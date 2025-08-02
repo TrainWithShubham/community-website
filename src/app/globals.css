@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Source Code Pro', monospace;
+}
+
+@layer base {
+  :root {
+    --background: 220 13% 95%; /* Light Gray */
+    --foreground: 224 71% 4%; /* Near Black */
+
+    --card: 220 13% 98%; /* Lighter Gray */
+    --card-foreground: 224 71% 4%;
+ 
+    --popover: 220 13% 98%;
+    --popover-foreground: 224 71% 4%;
+ 
+    --primary: 263 88% 68%; /* Vibrant Purple */
+    --primary-foreground: 0 0% 98%;
+ 
+    --secondary: 220 13% 90%;
+    --secondary-foreground: 224 71% 4%;
+ 
+    --muted: 220 13% 90%;
+    --muted-foreground: 220 10% 40%;
+ 
+    --accent: 340 82% 52%; /* Vibrant Pink/Red */
+    --accent-foreground: 0 0% 98%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 220 13% 85%;
+    --input: 220 13% 88%;
+    --ring: 263 88% 68%;
+ 
+    --radius: 0rem;
+
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+ 
+  .dark {
+    --background: 222 83% 4%; /* Near-black from image */
+    --foreground: 0 0% 98%; /* White text */
+
+    --card: 224 71% 8%; /* Dark blue from terminal */
+    --card-foreground: 0 0% 98%;
+ 
+    --popover: 222 83% 4%;
+    --popover-foreground: 0 0% 98%;
+ 
+    --primary: 263 88% 68%; /* Vibrant Purple from image */
+    --primary-foreground: 0 0% 98%;
+ 
+    --secondary: 224 71% 12%;
+    --secondary-foreground: 0 0% 98%;
+ 
+    --muted: 224 71% 12%;
+    --muted-foreground: 224 71% 60%;
+ 
+    --accent: 48 96% 58%; /* Gold accent from image */
+    --accent-foreground: 222 83% 4%;
+ 
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 224 71% 15%;
+    --input: 224 71% 12%;
+    --ring: 263 88% 68%;
+
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+    .tws-gradient {
+        background: linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .card-neo-border {
+        @apply rounded-lg border-2 border-primary/30 shadow-2xl shadow-primary/20 transition-all duration-300 hover:border-primary/50 hover:shadow-primary/30;
+    }
+}
