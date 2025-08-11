@@ -8,7 +8,7 @@
  * - IntelligentQuestionSearchOutput - The return type for the intelligentQuestionSearch function.
  */
 
-import {ai} from '@/ai/genkit';
+import { getAI } from '@/ai/genkit';
 import {z} from 'genkit';
 
 const IntelligentQuestionSearchInputSchema = z.object({
@@ -35,7 +35,7 @@ export async function intelligentQuestionSearch(input: IntelligentQuestionSearch
   return intelligentQuestionSearchFlow(input);
 }
 
-const prompt = ai.definePrompt({
+const prompt = getAI().definePrompt({
   name: 'intelligentQuestionSearchPrompt',
   input: {
     schema: IntelligentQuestionSearchInputSchema,
@@ -55,7 +55,7 @@ const prompt = ai.definePrompt({
   `,
 });
 
-const intelligentQuestionSearchFlow = ai.defineFlow(
+const intelligentQuestionSearchFlow = getAI().defineFlow(
   {
     name: 'intelligentQuestionSearchFlow',
     inputSchema: IntelligentQuestionSearchInputSchema,

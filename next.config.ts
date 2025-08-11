@@ -29,13 +29,13 @@ const nextConfig: NextConfig = {
       };
     }
     
-    // Ignore specific warnings that are not critical
-    config.ignoreWarnings = [
-      /Module not found: Can't resolve '@opentelemetry\/exporter-jaeger'/,
-      /Module not found: Can't resolve '@genkit-ai\/firebase'/,
-      /require\.extensions is not supported by webpack/,
-      /Critical dependency: the request of a dependency is an expression/,
-    ];
+    // Silence noisy optional deps from genkit/opentelemetry in client bundles
+    config.plugins = config.plugins || [];
+    config.plugins.push(
+      new (require('webpack')).IgnorePlugin({
+        resourceRegExp: /@opentelemetry\/exporter-jaeger|@genkit-ai\/firebase|handlebars/,
+      })
+    );
     
     return config;
   },
