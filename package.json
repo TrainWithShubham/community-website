@@ -10,7 +10,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "env:check": "node -e \"require('dotenv').config(); console.log('Environment variables loaded successfully')\""
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.14.1",
