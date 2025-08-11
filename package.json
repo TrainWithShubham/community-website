@@ -10,7 +10,6 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "postinstall": "patch-package",
     "env:check": "node -e \"require('dotenv').config(); console.log('Environment variables loaded successfully')\""
   },
   "dependencies": {
@@ -50,7 +49,6 @@
     "next": "15.3.3",
     "next-themes": "^0.3.0",
     "papaparse": "^5.4.1",
-    "patch-package": "^8.0.0",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.3.1",
