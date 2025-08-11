@@ -1,0 +1,146 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Source Code Pro', monospace;
+}
+
+/* Global smooth scrolling and refined scrollbars */
+html {
+  scroll-behavior: smooth;
+}
+
+@layer base {
+  :root {
+    /* Scrollbar tokens */
+    --scrollbar-thumb: hsl(var(--muted-foreground) / 0.25);
+    --scrollbar-thumb-hover: hsl(var(--accent) / 0.5);
+    --scrollbar-track: transparent;
+  }
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* WebKit */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+*::-webkit-scrollbar-track {
+  background-color: var(--scrollbar-track);
+}
+
+@layer base {
+  :root {
+    /* Light theme tuned for better hierarchy and brand harmony */
+    --background: 210 20% 98%;
+    --foreground: 224 71% 6%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 224 71% 6%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71% 6%;
+ 
+    --primary: 263 72% 55%;
+    --primary-foreground: 0 0% 100%;
+ 
+    --secondary: 220 14% 94%;
+    --secondary-foreground: 224 71% 10%;
+ 
+    --muted: 220 12% 92%;
+    --muted-foreground: 220 10% 38%;
+ 
+    /* Accent moved to terminal green for consistency */
+    --accent: 140 60% 35%;
+    --accent-foreground: 0 0% 100%;
+ 
+    --destructive: 0 72% 48%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 15% 84%;
+    --input: 220 15% 86%;
+    --ring: 263 72% 55%;
+ 
+    --radius: 0rem;
+
+    /* Harmonized chart palette for light mode */
+    --chart-1: 263 72% 55%;
+    --chart-2: 48 96% 50%;
+    --chart-3: 220 60% 56%;
+    --chart-4: 160 50% 45%;
+    --chart-5: 12 70% 52%;
+  }
+ 
+  .dark {
+    --background: 222 83% 4%; /* Near-black from image */
+    --foreground: 0 0% 98%; /* White text */
+
+    --card: 224 71% 8%; /* Dark blue from terminal */
+    --card-foreground: 0 0% 98%;
+ 
+    --popover: 222 83% 4%;
+    --popover-foreground: 0 0% 98%;
+ 
+    --primary: 263 88% 68%; /* Vibrant Purple from image */
+    --primary-foreground: 0 0% 98%;
+ 
+    --secondary: 224 71% 12%;
+    --secondary-foreground: 0 0% 98%;
+ 
+    --muted: 224 71% 12%;
+    --muted-foreground: 224 71% 60%;
+ 
+    /* Accent moved to terminal green for consistency */
+    --accent: 140 60% 45%;
+    --accent-foreground: 222 83% 4%;
+ 
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 224 71% 15%;
+    --input: 224 71% 12%;
+    --ring: 263 88% 68%;
+
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+    .tws-gradient {
+        background: linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .card-neo-border {
+        @apply rounded-lg border-2 border-primary/30 shadow-2xl shadow-primary/20 transition-all duration-300 hover:border-primary/50 hover:shadow-primary/30;
+    }
+}
