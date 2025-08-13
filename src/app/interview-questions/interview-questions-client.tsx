@@ -45,7 +45,12 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
       return;
     }
     startTransition(async () => {
-      const results = await handleSearch(searchQuery, activeTab, questionsMap[activeTab]);
+      const results = await handleSearch(
+        searchQuery, 
+        activeTab, 
+        questionsMap[activeTab],
+        user?.uid
+      );
       setSearchResults(results);
     });
   };
