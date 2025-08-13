@@ -24,7 +24,7 @@ const navLinks = [
   { href: '/', label: 'Home', icon: Home },
   { href: '/interview-questions', label: 'Interview Questions', icon: FileQuestion },
   { href: '/jobs', label: 'Jobs', icon: Briefcase },
-  { href: 'https://discord.gg/b4t3zD4b', label: 'Join Us', external: true, icon: Users },
+  { href: 'https://discord.gg/kGEr9mR5gT', label: 'Join Us', external: true, icon: Users },
 ];
 
 export function Navbar() {

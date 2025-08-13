@@ -2,15 +2,11 @@
 import { Question } from "@/data/questions";
 import { Contributor } from "@/data/leaderboard";
 import { Job } from "@/data/jobs";
+import { getSheetUrls } from "@/lib/env";
 import Papa from "papaparse";
 
-const SCENARIO_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTUrAU7tRsTjLa2B9nYV5yz4x3gcYLf38ofVM0haSMKZ3XFq-FHwDQiIGntWYH1oEeWJXMQPeHnm3WN/pub?output=csv';
-const INTERVIEW_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKXulHlDEFD1f3mVxbNgtk5_qfewFBIIN0s-XOYXXhOa2W-T9mmkvmbZi_SMqk0EpUhZbpFKhOMZDh/pub?output=csv';
-const LIVE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTX8qvtRs3zOsCtecGKHtcrqAAq8akht-drKxmkxCFBxxYEwWiG1_gqR8TY1fT757wqDIrzviEdbUpj/pub?output=csv';
-const COMMUNITY_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTS9P-csRa0DxN4W3DYQ-Jd1216fI0EhUmKEeBVhDNOgZmVTJPxTUFbY52SjpuORhaHYRkkc66IYLsD/pub?output=csv';
-const LEADERBOARD_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQl3-ej0Y-Y6apt3lJOpnj1y9B6wXcxqOi3OLCQJ-sDeEoWVUc3Kz12F8p3cYixrwjpzYLjds790La4/pub?output=csv';
-const JOBS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTXG1tfJqAN5IqlJqpvPWnOMVlCEKCYIgSfddrb30wZndYyn4rl2KSznKhx8D1GvdJmG040p1KA983u/pub?output=csv';
-const COMMUNITY_STATS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRX5qvUPTswosvphvap35loiZh754Enf45-A-IH3qNbxlVJY7oOqtD1YehFU9mXb8dStOq4vjA8CESX/pub?output=csv';
+// Get sheet URLs from environment variables with type safety
+const sheetUrls = getSheetUrls();
 
 export type CommunityStats = {
   activeMembers: string;
@@ -24,12 +20,45 @@ export type CommunityStats = {
 
 
 async function fetchCSV(url: string): Promise<string> {
-  // Use Next.js's default caching for fetched data.
-  const response = await fetch(url); 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch CSV from ${url}: ${response.statusText}`);
+  if (!url) {
+    throw new Error('CSV URL is not configured. Please check your environment variables.');
   }
-  return response.text();
+
+  try {
+    // Use Next.js's default caching for fetched data with timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'TWS-Community-Hub/1.0',
+      },
+      redirect: 'follow', // Follow redirects
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const text = await response.text();
+    
+    if (!text || text.trim().length === 0) {
+      throw new Error('Received empty CSV data');
+    }
+
+    return text;
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        throw new Error(`Request timeout while fetching CSV from ${url}`);
+      }
+      throw new Error(`Failed to fetch CSV from ${url}: ${error.message}`);
+    }
+    throw new Error(`Unknown error while fetching CSV from ${url}`);
+  }
 }
 
 function formatAnswerSection(text: string): string {
@@ -50,7 +79,7 @@ function formatAnswerSection(text: string): string {
 
 export async function getInterviewQuestions(): Promise<Question[]> {
   try {
-    const csvText = await fetchCSV(INTERVIEW_SHEET_URL);
+    const csvText = await fetchCSV(sheetUrls.interview);
     const parsed = Papa.parse(csvText, {
       header: true,
       skipEmptyLines: true,
@@ -78,7 +107,7 @@ export async function getInterviewQuestions(): Promise<Question[]> {
 
 export async function getScenarioQuestions(): Promise<Question[]> {
   try {
-    const csvText = await fetchCSV(SCENARIO_SHEET_URL);
+    const csvText = await fetchCSV(sheetUrls.scenario);
     const parsed = Papa.parse(csvText, {
       header: true,
       skipEmptyLines: true,
@@ -132,7 +161,7 @@ export async function getScenarioQuestions(): Promise<Question[]> {
 
 export async function getLiveQuestions(): Promise<Question[]> {
   try {
-    const csvText = await fetchCSV(LIVE_SHEET_URL);
+    const csvText = await fetchCSV(sheetUrls.live);
     const parsed = Papa.parse(csvText, {
       header: true,
       skipEmptyLines: true,
@@ -182,7 +211,7 @@ export async function getLiveQuestions(): Promise<Question[]> {
 
 export async function getCommunityQuestions(): Promise<Question[]> {
   try {
-    const csvText = await fetchCSV(COMMUNITY_SHEET_URL);
+    const csvText = await fetchCSV(sheetUrls.community);
     const parsed = Papa.parse(csvText, {
       header: true,
       skipEmptyLines: true,
@@ -237,7 +266,7 @@ export async function getCommunityQuestions(): Promise<Question[]> {
 
 export async function getLeaderboardData(): Promise<Contributor[]> {
   try {
-    const csvText = await fetchCSV(LEADERBOARD_SHEET_URL);
+    const csvText = await fetchCSV(sheetUrls.leaderboard);
     const parsed = Papa.parse(csvText, {
       header: true,
       skipEmptyLines: true,
@@ -265,7 +294,7 @@ export async function getLeaderboardData(): Promise<Contributor[]> {
 
 export async function getJobs(): Promise<Job[]> {
   try {
-    const csvText = await fetchCSV(JOBS_SHEET_URL);
+    const csvText = await fetchCSV(sheetUrls.jobs);
     const parsed = Papa.parse(csvText, {
       header: true,
       skipEmptyLines: true,
@@ -306,7 +335,7 @@ export async function getCommunityStats(): Promise<CommunityStats> {
     };
 
     try {
-        const csvText = await fetchCSV(COMMUNITY_STATS_URL);
+        const csvText = await fetchCSV(sheetUrls.communityStats);
         const parsed = Papa.parse(csvText, {
             header: true,
             skipEmptyLines: true,

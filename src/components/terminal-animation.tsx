@@ -176,16 +176,16 @@ export function TerminalAnimation() {
   }, [commandIndex]);
 
   return (
-    <div className="bg-card border border-primary/50 rounded-none p-3 md:p-4 font-code text-xs md:text-sm w-full max-w-full mx-auto shadow-none min-h-[80px] md:min-h-[100px] flex flex-col">
+    <div className="bg-card border border-primary/50 rounded-none p-3 md:p-4 font-code text-xs md:text-sm w-full max-w-full mx-auto shadow-none h-[120px] md:h-[140px] flex flex-col">
       <div className="flex items-center pb-2 mb-2 border-b border-border/50">
         <div className="h-3 w-3 rounded-full bg-red-500 mr-2"></div>
         <div className="h-3 w-3 rounded-full bg-yellow-500 mr-2"></div>
         <div className="h-3 w-3 rounded-full bg-green-500"></div>
       </div>
-      <div className="flex min-h-[40px]">
+      <div className="flex flex-1 overflow-hidden">
         <span className="text-primary shrink-0">user@tws-community:~$</span>
         <div className="ml-2 flex-1 relative">
-          <span className="break-all">{renderColoredCommand(currentLine)}</span>
+          <span className="break-all leading-relaxed">{renderColoredCommand(currentLine)}</span>
           <span className="inline-block w-2 h-4 bg-primary animate-pulse ml-1" aria-hidden="true"></span>
         </div>
       </div>

@@ -22,9 +22,19 @@ interface InterviewQuestionsClientProps {
 export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Question[] | null>(null);
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [activeTab, setActiveTab] = useState<QuestionCategory>('interview');
   const [isPending, startTransition] = useTransition();
+
+  // Debug authentication state
+  useEffect(() => {
+    console.log('🔐 Auth Debug:', {
+      user: !!user,
+      userEmail: user?.email,
+      loading,
+      activeTab
+    });
+  }, [user, loading, activeTab]);
 
   const currentQuestions = useMemo(() => {
     if (searchQuery && searchResults) {
@@ -91,6 +101,43 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
     );
   };
 
+  const renderCommunitySection = () => {
+    if (loading) {
+      return (
+        <div className="text-left my-4">
+          <div className="flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span className="text-muted-foreground">Loading authentication...</span>
+          </div>
+        </div>
+      );
+    }
+
+    if (!user) {
+      return (
+        <div className="text-left my-4">
+          <Alert className="border-accent text-accent-foreground rounded-none">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Authentication Required</AlertTitle>
+            <AlertDescription>
+              Please log in to contribute questions to the community.
+            </AlertDescription>
+          </Alert>
+        </div>
+      );
+    }
+
+    return (
+      <div className="text-left my-4">
+        <AddQuestionForm>
+          <Button variant="outline" className="border-accent text-accent rounded-none">
+            <PlusCircle className="mr-2 h-4 w-4" /> contribute.sh
+          </Button>
+        </AddQuestionForm>
+      </div>
+    );
+  };
+
   return (
     <Tabs value={activeTab} onValueChange={(value) => {
       setActiveTab(value as QuestionCategory);
@@ -124,15 +171,7 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
       <TabsContent value="scenario" className="mt-6">{renderQuestionList(currentQuestions)}</TabsContent>
       <TabsContent value="live" className="mt-6">{renderQuestionList(currentQuestions)}</TabsContent>
       <TabsContent value="community" className="mt-6">
-        <div className="text-left my-4">
-          {user && (
-            <AddQuestionForm>
-              <Button variant="outline" className="border-accent text-accent rounded-none">
-                <PlusCircle className="mr-2 h-4 w-4" /> contribute.sh
-              </Button>
-            </AddQuestionForm>
-          )}
-        </div>
+        {renderCommunitySection()}
         {renderQuestionList(currentQuestions)}
       </TabsContent>
     </Tabs>

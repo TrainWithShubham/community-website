@@ -5,10 +5,12 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import {
   onAuthStateChanged,
   signInWithPopup,
+  signInWithRedirect,
   GoogleAuthProvider,
   GithubAuthProvider,
   User,
   signOut,
+  getRedirectResult,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import { useToast } from '@/hooks/use-toast';
@@ -30,32 +32,114 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log('Auth state changed:', user ? `User: ${user.email}` : 'No user');
       setUser(user);
       setLoading(false);
     });
 
+    // Check for redirect result on mount
+    getRedirectResult(auth).then((result) => {
+      if (result) {
+        console.log('Redirect sign-in successful:', result.user.email);
+        toast({ title: "Successfully logged in!" });
+      }
+    }).catch((error) => {
+      console.error('Redirect sign-in error:', error);
+    });
+
     return () => unsubscribe();
-  }, []);
+  }, [toast]);
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({
+      prompt: 'select_account'
+    });
+    
     try {
+      console.log('Attempting Google sign-in with popup...');
       await signInWithPopup(auth, provider);
       toast({ title: "Successfully logged in with Google." });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Google sign-in error:", error);
-      toast({ title: "Failed to log in with Google.", variant: "destructive" });
+      
+      // Handle specific Firebase auth errors
+      if (error.code === 'auth/operation-not-allowed') {
+        toast({ 
+          title: "Google sign-in not configured", 
+          description: "Please contact support to enable Google authentication.",
+          variant: "destructive" 
+        });
+      } else if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
+        // Fallback to redirect method
+        console.log('Popup blocked, trying redirect method...');
+        toast({ 
+          title: "Popup blocked", 
+          description: "Redirecting to Google sign-in...",
+        });
+        try {
+          await signInWithRedirect(auth, provider);
+        } catch (redirectError: any) {
+          console.error('Redirect sign-in error:', redirectError);
+          toast({ 
+            title: "Sign-in failed", 
+            description: "Please try again or contact support.",
+            variant: "destructive" 
+          });
+        }
+      } else {
+        toast({ 
+          title: "Failed to log in with Google", 
+          description: error.message || "Please try again later.",
+          variant: "destructive" 
+        });
+      }
     }
   };
 
   const signInWithGitHub = async () => {
     const provider = new GithubAuthProvider();
+    provider.addScope('read:user');
+    provider.addScope('user:email');
+    
     try {
+      console.log('Attempting GitHub sign-in with popup...');
       await signInWithPopup(auth, provider);
-       toast({ title: "Successfully logged in with GitHub." });
-    } catch (error) {
+      toast({ title: "Successfully logged in with GitHub." });
+    } catch (error: any) {
       console.error("GitHub sign-in error:", error);
-      toast({ title: "Failed to log in with GitHub.", variant: "destructive" });
+      
+      // Handle specific Firebase auth errors
+      if (error.code === 'auth/operation-not-allowed') {
+        toast({ 
+          title: "GitHub sign-in not configured", 
+          description: "Please contact support to enable GitHub authentication.",
+          variant: "destructive" 
+        });
+      } else if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
+        // Fallback to redirect method
+        console.log('Popup blocked, trying redirect method...');
+        toast({ 
+          title: "Popup blocked", 
+          description: "Redirecting to GitHub sign-in...",
+        });
+        try {
+          await signInWithRedirect(auth, provider);
+        } catch (redirectError: any) {
+          console.error('Redirect sign-in error:', redirectError);
+          toast({ 
+            title: "Sign-in failed", 
+            description: "Please try again or contact support.",
+            variant: "destructive" 
+          });
+        }
+      } else {
+        toast({ 
+          title: "Failed to log in with GitHub", 
+          description: error.message || "Please try again later.",
+          variant: "destructive" 
+        });
+      }
     }
   };
 

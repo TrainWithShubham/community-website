@@ -29,10 +29,8 @@ export default async function Home() {
     ? allCommunityQuestions.slice(0, 3) 
     : allQuestions.slice(0, 3); // Fallback to static data
   
-  const fiveDaysAgo = new Date();
-  fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
-  
-  const recentJobs = allJobs.filter(job => new Date(job.postedDate) > fiveDaysAgo);
+  // Show all jobs instead of filtering by date since the dates in the sheet are future dates
+  const recentJobs = allJobs;
 
   return (
     <ErrorBoundary>
@@ -48,7 +46,7 @@ export default async function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm md:text-base min-h-[44px] md:min-h-[40px] px-4 md:px-6">
-                <a href="https://discord.gg/b4t3zD4b" target="_blank" rel="noopener noreferrer">
+                <a href="https://discord.gg/kGEr9mR5gT" target="_blank" rel="noopener noreferrer">
                   <Users className="mr-2 h-4 w-4 md:h-5 md:w-5" /> join_discord
                 </a>
               </Button>

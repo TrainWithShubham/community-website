@@ -9,6 +9,7 @@ import {
   getLeaderboardData,
   getCommunityStats 
 } from '@/services/google-sheets';
+import { getCommunityQuestionsFromSheetsAPI } from '@/services/google-sheets-api';
 import type { Question } from '@/data/questions';
 import type { Job } from '@/data/jobs';
 import type { Contributor } from '@/data/leaderboard';
@@ -71,7 +72,7 @@ export async function getHomePageData(): Promise<HomePageData> {
       getCachedData('interview-questions', getInterviewQuestions, 600), // 10 min
       getCachedData('scenario-questions', getScenarioQuestions, 600),
       getCachedData('live-questions', getLiveQuestions, 600),
-      getCachedData('community-questions', getCommunityQuestions, 300), // 5 min
+                        getCachedData('community-questions', getCommunityQuestionsFromSheetsAPI, 300), // 5 min
       getCachedData('jobs', getJobs, 1800), // 30 min
       getCachedData('leaderboard', getLeaderboardData, 3600), // 1 hour
       getCachedData('community-stats', getCommunityStats, 7200), // 2 hours
