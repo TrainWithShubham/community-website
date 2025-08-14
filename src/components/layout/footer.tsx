@@ -8,19 +8,19 @@ export function Footer() {
          <span className='text-primary'>&gt;</span> &copy; {new Date().getFullYear()} TWS Community Hub. All Rights Reserved.
         </p>
         <div className="flex gap-6">
-          <a href="#" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+          <a href="https://github.com/trainwithshubham" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
             <Github size={20} />
             <span className="sr-only">GitHub</span>
           </a>
-          <a href="#" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+          <a href="https://www.linkedin.com/company/trainwithshubham/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
             <Linkedin size={20} />
             <span className="sr-only">LinkedIn</span>
           </a>
-          <a href="#" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+          <a href="https://x.com/TrainWitShubham" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
             <Twitter size={20} />
             <span className="sr-only">Twitter</span>
           </a>
-          <a href="#" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+          <a href="https://www.instagram.com/trainwithshubham__" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
             <Instagram size={20} />
             <span className="sr-only">Instagram</span>
           </a>

@@ -329,13 +329,13 @@ export async function getJobs(): Promise<Job[]> {
 
 export async function getCommunityStats(): Promise<CommunityStats> {
     const defaultStats: CommunityStats = {
-        activeMembers: "10k+",
-        activeVolunteers: "50+",
-        successStories: "200+",
-        githubUrl: "#",
-        linkedinUrl: "#",
-        twitterUrl: "#",
-        instagramUrl: "#"
+        activeMembers: "5600+",
+        activeVolunteers: "4",
+        successStories: "2000+",
+        githubUrl: "https://github.com/trainwithshubham",
+        linkedinUrl: "https://www.linkedin.com/company/trainwithshubham/",
+        twitterUrl: "https://x.com/TrainWitShubham",
+        instagramUrl: "https://www.instagram.com/trainwithshubham__"
     };
 
     try {

@@ -43,13 +43,13 @@ function transformCommunityQuestions(apiQuestions: any[]): Question[] {
 
 function getDefaultStats() {
   return {
-    activeMembers: "10k+",
-    activeVolunteers: "50+",
-    successStories: "200+",
+    activeMembers: "5600+",
+    activeVolunteers: "4",
+    successStories: "2000+",
     githubUrl: "https://github.com/trainwithshubham",
-    linkedinUrl: "https://linkedin.com/company/trainwithshubham",
-    twitterUrl: "https://twitter.com/trainwithshubham",
-    instagramUrl: "https://instagram.com/trainwithshubham"
+    linkedinUrl: "https://www.linkedin.com/company/trainwithshubham/",
+    twitterUrl: "https://x.com/TrainWitShubham",
+    instagramUrl: "https://www.instagram.com/trainwithshubham__"
   };
 }
 
@@ -84,7 +84,7 @@ export async function getHomePageData(): Promise<HomePageData> {
       getCachedData('community-questions', getCommunityQuestionsFromSheetsAPI, 60),
       getCachedData('jobs', getJobs, 1800), // 30 min
       getCachedData('leaderboard', getLeaderboardData, 3600), // 1 hour
-      getCachedData('community-stats', getCommunityStats, 7200) // 2 hours
+      getCachedData('community-stats', getCommunityStats, 300) // 5 minutes
     ]);
 
     const duration = Date.now() - startTime;
