@@ -2,35 +2,50 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Github, Instagram, Linkedin, Twitter, Users, Code, Briefcase, Award, MapPin, MessageSquareQuote, Handshake, TrendingUp, Sparkles } from 'lucide-react';
+import { Github, Instagram, Linkedin, Twitter, Users, Code, Briefcase, Award, MapPin, MessageSquareQuote, Handshake, TrendingUp, Sparkles, UserCheck, Trophy, Star } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { TerminalAnimation } from '@/components/terminal-animation';
 import { ClientOnly } from '@/components/client-only';
 import { type Job, jobs } from '@/data/jobs';
 import { Badge } from '@/components/ui/badge';
-import { allQuestions } from '@/data/questions';
 import { JobsTerminalAnimation } from '@/components/jobs-terminal-animation';
 import { QuestionsTerminalAnimation } from '@/components/questions-terminal-animation';
 import { getHomePageData } from '@/lib/data-fetcher';
 import { SectionDivider } from '@/components/section-divider';
 import { ErrorBoundary } from '@/components/error-boundary';
+import { leaderboardData as fallbackLeaderboardData } from '@/data/leaderboard';
 
 export default async function Home() {
   // Use optimized data fetcher with caching and parallel requests
   const {
-    communityQuestions: allCommunityQuestions,
+    interviewQuestions,
+    scenarioQuestions,
+    liveQuestions,
+    communityQuestions,
     jobs: allJobs,
     leaderboardData,
     communityStats
   } = await getHomePageData();
   
-  const questionSnippets = allCommunityQuestions.length > 0 
-    ? allCommunityQuestions.slice(0, 3) 
-    : allQuestions.slice(0, 3); // Fallback to static data
+  // Combine all question sources from real-time spreadsheets
+  const allQuestions = [
+    ...interviewQuestions,
+    ...scenarioQuestions,
+    ...liveQuestions,
+    ...communityQuestions
+  ];
+  
+  // Take first 6 questions for homepage display (2 from each category if available)
+  const questionSnippets = allQuestions.slice(0, 6);
   
   // Show all jobs instead of filtering by date since the dates in the sheet are future dates
   const recentJobs = allJobs;
+
+  // Use fallback leaderboard data if Google Sheets data is empty
+  const displayLeaderboardData = leaderboardData.length > 0 
+    ? leaderboardData 
+    : fallbackLeaderboardData;
 
   return (
     <ErrorBoundary>
@@ -67,7 +82,7 @@ export default async function Home() {
             <Award className="inline-block mr-2 md:mr-3 h-6 w-6 md:h-8 md:w-8 text-primary" />
             ./Volunteer-Leaderboard
           </h2>
-          <Card className="max-w-full md:max-w-4xl mx-auto bg-card/80 backdrop-blur-sm card-neo-border">
+          <Card className="max-w-full md:max-w-4xl mx-auto bg-card/80 backdrop-blur-sm card-neo-border border-2 border-primary/30 shadow-2xl shadow-primary/20 transition-all duration-300 hover:border-primary/50 hover:shadow-primary/30">
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <Table className="text-sm md:text-base">
@@ -79,7 +94,7 @@ export default async function Home() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {leaderboardData.map((contributor) => (
+                    {displayLeaderboardData.map((contributor) => (
                       <TableRow key={contributor.rank} className="border-border/50">
                         <TableCell className="font-medium text-accent text-center">{contributor.rank}</TableCell>
                         <TableCell className="font-medium">{contributor.name}</TableCell>
@@ -98,9 +113,7 @@ export default async function Home() {
         {/* Jobs Section - Enhanced Responsive Design */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 lg:gap-12 items-center py-8 md:py-12" id="jobs">
           <div className="order-2 md:order-1 min-h-[200px] md:min-h-[240px] lg:min-h-[280px] xl:min-h-[320px]">
-            <ClientOnly>
-              <JobsTerminalAnimation jobs={recentJobs} />
-            </ClientOnly>
+            <JobsTerminalAnimation jobs={recentJobs} />
           </div>
           <div className="space-y-3 md:space-y-4 order-1 md:order-2 text-center md:text-left">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-headline">
@@ -149,7 +162,7 @@ export default async function Home() {
               <Card className="bg-transparent border-0 shadow-none p-4 md:p-6">
                   <CardHeader className="flex items-center flex-row gap-3 md:gap-4 p-0">
                       <div className="bg-primary/20 p-2 md:p-3 rounded-md">
-                          <Users className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+                          <UserCheck className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                       </div>
                       <div>
                           <CardTitle className="text-xl md:text-2xl">{communityStats.activeMembers}</CardTitle>
@@ -160,7 +173,7 @@ export default async function Home() {
                <Card className="bg-transparent border-0 shadow-none p-4 md:p-6">
                   <CardHeader className="flex items-center flex-row gap-3 md:gap-4 p-0">
                       <div className="bg-primary/20 p-2 md:p-3 rounded-md">
-                          <Handshake className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+                          <Trophy className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                       </div>
                        <div>
                           <CardTitle className="text-xl md:text-2xl">{communityStats.activeVolunteers}</CardTitle>
@@ -171,7 +184,7 @@ export default async function Home() {
                <Card className="bg-transparent border-0 shadow-none p-4 md:p-6 sm:col-span-2 lg:col-span-1">
                   <CardHeader className="flex items-center flex-row gap-3 md:gap-4 p-0">
                       <div className="bg-primary/20 p-2 md:p-3 rounded-md">
-                          <Sparkles className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+                          <Star className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                       </div>
                        <div>
                           <CardTitle className="text-xl md:text-2xl">{communityStats.successStories}</CardTitle>

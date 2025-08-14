@@ -7,9 +7,9 @@ export type Contributor = {
 
 // This static data is now a fallback and will be replaced by data from Google Sheets on the homepage.
 export const leaderboardData: Contributor[] = [
-  { rank: 1, name: 'alex_devops', contributions: 124 },
-  { rank: 2, name: 'cloud_guru_jane', contributions: 112 },
-  { rank: 3, name: 'secops_sam', contributions: 98 },
-  { rank: 4, name: 'kubemaster_kim', contributions: 85 },
-  { rank: 5, name: 'git_wizard_greg', contributions: 76 },
+  { rank: 1, name: 'Pooja', contributions: 45 },
+  { rank: 2, name: 'Fauzeya', contributions: 40 },
+  { rank: 3, name: 'Shubham', contributions: 30 },
+  { rank: 4, name: 'Altamash', contributions: 25 },
+  { rank: 5, name: 'Yashir', contributions: 15 },
 ];

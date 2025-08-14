@@ -32,7 +32,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log('Auth state changed:', user ? `User: ${user.email}` : 'No user');
       setUser(user);
       setLoading(false);
     });
@@ -40,11 +39,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Check for redirect result on mount
     getRedirectResult(auth).then((result) => {
       if (result) {
-        console.log('Redirect sign-in successful:', result.user.email);
         toast({ title: "Successfully logged in!" });
       }
     }).catch((error) => {
-      console.error('Redirect sign-in error:', error);
+      // Handle error silently
     });
 
     return () => unsubscribe();
@@ -57,12 +55,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
     
     try {
-      console.log('Attempting Google sign-in with popup...');
       await signInWithPopup(auth, provider);
       toast({ title: "Successfully logged in with Google." });
     } catch (error: any) {
-      console.error("Google sign-in error:", error);
-      
       // Handle specific Firebase auth errors
       if (error.code === 'auth/operation-not-allowed') {
         toast({ 
@@ -72,7 +67,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         });
       } else if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
         // Fallback to redirect method
-        console.log('Popup blocked, trying redirect method...');
         toast({ 
           title: "Popup blocked", 
           description: "Redirecting to Google sign-in...",
@@ -80,7 +74,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try {
           await signInWithRedirect(auth, provider);
         } catch (redirectError: any) {
-          console.error('Redirect sign-in error:', redirectError);
           toast({ 
             title: "Sign-in failed", 
             description: "Please try again or contact support.",
@@ -103,12 +96,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     provider.addScope('user:email');
     
     try {
-      console.log('Attempting GitHub sign-in with popup...');
       await signInWithPopup(auth, provider);
       toast({ title: "Successfully logged in with GitHub." });
     } catch (error: any) {
-      console.error("GitHub sign-in error:", error);
-      
       // Handle specific Firebase auth errors
       if (error.code === 'auth/operation-not-allowed') {
         toast({ 
@@ -118,7 +108,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         });
       } else if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
         // Fallback to redirect method
-        console.log('Popup blocked, trying redirect method...');
         toast({ 
           title: "Popup blocked", 
           description: "Redirecting to GitHub sign-in...",
@@ -126,7 +115,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try {
           await signInWithRedirect(auth, provider);
         } catch (redirectError: any) {
-          console.error('Redirect sign-in error:', redirectError);
           toast({ 
             title: "Sign-in failed", 
             description: "Please try again or contact support.",
@@ -148,7 +136,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await signOut(auth);
       toast({ title: "Successfully logged out." });
     } catch (error) {
-      console.error("Logout error:", error);
       toast({ title: "Failed to log out.", variant: "destructive" });
     }
   };

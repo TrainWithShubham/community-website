@@ -56,8 +56,6 @@ function convertToQuestionFormat(apiData: any): Question {
 // New function to get community questions from Google Sheets API
 export async function getCommunityQuestionsFromSheetsAPI(): Promise<Question[]> {
   try {
-    console.log('📖 Fetching community questions from Google Sheets API...');
-    
     const apiData = await getCommunityQuestionsFromAPI();
     
     // Convert API data to Question format
@@ -65,11 +63,9 @@ export async function getCommunityQuestionsFromSheetsAPI(): Promise<Question[]> 
       .filter(item => item.question && item.question.trim() !== '')
       .map(convertToQuestionFormat);
     
-    console.log(`✅ Successfully fetched ${questions.length} community questions from Google Sheets API`);
     return questions;
     
   } catch (error) {
-    console.error('❌ Error fetching community questions from Google Sheets API:', error);
     return [];
   }
 }

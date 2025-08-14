@@ -1,7 +1,6 @@
 import { InterviewQuestionsClient } from './interview-questions-client';
 import { getInterviewQuestions, getScenarioQuestions, getLiveQuestions, getCommunityQuestions } from '@/services/google-sheets';
 import { getCommunityQuestionsFromSheetsAPI } from '@/services/google-sheets-api';
-import { AuthDebug } from '@/components/auth-debug';
 
 export default async function InterviewQuestionsPage() {
   const [interviewQuestions, scenarioQuestions, liveQuestions, communityQuestions] = await Promise.allSettled([
@@ -22,10 +21,9 @@ export default async function InterviewQuestionsPage() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8 text-center">Interview Questions</h1>
       
-      {/* Temporary debug component */}
-      <AuthDebug />
-      
-      <InterviewQuestionsClient questionsMap={questionsMap} />
+      <div className="card-neo-border">
+        <InterviewQuestionsClient questionsMap={questionsMap} />
+      </div>
     </div>
   );
 }

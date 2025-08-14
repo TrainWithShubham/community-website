@@ -21,9 +21,6 @@ export async function appendToGoogleSheets(data: any) {
       throw new Error('GOOGLE_SHEETS_SPREADSHEET_ID not configured');
     }
 
-    console.log('📊 Writing to Google Sheets:', spreadsheetId);
-    console.log('📝 Question Type:', data.questionType);
-
     let sheetName: string;
     let values: any[][];
 
@@ -84,8 +81,7 @@ export async function appendToGoogleSheets(data: any) {
         throw new Error(`Unsupported question type: ${data.questionType}`);
     }
 
-    console.log('📋 Sheet Name:', sheetName);
-    console.log('📝 Row data to append:', values[0]);
+
 
     // Append the row to the correct sheet
     const response = await sheets.spreadsheets.values.append({
@@ -95,61 +91,16 @@ export async function appendToGoogleSheets(data: any) {
       requestBody: { values },
     });
 
-    console.log('✅ Successfully appended to Google Sheets');
-    console.log('📊 Updated range:', response.data.updates?.updatedRange);
-    
+
     return true;
   } catch (error) {
-    console.error('❌ Error writing to Google Sheets:', error);
     throw error;
   }
 }
 
-// Function to get sheet data for a specific sheet (for debugging)
-export async function getSheetData(sheetName: string = 'Interview Questions') {
-  try {
-    const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
-    
-    if (!spreadsheetId) {
-      throw new Error('GOOGLE_SHEETS_SPREADSHEET_ID not configured');
-    }
 
-    console.log(`📖 Reading data from sheet: ${sheetName}`);
 
-    const response = await sheets.spreadsheets.values.get({
-      spreadsheetId,
-      range: `${sheetName}!A:Z`,
-    });
 
-    console.log(`✅ Successfully read ${response.data.values?.length || 0} rows from ${sheetName}`);
-    return response.data.values;
-  } catch (error) {
-    console.error(`❌ Error reading from sheet ${sheetName}:`, error);
-    throw error;
-  }
-}
-
-// Function to get all sheet names
-export async function getSheetNames() {
-  try {
-    const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
-    
-    if (!spreadsheetId) {
-      throw new Error('GOOGLE_SHEETS_SPREADSHEET_ID not configured');
-    }
-
-    const response = await sheets.spreadsheets.get({
-      spreadsheetId,
-    });
-
-    const sheetNames = response.data.sheets?.map(sheet => sheet.properties?.title) || [];
-    console.log('📋 Available sheets:', sheetNames);
-    return sheetNames;
-  } catch (error) {
-    console.error('❌ Error getting sheet names:', error);
-    throw error;
-  }
-}
 
 // Function to get community questions from Google Sheets API
 export async function getCommunityQuestionsFromAPI(): Promise<Array<{
@@ -175,7 +126,7 @@ export async function getCommunityQuestionsFromAPI(): Promise<Array<{
       throw new Error('GOOGLE_SHEETS_SPREADSHEET_ID not configured');
     }
 
-    console.log('📖 Reading community questions from Google Sheets API...');
+
 
     // Read from all three sheets to get community questions
     const [interviewData, scenarioData, mcqData] = await Promise.allSettled([
@@ -268,11 +219,9 @@ export async function getCommunityQuestionsFromAPI(): Promise<Array<{
       });
     }
 
-    console.log(`✅ Successfully read ${allQuestions.length} community questions from Google Sheets API`);
     return allQuestions;
     
   } catch (error) {
-    console.error('❌ Error reading community questions from Google Sheets API:', error);
     return [];
   }
 }
@@ -292,7 +241,6 @@ export async function checkForDuplicateQuestion(questionText: string, questionTy
     );
     
     if (exactMatch) {
-      console.log('🚫 Duplicate question found (exact match)');
       return true;
     }
     
@@ -304,14 +252,12 @@ export async function checkForDuplicateQuestion(questionText: string, questionTy
     });
     
     if (similarQuestions.length > 0) {
-      console.log('🚫 Similar questions found:', similarQuestions.map(q => q.question));
       return true;
     }
     
     return false;
     
   } catch (error) {
-    console.error('❌ Error checking for duplicates:', error);
     return false; // Allow submission if duplicate check fails
   }
 }

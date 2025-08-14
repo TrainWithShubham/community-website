@@ -12,12 +12,8 @@ if (typeof window === 'undefined' && !process.env.ENV_LOADED) {
     if (existsSync(envLocalPath)) {
       const result = config({ path: envLocalPath, override: true });
       if (result.error) {
-        console.warn('⚠️  Error loading .env.local:', result.error);
-      } else {
-        console.log('✅ .env.local loaded successfully');
+        // Silent error handling for production
       }
-    } else {
-      console.warn('⚠️  .env.local file not found at:', envLocalPath);
     }
     
     // Also load standard .env files (lower priority)
@@ -26,13 +22,10 @@ if (typeof window === 'undefined' && !process.env.ENV_LOADED) {
     // Mark as loaded to prevent multiple loads
     process.env.ENV_LOADED = 'true';
     
-    // Debug: Log a sample variable to verify loading
-    if (process.env.NODE_ENV === 'development') {
-      console.log('🔍 Environment debug - SCENARIO_SHEET_URL exists:', !!process.env.SCENARIO_SHEET_URL);
-    }
+
     
   } catch (error) {
-    console.warn('⚠️  Could not load environment files:', error);
+    // Silent error handling for production
   }
 }
 

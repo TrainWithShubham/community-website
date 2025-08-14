@@ -176,17 +176,27 @@ export function TerminalAnimation() {
   }, [commandIndex]);
 
   return (
-    <div className="bg-card border border-primary/50 rounded-none p-3 md:p-4 font-code text-xs md:text-sm w-full max-w-full mx-auto shadow-none h-[120px] md:h-[140px] flex flex-col">
-      <div className="flex items-center pb-2 mb-2 border-b border-border/50">
-        <div className="h-3 w-3 rounded-full bg-red-500 mr-2"></div>
-        <div className="h-3 w-3 rounded-full bg-yellow-500 mr-2"></div>
-        <div className="h-3 w-3 rounded-full bg-green-500"></div>
+    <div className="bg-card border border-primary/50 rounded-lg overflow-hidden card-neo-border h-[120px] md:h-[140px] flex flex-col">
+      {/* macOS-style header */}
+      <div className="bg-muted/50 px-4 py-2 flex items-center gap-2 border-b border-border/50">
+        <div className="flex gap-1.5">
+          <div className="w-3 h-3 rounded-full bg-red-500"></div>
+          <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+          <div className="w-3 h-3 rounded-full bg-green-500"></div>
+        </div>
+        <div className="flex-1 text-center text-sm font-medium text-muted-foreground">
+          Hero Terminal
+        </div>
       </div>
-      <div className="flex flex-1 overflow-hidden">
-        <span className="text-primary shrink-0">user@tws-community:~$</span>
-        <div className="ml-2 flex-1 relative">
-          <span className="break-all leading-relaxed">{renderColoredCommand(currentLine)}</span>
-          <span className="inline-block w-2 h-4 bg-primary animate-pulse ml-1" aria-hidden="true"></span>
+      
+      {/* Terminal content */}
+      <div className="p-4 flex-1 overflow-hidden bg-card text-sm font-mono">
+        <div className="flex items-center gap-2">
+          <span className="text-primary shrink-0">user@tws-community:~$</span>
+          <div className="flex-1 relative">
+            <span className="break-all leading-relaxed">{renderColoredCommand(currentLine)}</span>
+            <span className="inline-block w-2 h-4 bg-primary animate-pulse ml-1" aria-hidden="true"></span>
+          </div>
         </div>
       </div>
     </div>

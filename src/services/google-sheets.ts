@@ -27,7 +27,7 @@ async function fetchCSV(url: string): Promise<string> {
   try {
     // Use Next.js's default caching for fetched data with timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
     const response = await fetch(url, {
       signal: controller.signal,
@@ -85,9 +85,7 @@ export async function getInterviewQuestions(): Promise<Question[]> {
       skipEmptyLines: true,
     });
 
-    if (parsed.errors.length > 0) {
-        console.error("Errors parsing interview CSV:", parsed.errors);
-    }
+
 
     return parsed.data.map((row: any) => {
       const { question, answer, author } = row;
@@ -99,7 +97,6 @@ export async function getInterviewQuestions(): Promise<Question[]> {
     }).filter(q => q.question);
 
   } catch (error) {
-    console.error('Error fetching or parsing interview questions:', error);
     return []; // Return empty array on error
   }
 }
@@ -113,9 +110,7 @@ export async function getScenarioQuestions(): Promise<Question[]> {
       skipEmptyLines: true,
     });
 
-    if (parsed.errors.length > 0) {
-        console.error("Errors parsing CSV:", parsed.errors);
-    }
+
 
     return parsed.data.map((row: any) => {
       const { 
@@ -154,7 +149,6 @@ export async function getScenarioQuestions(): Promise<Question[]> {
     }).filter(q => q.question);
 
   } catch (error) {
-    console.error('Error fetching or parsing scenario questions:', error);
     return []; // Return empty array on error
   }
 }
@@ -167,9 +161,7 @@ export async function getLiveQuestions(): Promise<Question[]> {
       skipEmptyLines: true,
     });
 
-    if (parsed.errors.length > 0) {
-        console.error("Errors parsing live questions CSV:", parsed.errors);
-    }
+
 
     return parsed.data.map((row: any) => {
       const { 
@@ -204,7 +196,6 @@ export async function getLiveQuestions(): Promise<Question[]> {
     }).filter(q => q.question);
 
   } catch (error) {
-    console.error('Error fetching or parsing live questions:', error);
     return [];
   }
 }
@@ -217,9 +208,7 @@ export async function getCommunityQuestions(): Promise<Question[]> {
       skipEmptyLines: true,
     });
 
-    if (parsed.errors.length > 0) {
-        console.error("Errors parsing community questions CSV:", parsed.errors);
-    }
+
 
     return parsed.data.map((row: any) => {
        const { 
@@ -259,7 +248,6 @@ export async function getCommunityQuestions(): Promise<Question[]> {
     }).filter(q => q.question);
 
   } catch (error) {
-    console.error('Error fetching or parsing community questions:', error);
     return [];
   }
 }
@@ -267,27 +255,42 @@ export async function getCommunityQuestions(): Promise<Question[]> {
 export async function getLeaderboardData(): Promise<Contributor[]> {
   try {
     const csvText = await fetchCSV(sheetUrls.leaderboard);
+    
     const parsed = Papa.parse(csvText, {
       header: true,
       skipEmptyLines: true,
-      dynamicTyping: true,
+      dynamicTyping: false, // Keep as string to handle "pts" suffix
     });
 
-    if (parsed.errors.length > 0) {
-        console.error("Errors parsing leaderboard CSV:", parsed.errors);
-    }
-    
     // Filter out rows that are empty or don't have a name.
-    const validData = parsed.data.filter((row: any) => row.name && row.rank && row.contributions);
+    const validData = parsed.data.filter((row: any) => {
+      const hasValidData = row.name && row.rank && row.contributions;
+      return hasValidData;
+    });
 
-    return validData.map((row: any) => ({
-      rank: row.rank || 0,
-      name: row.name || 'Anonymous',
-      contributions: row.contributions || 0,
-    }));
+    const processedData = validData.map((row: any) => {
+      // Clean up contributions field - remove "pts" suffix and any trailing characters
+      let contributions = row.contributions;
+      if (typeof contributions === 'string') {
+        // Remove "pts" suffix and any trailing characters like "%"
+        contributions = contributions.replace(/\s*pts\s*.*$/i, '').trim();
+      }
+      
+      // Convert to number, default to 0 if invalid
+      const contributionsNum = parseInt(contributions) || 0;
+      
+      const contributor = {
+        rank: parseInt(row.rank) || 0,
+        name: row.name || 'Anonymous',
+        contributions: contributionsNum,
+      };
+      
+      return contributor;
+    });
+
+    return processedData;
 
   } catch (error) {
-    console.error('Error fetching or parsing leaderboard data:', error);
     return [];
   }
 }
@@ -295,19 +298,19 @@ export async function getLeaderboardData(): Promise<Contributor[]> {
 export async function getJobs(): Promise<Job[]> {
   try {
     const csvText = await fetchCSV(sheetUrls.jobs);
+    
     const parsed = Papa.parse(csvText, {
       header: true,
       skipEmptyLines: true,
       dynamicTyping: true,
     });
 
-    if (parsed.errors.length > 0) {
-        console.error("Errors parsing jobs CSV:", parsed.errors);
-    }
+    const validData = parsed.data.filter((row: any) => {
+      const hasValidData = row.id && row.title && row.company;
+      return hasValidData;
+    });
 
-    const validData = parsed.data.filter((row: any) => row.id && row.title && row.company);
-
-    return validData.map((row: any) => ({
+    const processedJobs = validData.map((row: any) => ({
       id: row.id,
       title: row.title,
       company: row.company,
@@ -317,8 +320,9 @@ export async function getJobs(): Promise<Job[]> {
       postedDate: row.postedDate,
       applyLink: row.applyLink,
     }));
+
+    return processedJobs;
   } catch (error) {
-    console.error('Error fetching or parsing jobs data:', error);
     return [];
   }
 }
@@ -336,27 +340,36 @@ export async function getCommunityStats(): Promise<CommunityStats> {
 
     try {
         const csvText = await fetchCSV(sheetUrls.communityStats);
+        
         const parsed = Papa.parse(csvText, {
             header: true,
             skipEmptyLines: true,
         });
 
         if (parsed.errors.length > 0) {
-            console.error("Errors parsing community stats CSV:", parsed.errors);
             return defaultStats;
         }
 
-        const stats = parsed.data.reduce((acc: any, row: any) => {
-            if (row.key) {
-                acc[row.key] = row.value;
-            }
-            return acc;
-        }, {});
+        // Get the first row of data (assuming single row)
+        const row = parsed.data[0] as any;
+        if (!row) {
+            return defaultStats;
+        }
 
-        return Object.assign({}, defaultStats, stats);
+        // Map the actual CSV column names to our expected structure
+        const stats: CommunityStats = {
+            activeMembers: row.discord_members || defaultStats.activeMembers,
+            activeVolunteers: row.discord_volunteers || defaultStats.activeVolunteers,
+            successStories: row.success_stories || defaultStats.successStories,
+            githubUrl: row.github_url || defaultStats.githubUrl,
+            linkedinUrl: row.linkedin_url || defaultStats.linkedinUrl,
+            twitterUrl: row.twitter_url || defaultStats.twitterUrl,
+            instagramUrl: row.instagram_url || defaultStats.instagramUrl
+        };
+
+        return stats;
 
     } catch (error) {
-        console.error('Error fetching or parsing community stats:', error);
         return defaultStats;
     }
 }

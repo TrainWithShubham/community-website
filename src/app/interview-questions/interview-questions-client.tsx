@@ -26,15 +26,7 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
   const [activeTab, setActiveTab] = useState<QuestionCategory>('interview');
   const [isPending, startTransition] = useTransition();
 
-  // Debug authentication state
-  useEffect(() => {
-    console.log('🔐 Auth Debug:', {
-      user: !!user,
-      userEmail: user?.email,
-      loading,
-      activeTab
-    });
-  }, [user, loading, activeTab]);
+
 
   const currentQuestions = useMemo(() => {
     if (searchQuery && searchResults) {
@@ -73,12 +65,12 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
 
   const renderQuestionList = (questions: Question[]) => {
     if (isPending) {
-      return <div className="flex justify-center items-center p-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+      return <div className="flex justify-center items-center p-8 card-neo-border"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
     }
 
     if (searchQuery && searchResults?.length === 0) {
       return (
-        <Alert variant="destructive" className="mt-4 border-destructive text-destructive-foreground rounded-none">
+        <Alert variant="destructive" className="mt-4 border-destructive text-destructive-foreground rounded-none card-neo-border">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>No Results Found</AlertTitle>
           <AlertDescription>
@@ -93,7 +85,7 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
     }
 
     return (
-      <div className="space-y-2 mt-6">
+      <div className="space-y-2 mt-6 p-4 card-neo-border">
         {questions.map((q, index) => (
           <QuestionCard key={index} question={q.question} answer={q.answer} author={q.author} />
         ))}
@@ -105,7 +97,7 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
     if (loading) {
       return (
         <div className="text-left my-4">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 p-4 card-neo-border">
             <Loader2 className="h-4 w-4 animate-spin" />
             <span className="text-muted-foreground">Loading authentication...</span>
           </div>
@@ -116,7 +108,7 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
     if (!user) {
       return (
         <div className="text-left my-4">
-          <Alert className="border-accent text-accent-foreground rounded-none">
+          <Alert className="border-accent text-accent-foreground rounded-none card-neo-border">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Authentication Required</AlertTitle>
             <AlertDescription>
@@ -129,11 +121,13 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
 
     return (
       <div className="text-left my-4">
-        <AddQuestionForm>
-          <Button variant="outline" className="border-accent text-accent rounded-none">
-            <PlusCircle className="mr-2 h-4 w-4" /> contribute.sh
-          </Button>
-        </AddQuestionForm>
+        <div className="p-4 card-neo-border">
+          <AddQuestionForm>
+            <Button variant="outline" className="border-accent text-accent rounded-none">
+              <PlusCircle className="mr-2 h-4 w-4" /> contribute.sh
+            </Button>
+          </AddQuestionForm>
+        </div>
       </div>
     );
   };
@@ -143,7 +137,7 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
       setActiveTab(value as QuestionCategory);
       setSearchQuery('');
       setSearchResults(null);
-    }} className="w-full">
+    }} className="w-full p-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-border pb-4">
         <TabsList className="bg-transparent p-0 rounded-none border-0">
           <TabsTrigger value="interview">interview.sh</TabsTrigger>
@@ -151,7 +145,7 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
           <TabsTrigger value="live">live.sh</TabsTrigger>
           <TabsTrigger value="community">community.sh</TabsTrigger>
         </TabsList>
-        <div className="flex-grow md:max-w-sm flex items-center gap-2">
+        <div className="flex-grow md:max-w-sm flex items-center gap-2 p-3 card-neo-border">
           <span className="text-primary hidden sm:inline-block">~/tws/questions/{activeTab} $</span>
           <Input
             type="search"

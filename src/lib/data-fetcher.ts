@@ -32,6 +32,15 @@ export interface HomePageData {
   };
 }
 
+// Function to transform community questions from Google Sheets API format to Question type
+function transformCommunityQuestions(apiQuestions: any[]): Question[] {
+  return apiQuestions.map(q => ({
+    question: q.question || '',
+    answer: q.answer || '',
+    author: q.author || 'Anonymous'
+  }));
+}
+
 function getDefaultStats() {
   return {
     activeMembers: "10k+",
@@ -72,27 +81,31 @@ export async function getHomePageData(): Promise<HomePageData> {
       getCachedData('interview-questions', getInterviewQuestions, 600), // 10 min
       getCachedData('scenario-questions', getScenarioQuestions, 600),
       getCachedData('live-questions', getLiveQuestions, 600),
-                        getCachedData('community-questions', getCommunityQuestionsFromSheetsAPI, 300), // 5 min
+      getCachedData('community-questions', getCommunityQuestionsFromSheetsAPI, 60),
       getCachedData('jobs', getJobs, 1800), // 30 min
       getCachedData('leaderboard', getLeaderboardData, 3600), // 1 hour
-      getCachedData('community-stats', getCommunityStats, 7200), // 2 hours
+      getCachedData('community-stats', getCommunityStats, 7200) // 2 hours
     ]);
 
     const duration = Date.now() - startTime;
     trackPerformance('homepage-data-fetch', duration);
 
+    // Transform community questions to match Question type
+    const transformedCommunityQuestions = communityQuestions.status === 'fulfilled' 
+      ? transformCommunityQuestions(communityQuestions.value)
+      : [];
+
     return {
       interviewQuestions: interviewQuestions.status === 'fulfilled' ? interviewQuestions.value : [],
       scenarioQuestions: scenarioQuestions.status === 'fulfilled' ? scenarioQuestions.value : [],
       liveQuestions: liveQuestions.status === 'fulfilled' ? liveQuestions.value : [],
-      communityQuestions: communityQuestions.status === 'fulfilled' ? communityQuestions.value : [],
+      communityQuestions: transformedCommunityQuestions,
       jobs: jobs.status === 'fulfilled' ? jobs.value : [],
       leaderboardData: leaderboardData.status === 'fulfilled' ? leaderboardData.value : [],
       communityStats: communityStats.status === 'fulfilled' ? communityStats.value : getDefaultStats(),
     };
   } catch (error) {
     trackError(error as Error, 'homepage-data-fetch');
-    console.error('Error fetching home page data:', error);
     return getFallbackData();
   }
 }

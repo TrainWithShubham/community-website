@@ -33,7 +33,6 @@ export async function handleSearch(
     return response;
   } catch (error) {
     trackError(error as Error, 'intelligent-search');
-    console.error("Error during intelligent search:", error);
     return [];
   }
 }

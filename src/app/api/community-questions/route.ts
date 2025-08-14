@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { appendToGoogleSheets, checkForDuplicateQuestion } from '@/lib/google-sheets-api';
+import { clearCache } from '@/lib/cache';
 
 // Validation schema for community questions
 const CommunityQuestionSchema = z.object({
@@ -29,21 +30,15 @@ export async function POST(request: NextRequest) {
   };
 
   try {
-    console.log('📝 Community question submission received');
-    
     const body = await request.json();
-    console.log('📝 Request body:', body);
     
     // Validate the request body
     const validatedData = CommunityQuestionSchema.parse(body);
-    console.log('✅ Data validation passed');
     
     // Check for duplicate questions
-    console.log('🔍 Checking for duplicate questions...');
     const isDuplicate = await checkForDuplicateQuestion(validatedData.question, validatedData.questionType);
     
     if (isDuplicate) {
-      console.log('🚫 Duplicate question detected, rejecting submission');
       return NextResponse.json({
         success: false,
         message: 'This question appears to be a duplicate. Please check if a similar question already exists.',
@@ -54,8 +49,6 @@ export async function POST(request: NextRequest) {
       });
     }
     
-    console.log('✅ No duplicates found, proceeding with submission');
-    
     // Prepare submission data
     const submissionData = {
       ...validatedData,
@@ -64,14 +57,14 @@ export async function POST(request: NextRequest) {
       id: `cq_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     };
     
-    console.log('📝 Community Question Submitted:', submissionData);
-    
     // Actually write to Google Sheets
     try {
       await appendToGoogleSheets(submissionData);
-      console.log('✅ Successfully written to Google Sheets');
+      
+      // Clear the community questions cache to ensure fresh data is fetched
+      clearCache('community-questions');
+      
     } catch (sheetsError) {
-      console.error('❌ Failed to write to Google Sheets:', sheetsError);
       // Continue with success response but log the error
       // In production, you might want to handle this differently
     }
@@ -90,10 +83,7 @@ export async function POST(request: NextRequest) {
     });
     
   } catch (error) {
-    console.error('❌ Error submitting community question:', error);
-    
     if (error instanceof z.ZodError) {
-      console.error('❌ Validation errors:', error.errors);
       return NextResponse.json({
         success: false,
         message: 'Validation failed',

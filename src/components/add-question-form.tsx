@@ -119,15 +119,7 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
       return;
     }
 
-    // Enhanced debugging
-    console.log('🔍 Form Debug Info:');
-    console.log('📝 Form values:', values);
-    console.log('🔍 Form errors:', form.formState.errors);
-    console.log('✅ Form is valid:', form.formState.isValid);
-    console.log('🔄 Form is dirty:', form.formState.isDirty);
-    console.log('📝 Question length:', values.question?.length);
-    console.log('📝 Answer length:', values.answer?.length);
-    console.log('📝 Question type:', values.questionType);
+
 
     // Check for form validation errors (but allow MCQ errors for non-MCQ questions)
     const errors = form.formState.errors;
@@ -140,7 +132,6 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
     });
     
     if (relevantErrors.length > 0) {
-      console.error('❌ Form validation errors:', errors);
       toast({
         title: "Validation Error",
         description: `Please fix the form errors: ${relevantErrors.map(key => (errors as any)[key]?.message).join(', ')}`,
@@ -169,10 +160,6 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
     }
 
     setIsSubmitting(true);
-    console.log('🚀 Form submission started');
-    console.log('📝 Form values:', values);
-    console.log('👤 User:', user.email);
-    console.log('🔍 Form errors:', form.formState.errors);
     
     try {
       const response = await fetch('/api/community-questions', {
@@ -187,9 +174,7 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
         }),
       });
       
-      console.log('📡 Response status:', response.status);
       const result = await response.json();
-      console.log('📡 Response data:', result);
       
       if (result.success) {
         toast({
@@ -206,7 +191,6 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
         });
         setIsOpen(false);
       } else {
-        console.error('❌ API returned error:', result);
         toast({
           title: "Submission Failed",
           description: result.message || "Please try again later.",
@@ -214,7 +198,6 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
         });
       }
     } catch (error) {
-      console.error('❌ Network error during submission:', error);
       toast({
         title: "Network Error",
         description: "Please check your connection and try again.",
@@ -246,7 +229,7 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] rounded-none">
+      <DialogContent className="sm:max-w-[600px] rounded-none card-neo-border">
         <DialogHeader>
           <DialogTitle>Add a Community Question</DialogTitle>
           <DialogDescription>
@@ -456,22 +439,6 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
              )}
 
             <DialogFooter className="flex gap-2">
-              <Button 
-                type="button" 
-                variant="outline"
-                onClick={() => {
-                  console.log('🔍 Form Debug State:');
-                  console.log('📝 Form values:', form.getValues());
-                  console.log('🔍 Form errors:', form.formState.errors);
-                  console.log('✅ Form is valid:', form.formState.isValid);
-                  console.log('🔄 Form is dirty:', form.formState.isDirty);
-                  console.log('📝 Question length:', form.getValues('question')?.length);
-                  console.log('📝 Answer length:', form.getValues('answer')?.length);
-                  console.log('📝 Question type:', form.getValues('questionType'));
-                }}
-              >
-                Debug Form
-              </Button>
               <Button 
                 type="submit" 
                 className="rounded-none" 

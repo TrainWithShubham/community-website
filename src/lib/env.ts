@@ -49,7 +49,6 @@ function parseEnvironment() {
   try {
     return envSchema.parse(process.env);
   } catch (error) {
-    console.warn('Environment validation failed, using fallback values:', error);
     // Merge process.env with defaults for missing values
     const envWithDefaults = { ...process.env };
     
@@ -57,7 +56,6 @@ function parseEnvironment() {
     Object.entries(DEFAULT_SHEET_URLS).forEach(([key, defaultValue]) => {
       if (!envWithDefaults[key]) {
         envWithDefaults[key] = defaultValue;
-        console.warn(`Using default value for ${key}`);
       }
     });
     
@@ -91,11 +89,9 @@ export function validateEnvironment(): { isValid: boolean; errors: string[]; war
   } catch (error) {
     if (error instanceof z.ZodError) {
       const errors = error.errors.map(err => `${err.path.join('.')}: ${err.message}`);
-      console.error('Environment validation failed:', errors);
       return { isValid: false, errors, warnings };
     }
     const errorMessage = 'Unknown validation error';
-    console.error('Environment validation failed:', errorMessage);
     return { isValid: false, errors: [errorMessage], warnings };
   }
 }
@@ -113,38 +109,6 @@ export function getSheetUrls() {
   };
 }
 
-// Debug function to help troubleshoot environment issues
-export function debugEnvironment() {
-  console.log('🔍 Environment Debug Information:');
-  console.log('NODE_ENV:', process.env.NODE_ENV);
-  console.log('ENV_LOADED:', process.env.ENV_LOADED);
-  
-  const sheetVars = [
-    'SCENARIO_SHEET_URL',
-    'INTERVIEW_SHEET_URL', 
-    'LIVE_SHEET_URL',
-    'COMMUNITY_SHEET_URL',
-    'LEADERBOARD_SHEET_URL',
-    'JOBS_SHEET_URL',
-    'COMMUNITY_STATS_URL'
-  ];
-  
-  sheetVars.forEach(varName => {
-    const value = process.env[varName];
-    console.log(`${varName}:`, value ? '✅ Set' : '❌ Missing');
-  });
-  
-  const validation = validateEnvironment();
-  console.log('Validation result:', validation);
-}
 
-// Validate environment on module load (server-side only)
-if (typeof window === 'undefined') {
-  const validation = validateEnvironment();
-  if (!validation.isValid) {
-    console.warn('Environment validation warnings:', validation.errors);
-    debugEnvironment();
-  } else if (validation.warnings.length > 0) {
-    console.warn('Environment validation warnings:', validation.warnings);
-  }
-}
+
+
