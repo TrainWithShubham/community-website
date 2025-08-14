@@ -229,23 +229,27 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] rounded-none">
+      <DialogContent className="sm:max-w-[600px] bg-card/95 backdrop-blur-sm border border-border shadow-xl rounded-lg">
         <DialogHeader>
-          <DialogTitle>Add a Community Question</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-xl font-bold text-foreground">Add a Community Question</DialogTitle>
+          <DialogDescription className="text-muted-foreground">
             Contribute to the community by adding a question. Fill out the details below.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto pr-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-h-[70vh] overflow-y-auto pr-4 custom-scrollbar">
             <FormField
               control={form.control}
               name="author"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Author Name</FormLabel>
+                  <FormLabel className="text-sm font-medium text-foreground">Author Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. John Doe" {...field} />
+                    <Input 
+                      placeholder="e.g. John Doe" 
+                      {...field} 
+                      className="bg-background/80 border-border focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 rounded-lg font-mono text-sm text-foreground placeholder:text-muted-foreground"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -256,17 +260,17 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
               name="questionType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Question Type</FormLabel>
+                  <FormLabel className="text-sm font-medium text-foreground">Question Type</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-background/80 border-border focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 rounded-lg font-mono text-sm text-foreground">
                         <SelectValue placeholder="Select a question type" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="interview">Interview Question</SelectItem>
-                      <SelectItem value="mcq">MCQ</SelectItem>
-                      <SelectItem value="scenario">Scenario-Based</SelectItem>
+                    <SelectContent className="bg-card/95 backdrop-blur-sm border border-border rounded-lg shadow-lg">
+                      <SelectItem value="interview" className="hover:bg-muted/80 focus:bg-muted/80 text-foreground cursor-pointer">Interview Question</SelectItem>
+                      <SelectItem value="mcq" className="hover:bg-muted/80 focus:bg-muted/80 text-foreground cursor-pointer">MCQ</SelectItem>
+                      <SelectItem value="scenario" className="hover:bg-muted/80 focus:bg-muted/80 text-foreground cursor-pointer">Scenario-Based</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -279,11 +283,12 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
               name="question"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Question</FormLabel>
+                  <FormLabel className="text-sm font-medium text-foreground">Question</FormLabel>
                   <FormControl>
                     <Textarea 
                       placeholder={questionType === 'scenario' ? "Briefly describe the scenario or problem." : "Enter the question."} 
                       {...field} 
+                      className="bg-background/80 border-border focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 rounded-lg font-mono text-sm min-h-[100px] resize-none text-foreground placeholder:text-muted-foreground"
                     />
                   </FormControl>
                   <FormMessage />
@@ -297,9 +302,13 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
                   name="answer"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Answer</FormLabel>
+                      <FormLabel className="text-sm font-medium text-foreground">Answer</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Explain the answer here..." {...field} />
+                        <Textarea 
+                          placeholder="Explain the answer here..." 
+                          {...field} 
+                          className="bg-background/80 border-border focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 rounded-lg font-mono text-sm min-h-[120px] resize-none text-foreground placeholder:text-muted-foreground"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -309,7 +318,7 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
 
             {questionType === 'mcq' && (
                 <div className="space-y-4">
-                    <FormLabel>MCQ Options</FormLabel>
+                    <FormLabel className="text-sm font-medium text-foreground">MCQ Options</FormLabel>
                     {fields.map((field, index) => (
                        <FormField
                           key={field.id}
@@ -319,10 +328,20 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
                             <FormItem>
                                <div className="flex items-center gap-2">
                                   <FormControl>
-                                    <Input placeholder={`Option ${index + 1}`} {...field} />
+                                    <Input 
+                                      placeholder={`Option ${index + 1}`} 
+                                      {...field} 
+                                      className="bg-background/80 border-border focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 rounded-lg font-mono text-sm text-foreground placeholder:text-muted-foreground"
+                                    />
                                   </FormControl>
                                   {fields.length > 2 && (
-                                    <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
+                                    <Button 
+                                      type="button" 
+                                      variant="outline" 
+                                      size="icon" 
+                                      onClick={() => remove(index)}
+                                      className="border-border hover:border-destructive/50 hover:bg-destructive/5 transition-all duration-300"
+                                    >
                                         <Trash2 className="h-4 w-4" />
                                     </Button>
                                   )}
@@ -332,7 +351,13 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
                           )}
                         />
                     ))}
-                    <Button type="button" size="sm" variant="outline" onClick={() => append({ value: "" })}>
+                    <Button 
+                      type="button" 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => append({ value: "" })}
+                      className="border-border hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 font-mono text-sm"
+                    >
                         <PlusCircle className="mr-2 h-4 w-4" /> Add Option
                     </Button>
 
@@ -341,19 +366,22 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
                       name="correctMcqAnswer"
                       render={({ field }) => (
                         <FormItem className="space-y-3">
-                          <FormLabel>Correct Answer</FormLabel>
+                          <FormLabel className="text-sm font-medium text-foreground">Correct Answer</FormLabel>
                           <FormControl>
                             <RadioGroup
                               onValueChange={field.onChange}
                               defaultValue={field.value}
-                              className="flex flex-col space-y-1"
+                              className="flex flex-col space-y-2"
                             >
                               {form.getValues('mcqOptions')?.map((option, index) => option.value && (
                                 <FormItem key={index} className="flex items-center space-x-3 space-y-0">
                                   <FormControl>
-                                    <RadioGroupItem value={option.value} />
+                                    <RadioGroupItem 
+                                      value={option.value} 
+                                      className="border-border text-primary focus:ring-primary/50"
+                                    />
                                   </FormControl>
-                                  <FormLabel className="font-normal">
+                                  <FormLabel className="font-normal text-foreground cursor-pointer">
                                     {option.value}
                                   </FormLabel>
                                 </FormItem>
@@ -374,8 +402,14 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
                       name="summary"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Summary</FormLabel>
-                          <FormControl><Textarea placeholder="Provide a brief summary of the situation." {...field} /></FormControl>
+                          <FormLabel className="text-sm font-medium text-foreground">Summary</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="Provide a brief summary of the situation." 
+                              {...field} 
+                              className="bg-background/80 border-border focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 rounded-lg font-mono text-sm min-h-[80px] resize-none text-foreground placeholder:text-muted-foreground"
+                            />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -385,8 +419,14 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
                       name="diagnosisSteps"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Diagnosis Steps</FormLabel>
-                          <FormControl><Textarea placeholder="What steps were taken to diagnose the issue?" {...field} /></FormControl>
+                          <FormLabel className="text-sm font-medium text-foreground">Diagnosis Steps</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="What steps were taken to diagnose the issue?" 
+                              {...field} 
+                              className="bg-background/80 border-border focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 rounded-lg font-mono text-sm min-h-[80px] resize-none text-foreground placeholder:text-muted-foreground"
+                            />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -396,8 +436,14 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
                       name="rootCause"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Root Cause</FormLabel>
-                          <FormControl><Textarea placeholder="What was the final root cause?" {...field} /></FormControl>
+                          <FormLabel className="text-sm font-medium text-foreground">Root Cause</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="What was the final root cause?" 
+                              {...field} 
+                              className="bg-background/80 border-border focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 rounded-lg font-mono text-sm min-h-[80px] resize-none text-foreground placeholder:text-muted-foreground"
+                            />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -407,8 +453,14 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
                       name="fix"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Fix</FormLabel>
-                          <FormControl><Textarea placeholder="What was the fix for the issue?" {...field} /></FormControl>
+                          <FormLabel className="text-sm font-medium text-foreground">Fix</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="What was the fix for the issue?" 
+                              {...field} 
+                              className="bg-background/80 border-border focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 rounded-lg font-mono text-sm min-h-[80px] resize-none text-foreground placeholder:text-muted-foreground"
+                            />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -418,8 +470,14 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
                       name="lessonLearned"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Lesson Learned</FormLabel>
-                          <FormControl><Textarea placeholder="What was the key takeaway from this scenario?" {...field} /></FormControl>
+                          <FormLabel className="text-sm font-medium text-foreground">Lesson Learned</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="What was the key takeaway from this scenario?" 
+                              {...field} 
+                              className="bg-background/80 border-border focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 rounded-lg font-mono text-sm min-h-[80px] resize-none text-foreground placeholder:text-muted-foreground"
+                            />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -429,8 +487,14 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
                       name="howToAvoid"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>How to Avoid in Future</FormLabel>
-                          <FormControl><Textarea placeholder="What can be done to prevent this from happening again?" {...field} /></FormControl>
+                          <FormLabel className="text-sm font-medium text-foreground">How to Avoid in Future</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="What can be done to prevent this from happening again?" 
+                              {...field} 
+                              className="bg-background/80 border-border focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 rounded-lg font-mono text-sm min-h-[80px] resize-none text-foreground placeholder:text-muted-foreground"
+                            />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -438,10 +502,10 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
                 </div>
              )}
 
-            <DialogFooter className="flex gap-2">
+            <DialogFooter className="flex gap-2 pt-4">
               <Button 
                 type="submit" 
-                className="rounded-none" 
+                className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-all duration-300 font-mono text-sm" 
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
