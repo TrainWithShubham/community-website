@@ -141,6 +141,6 @@ html {
     }
     
     .card-neo-border {
-        @apply rounded-lg border border-border shadow-lg transition-all duration-300 hover:border-primary/30 hover:shadow-xl;
+        @apply rounded-lg border-2 border-primary/30 shadow-2xl shadow-primary/20 transition-all duration-300 hover:border-primary/50 hover:shadow-primary/30;
     }
 }

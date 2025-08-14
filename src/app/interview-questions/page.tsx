@@ -18,21 +18,10 @@ export default async function InterviewQuestionsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        {/* Page Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 font-mono">
-            Interview Questions
-          </h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Explore comprehensive DevOps interview questions, scenario-based challenges, and live incident cases.
-          </p>
-        </div>
-        
-        {/* Main Content */}
-        <InterviewQuestionsClient questionsMap={questionsMap} />
-      </div>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8 text-center">Interview Questions</h1>
+      
+      <InterviewQuestionsClient questionsMap={questionsMap} />
     </div>
   );
 }
