@@ -5,7 +5,7 @@ export function Footer() {
     <footer className="border-t border-border/40">
       <div className="container mx-auto px-4 py-6 flex flex-col sm:flex-row justify-between items-center">
         <p className="text-sm text-muted-foreground mb-4 sm:mb-0">
-         <span className='text-primary'>&gt;</span> &copy; {new Date().getFullYear()} TWS Community Hub. All Rights Reserved.
+         <span className='text-primary'>&gt;</span> &copy; {new Date().getFullYear()} TrainWithShubhamCommunity. All Rights Reserved.
         </p>
         <div className="flex gap-6">
           <a href="https://github.com/trainwithshubham" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
