@@ -229,7 +229,7 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] rounded-none card-neo-border">
+      <DialogContent className="sm:max-w-[600px] rounded-none">
         <DialogHeader>
           <DialogTitle>Add a Community Question</DialogTitle>
           <DialogDescription>

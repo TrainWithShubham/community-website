@@ -21,9 +21,7 @@ export default async function InterviewQuestionsPage() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8 text-center">Interview Questions</h1>
       
-      <div className="card-neo-border">
-        <InterviewQuestionsClient questionsMap={questionsMap} />
-      </div>
+      <InterviewQuestionsClient questionsMap={questionsMap} />
     </div>
   );
 }
