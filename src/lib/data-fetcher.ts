@@ -83,7 +83,7 @@ export async function getHomePageData(): Promise<HomePageData> {
       getCachedData('live-questions', getLiveQuestions, 600),
       getCachedData('community-questions', getCommunityQuestionsFromSheetsAPI, 60),
       getCachedData('jobs', getJobs, 1800), // 30 min
-      getCachedData('leaderboard', getLeaderboardData, 3600), // 1 hour
+      getCachedData('leaderboard', getLeaderboardData, 300), // 5 minutes to align with ISR
       getCachedData('community-stats', getCommunityStats, 300) // 5 minutes
     ]);
 

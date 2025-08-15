@@ -1,0 +1,3 @@
+# Include .env files for AI/context/autocomplete
+!.env
+!.env.local
