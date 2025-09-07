@@ -1,6 +1,6 @@
 "use client"
 
-import { ReactNode, useState } from "react"
+import React, { ReactNode, useState, useEffect } from "react"
 import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -34,14 +34,15 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
-import { PlusCircle, Trash2 } from "lucide-react"
+import { PlusCircle, Trash2, Loader2 } from "lucide-react"
+import { useAuth } from "@/contexts/auth-context"
 
 const formSchema = z.object({
-  author: z.string().min(2, "Author name is required."),
+  author: z.string().min(1, "Author name is required."),
   questionType: z.enum(["interview", "mcq", "scenario"]),
-  question: z.string().min(10, "Question must be at least 10 characters."),
+  question: z.string().min(3, "Question must be at least 3 characters."),
   answer: z.string().optional(),
-  mcqOptions: z.array(z.object({ value: z.string().min(1, "Option cannot be empty.") })).optional(),
+  mcqOptions: z.array(z.object({ value: z.string() })).optional(),
   correctMcqAnswer: z.string().optional(),
   summary: z.string().optional(),
   diagnosisSteps: z.string().optional(),
@@ -50,31 +51,37 @@ const formSchema = z.object({
   lessonLearned: z.string().optional(),
   howToAvoid: z.string().optional(),
 }).refine(data => {
-    if (data.questionType === "interview") return !!data.answer && data.answer.length > 0;
+    if (data.questionType === "interview") return !!data.answer && data.answer.trim().length >= 3;
     return true;
-}, { message: "Answer is required for interview questions.", path: ["answer"]})
+}, { message: "Answer must be at least 3 characters for interview questions.", path: ["answer"]})
 .refine(data => {
-    if (data.questionType === "mcq") return data.mcqOptions && data.mcqOptions.length >= 2;
+    if (data.questionType === "mcq") {
+      // Only validate MCQ options if they exist and have values
+      return data.mcqOptions && data.mcqOptions.length >= 2 && 
+             data.mcqOptions.every(option => option.value && option.value.trim().length > 0);
+    }
     return true;
-}, { message: "MCQs must have at least 2 options.", path: ["mcqOptions"]})
+}, { message: "MCQs must have at least 2 non-empty options.", path: ["mcqOptions"]})
 .refine(data => {
     if (data.questionType === "mcq") return !!data.correctMcqAnswer;
     return true;
 }, { message: "You must select a correct answer for an MCQ.", path: ["correctMcqAnswer"]});
 
-
 export function AddQuestionForm({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    mode: "onSubmit", // Only validate on submit
     defaultValues: {
-      author: "",
+      author: user?.displayName || user?.email?.split('@')[0] || "",
       questionType: "interview",
       question: "",
       answer: "",
-      mcqOptions: [{ value: "" }, { value: "" }],
+      mcqOptions: undefined, // Don't initialize MCQ options for interview questions
     },
   })
   
@@ -85,18 +92,142 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
 
   const questionType = form.watch("questionType")
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Form submitted. In a real application, this would write to the Google Sheet via a backend service.", values);
-    toast({
-      title: "Question Submitted!",
-      description: "Thank you for your contribution. Your question is pending review.",
-    })
-    form.reset();
-    setIsOpen(false);
+  // Update author field when user changes
+  useEffect(() => {
+    if (user) {
+      form.setValue("author", user.displayName || user.email?.split('@')[0] || "");
+    }
+  }, [user, form]);
+
+  // Clear MCQ options when switching to non-MCQ question types
+  useEffect(() => {
+    if (questionType !== "mcq") {
+      form.setValue("mcqOptions", undefined);
+      form.setValue("correctMcqAnswer", undefined);
+    } else if (!form.getValues("mcqOptions")) {
+      form.setValue("mcqOptions", [{ value: "" }, { value: "" }]);
+    }
+  }, [questionType, form]);
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to submit questions.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+
+
+    // Check for form validation errors (but allow MCQ errors for non-MCQ questions)
+    const errors = form.formState.errors;
+    const relevantErrors = Object.keys(errors).filter(key => {
+      // Ignore MCQ-related errors for non-MCQ question types
+      if (values.questionType !== "mcq" && (key === "mcqOptions" || key === "correctMcqAnswer")) {
+        return false;
+      }
+      return true;
+    });
+    
+    if (relevantErrors.length > 0) {
+      toast({
+        title: "Validation Error",
+        description: `Please fix the form errors: ${relevantErrors.map(key => (errors as any)[key]?.message).join(', ')}`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Manual validation (more lenient)
+    if (!values.question || values.question.trim().length < 3) {
+      toast({
+        title: "Question Too Short",
+        description: "Question must be at least 3 characters long.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (values.questionType === "interview" && (!values.answer || values.answer.trim().length < 3)) {
+      toast({
+        title: "Answer Required",
+        description: "Answer must be at least 3 characters for interview questions.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      const response = await fetch('/api/community-questions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...values,
+          userId: user.uid,
+          userEmail: user.email,
+        }),
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        toast({
+          title: "Question Submitted!",
+          description: "Thank you for your contribution. Your question is pending review.",
+        });
+        form.reset({
+          author: user.displayName || user.email?.split('@')[0] || "",
+          questionType: "interview",
+          question: "",
+          answer: "",
+          mcqOptions: undefined,
+          correctMcqAnswer: undefined,
+        });
+        setIsOpen(false);
+      } else {
+        toast({
+          title: "Submission Failed",
+          description: result.message || "Please try again later.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Network Error",
+        description: "Please check your connection and try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open && isSubmitting) {
+      return; // Prevent closing while submitting
+    }
+    setIsOpen(open);
+    if (!open) {
+      // Reset form when closing
+              form.reset({
+          author: user?.displayName || user?.email?.split('@')[0] || "",
+          questionType: "interview",
+          question: "",
+          answer: "",
+          mcqOptions: undefined,
+          correctMcqAnswer: undefined,
+        });
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[600px] rounded-none">
         <DialogHeader>
@@ -150,7 +281,10 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
                 <FormItem>
                   <FormLabel>Question</FormLabel>
                   <FormControl>
-                    <Textarea placeholder={questionType === 'scenario' ? "Briefly describe the scenario or problem." : "Enter the question."} {...field} />
+                    <Textarea 
+                      placeholder={questionType === 'scenario' ? "Briefly describe the scenario or problem." : "Enter the question."} 
+                      {...field} 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -304,9 +438,21 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
                 </div>
              )}
 
-
-            <DialogFooter>
-              <Button type="submit" className="rounded-none">Submit Question</Button>
+            <DialogFooter className="flex gap-2">
+              <Button 
+                type="submit" 
+                className="rounded-none" 
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Submit Question"
+                )}
+              </Button>
             </DialogFooter>
           </form>
         </Form>

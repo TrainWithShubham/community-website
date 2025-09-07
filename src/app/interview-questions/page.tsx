@@ -1,36 +1,26 @@
-import { TerminalAnimation } from '@/components/terminal-animation';
-import { ClientOnly } from '@/components/client-only';
 import { InterviewQuestionsClient } from './interview-questions-client';
-import { getScenarioQuestions, getInterviewQuestions, getLiveQuestions, getCommunityQuestions } from '@/services/google-sheets';
-import { SectionDivider } from '@/components/section-divider';
+import { getInterviewQuestions, getScenarioQuestions, getLiveQuestions, getCommunityQuestions } from '@/services/google-sheets';
+import { getCommunityQuestionsFromSheetsAPI } from '@/services/google-sheets-api';
 
 export default async function InterviewQuestionsPage() {
-  const [scenarioQuestions, interviewQuestions, liveQuestions, communityQuestions] = await Promise.all([
-    getScenarioQuestions(),
+  const [interviewQuestions, scenarioQuestions, liveQuestions, communityQuestions] = await Promise.allSettled([
     getInterviewQuestions(),
+    getScenarioQuestions(),
     getLiveQuestions(),
-    getCommunityQuestions(),
+    getCommunityQuestionsFromSheetsAPI(), // Use Google Sheets API instead of CSV
   ]);
-  
+
   const questionsMap = {
-    interview: interviewQuestions,
-    scenario: scenarioQuestions,
-    live: liveQuestions,
-    community: communityQuestions,
+    interview: interviewQuestions.status === 'fulfilled' ? interviewQuestions.value : [],
+    scenario: scenarioQuestions.status === 'fulfilled' ? scenarioQuestions.value : [],
+    live: liveQuestions.status === 'fulfilled' ? liveQuestions.value : [],
+    community: communityQuestions.status === 'fulfilled' ? communityQuestions.value : [],
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 md:py-12">
-      <section className="mb-12 min-h-[220px] flex items-center justify-center">
-        <div className="w-full max-w-full">
-          <ClientOnly>
-            <TerminalAnimation />
-          </ClientOnly>
-        </div>
-      </section>
-
-      <SectionDivider />
-
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8 text-center">Interview Questions</h1>
+      
       <InterviewQuestionsClient questionsMap={questionsMap} />
     </div>
   );

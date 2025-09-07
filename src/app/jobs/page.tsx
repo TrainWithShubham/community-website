@@ -5,10 +5,9 @@ import { SectionDivider } from '@/components/section-divider';
 
 export default async function JobsPage() {
   const allJobs = await getJobs();
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
   
-  const recentJobs = allJobs.filter(job => new Date(job.postedDate) > sevenDaysAgo);
+  // Show all jobs instead of filtering by date since the dates in the sheet are future dates
+  const recentJobs = allJobs;
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">
@@ -18,7 +17,7 @@ export default async function JobsPage() {
           ./JobBoard
         </h1>
         <p className="text-muted-foreground mt-2 text-lg">Your next career move in the DevOps ecosystem starts here.</p>
-        <p className="text-sm text-accent mt-1">// Displaying jobs posted in the last 7 days.</p>
+        <p className="text-sm text-accent mt-1">// Displaying all available job opportunities.</p>
       </div>
       
       <SectionDivider />
