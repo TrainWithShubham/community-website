@@ -13,6 +13,7 @@ import { getCommunityQuestionsFromSheetsAPI } from '@/services/google-sheets-api
 import type { Question } from '@/data/questions';
 import type { Job } from '@/data/jobs';
 import type { Contributor } from '@/data/leaderboard';
+import { unstable_cache } from 'next/cache';
 
 export interface HomePageData {
   interviewQuestions: Question[];
@@ -65,6 +66,49 @@ function getFallbackData(): HomePageData {
   };
 }
 
+// Create cached versions with tags for better cache invalidation
+const getCachedInterviewQuestions = unstable_cache(
+  () => getInterviewQuestions(),
+  ['interview-questions'],
+  { tags: ['interview-questions'], revalidate: 300 }
+);
+
+const getCachedScenarioQuestions = unstable_cache(
+  () => getScenarioQuestions(),
+  ['scenario-questions'],
+  { tags: ['scenario-questions'], revalidate: 300 }
+);
+
+const getCachedLiveQuestions = unstable_cache(
+  () => getLiveQuestions(),
+  ['live-questions'],
+  { tags: ['live-questions'], revalidate: 300 }
+);
+
+const getCachedCommunityQuestions = unstable_cache(
+  () => getCommunityQuestionsFromSheetsAPI(),
+  ['community-questions'],
+  { tags: ['community-questions'], revalidate: 60 }
+);
+
+const getCachedJobs = unstable_cache(
+  () => getJobs(),
+  ['jobs'],
+  { tags: ['jobs'], revalidate: 300 }
+);
+
+const getCachedLeaderboard = unstable_cache(
+  () => getLeaderboardData(),
+  ['leaderboard'],
+  { tags: ['leaderboard'], revalidate: 300 }
+);
+
+const getCachedCommunityStats = unstable_cache(
+  () => getCommunityStats(),
+  ['community-stats'],
+  { tags: ['community-stats'], revalidate: 300 }
+);
+
 export async function getHomePageData(): Promise<HomePageData> {
   const startTime = Date.now();
   
@@ -78,13 +122,13 @@ export async function getHomePageData(): Promise<HomePageData> {
       leaderboardData,
       communityStats
     ] = await Promise.allSettled([
-      getCachedData('interview-questions', getInterviewQuestions, 600), // 10 min
-      getCachedData('scenario-questions', getScenarioQuestions, 600),
-      getCachedData('live-questions', getLiveQuestions, 600),
-      getCachedData('community-questions', getCommunityQuestionsFromSheetsAPI, 60),
-      getCachedData('jobs', getJobs, 1800), // 30 min
-      getCachedData('leaderboard', getLeaderboardData, 300), // 5 minutes to align with ISR
-      getCachedData('community-stats', getCommunityStats, 300) // 5 minutes
+      getCachedInterviewQuestions(),
+      getCachedScenarioQuestions(),
+      getCachedLiveQuestions(),
+      getCachedCommunityQuestions(),
+      getCachedJobs(),
+      getCachedLeaderboard(),
+      getCachedCommunityStats()
     ]);
 
     const duration = Date.now() - startTime;
