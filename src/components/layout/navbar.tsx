@@ -95,8 +95,12 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
-        <Link href="/" className="mr-auto flex items-center space-x-2">
-          <Terminal className="h-6 w-6 text-primary" />
+        <Link 
+          href="/" 
+          className="mr-auto flex items-center space-x-2"
+          aria-label="TWS Community Hub - Home"
+        >
+          <Terminal className="h-6 w-6 text-primary" aria-hidden="true" />
           <span className="font-bold sm:inline-block">
             <span className="text-primary">TrainWithShubham</span>
             <span className="text-accent">@</span>
@@ -104,7 +108,12 @@ export function Navbar() {
             <span>:~#</span>
           </span>
         </Link>
-        <nav className="hidden md:flex items-center gap-1 text-sm">
+        <nav 
+          id="navigation"
+          className="hidden md:flex items-center gap-1 text-sm"
+          role="navigation"
+          aria-label="Main navigation"
+        >
           {renderNavLinks()}
         </nav>
         <div className="flex items-center justify-end space-x-2 ml-4">
@@ -136,16 +145,31 @@ export function Navbar() {
           <div className="md:hidden">
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Menu className="h-5 w-5" />
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  aria-label="Toggle mobile menu"
+                  aria-expanded={isMobileMenuOpen}
+                  aria-controls="mobile-menu"
+                >
+                  <Menu className="h-5 w-5" aria-hidden="true" />
                   <span className="sr-only">Toggle Menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right">
+              <SheetContent 
+                side="right"
+                aria-label="Mobile navigation menu"
+                id="mobile-menu"
+              >
                 <div className="p-4">
                   <div className="flex justify-between items-center mb-6">
-                     <Link href="/" className="font-bold flex items-center space-x-2" onClick={() => setIsMobileMenuOpen(false)}>
-                        <Terminal className="h-6 w-6 text-primary" />
+                     <Link 
+                       href="/" 
+                       className="font-bold flex items-center space-x-2" 
+                       onClick={() => setIsMobileMenuOpen(false)}
+                       aria-label="TWS Community Hub - Home"
+                     >
+                        <Terminal className="h-6 w-6 text-primary" aria-hidden="true" />
                         <span className="text-sm">
                             <span className="text-primary">TrainWithShubham</span>
                             <span className="text-accent">@</span>

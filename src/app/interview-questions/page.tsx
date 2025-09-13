@@ -1,6 +1,23 @@
 import { InterviewQuestionsClient } from './interview-questions-client';
 import { getInterviewQuestions, getScenarioQuestions, getLiveQuestions, getCommunityQuestions } from '@/services/google-sheets';
 import { getCommunityQuestionsFromSheetsAPI } from '@/services/google-sheets-api';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Interview Questions',
+  description: 'Prepare for your next interview with our curated list of DevOps, Cloud, and DevSecOps questions, including real-world scenarios and live interview simulations.',
+  keywords: ['DevOps Interview', 'Cloud Interview', 'DevSecOps Interview', 'Tech Interview Questions', 'Interview Preparation', 'Career Development'],
+  openGraph: {
+    title: 'Interview Questions | TWS Community Hub',
+    description: 'Prepare for your next interview with our curated list of DevOps, Cloud, and DevSecOps questions, including real-world scenarios and live interview simulations.',
+    images: ['/og-interview.svg'],
+  },
+  twitter: {
+    title: 'Interview Questions | TWS Community Hub',
+    description: 'Prepare for your next interview with our curated list of DevOps, Cloud, and DevSecOps questions, including real-world scenarios and live interview simulations.',
+    images: ['/og-interview.svg'],
+  },
+};
 
 export default async function InterviewQuestionsPage() {
   const [interviewQuestions, scenarioQuestions, liveQuestions, communityQuestions] = await Promise.allSettled([

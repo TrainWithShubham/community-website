@@ -1,0 +1,71 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0a0a0a"/>
+  
+  <!-- Terminal-style border -->
+  <rect x="50" y="50" width="1100" height="530" fill="none" stroke="#8b5cf6" stroke-width="4" rx="8"/>
+  
+  <!-- Header -->
+  <rect x="50" y="50" width="1100" height="80" fill="#8b5cf6" rx="8"/>
+  
+  <!-- Terminal dots -->
+  <circle cx="80" cy="90" r="8" fill="#ef4444"/>
+  <circle cx="110" cy="90" r="8" fill="#f59e0b"/>
+  <circle cx="140" cy="90" r="8" fill="#10b981"/>
+  
+  <!-- Title -->
+  <text x="200" y="100" font-family="monospace" font-size="32" font-weight="bold" fill="#ffffff">
+    TWS Community Hub
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="200" y="140" font-family="monospace" font-size="18" fill="#a78bfa">
+    DevOps, Cloud & DevSecOps Community
+  </text>
+  
+  <!-- Main content area -->
+  <rect x="100" y="200" width="1000" height="300" fill="#1a1a1a" stroke="#8b5cf6" stroke-width="2" rx="4"/>
+  
+  <!-- Terminal prompt -->
+  <text x="120" y="240" font-family="monospace" font-size="16" fill="#8b5cf6">
+    user@tws-community:~$ 
+  </text>
+  
+  <!-- Commands -->
+  <text x="120" y="280" font-family="monospace" font-size="14" fill="#10b981">
+    git clone https://github.com/trainwithshubham/community.git
+  </text>
+  <text x="120" y="310" font-family="monospace" font-size="14" fill="#10b981">
+    docker run -p 3000:3000 tws-app
+  </text>
+  <text x="120" y="340" font-family="monospace" font-size="14" fill="#10b981">
+    kubectl get pods -n production
+  </text>
+  <text x="120" y="370" font-family="monospace" font-size="14" fill="#10b981">
+    terraform apply --auto-approve
+  </text>
+  
+  <!-- Cursor -->
+  <rect x="120" y="390" width="8" height="16" fill="#8b5cf6"/>
+  
+  <!-- Features -->
+  <text x="120" y="450" font-family="monospace" font-size="16" fill="#ffffff">
+    ✓ Job Board
+  </text>
+  <text x="300" y="450" font-family="monospace" font-size="16" fill="#ffffff">
+    ✓ Interview Questions
+  </text>
+  <text x="550" y="450" font-family="monospace" font-size="16" fill="#ffffff">
+    ✓ Community Leaderboard
+  </text>
+  
+  <!-- URL -->
+  <text x="120" y="500" font-family="monospace" font-size="14" fill="#a78bfa">
+    community.trainwithshubham.com
+  </text>
+  
+  <!-- Footer -->
+  <text x="120" y="550" font-family="monospace" font-size="12" fill="#6b7280">
+    Join our growing community of DevOps professionals
+  </text>
+</svg>

@@ -5,6 +5,23 @@ import { Terminal } from 'lucide-react';
 import { JobsClient } from './jobs-client';
 import { getJobs } from '@/services/google-sheets';
 import { SectionDivider } from '@/components/section-divider';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Job Board',
+  description: 'Find your next role in DevOps, Cloud, or DevSecOps. We feature opportunities for interns, freshers, and experienced professionals.',
+  keywords: ['DevOps Jobs', 'Cloud Jobs', 'DevSecOps Jobs', 'Tech Careers', 'Remote Jobs', 'Job Board'],
+  openGraph: {
+    title: 'Job Board | TWS Community Hub',
+    description: 'Find your next role in DevOps, Cloud, or DevSecOps. We feature opportunities for interns, freshers, and experienced professionals.',
+    images: ['/og-jobs.svg'],
+  },
+  twitter: {
+    title: 'Job Board | TWS Community Hub',
+    description: 'Find your next role in DevOps, Cloud, or DevSecOps. We feature opportunities for interns, freshers, and experienced professionals.',
+    images: ['/og-jobs.svg'],
+  },
+};
 
 export default async function JobsPage() {
   const allJobs = await getJobs();

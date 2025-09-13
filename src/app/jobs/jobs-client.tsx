@@ -105,17 +105,31 @@ export function JobsClient({ recentJobs }: JobsClientProps) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-      <aside className="lg:col-span-1">
+      <aside className="lg:col-span-1" aria-label="Job filters">
         <Card className='rounded-none'>
           <CardHeader>
             <CardTitle>Filter by Experience</CardTitle>
           </CardHeader>
           <CardContent>
-            <RadioGroup value={selectedExperience} onValueChange={setSelectedExperience} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-4">
+            <RadioGroup 
+              value={selectedExperience} 
+              onValueChange={setSelectedExperience} 
+              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-4"
+              aria-label="Experience level filter"
+            >
               {experienceLevels.map(level => (
                 <div key={level} className="flex items-center space-x-2">
-                  <RadioGroupItem value={level} id={level.replace(/\s+/g, '-')} />
-                  <Label htmlFor={level.replace(/\s+/g, '-')}>{level}</Label>
+                  <RadioGroupItem 
+                    value={level} 
+                    id={level.replace(/\s+/g, '-')}
+                    aria-describedby={`${level.replace(/\s+/g, '-')}-description`}
+                  />
+                  <Label 
+                    htmlFor={level.replace(/\s+/g, '-')}
+                    id={`${level.replace(/\s+/g, '-')}-description`}
+                  >
+                    {level}
+                  </Label>
                 </div>
               ))}
             </RadioGroup>
@@ -134,33 +148,58 @@ export function JobsClient({ recentJobs }: JobsClientProps) {
 
         {currentJobs.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6" role="list" aria-label="Job listings">
               {currentJobs.map(job => (
-              <Card key={job.id} className="flex flex-col border-secondary hover:border-primary transition-colors rounded-none">
+              <Card 
+                key={job.id} 
+                className="flex flex-col border-secondary hover:border-primary transition-colors rounded-none"
+                role="listitem"
+                aria-labelledby={`job-title-${job.id}`}
+              >
                 <CardHeader>
-                  <CardTitle className="text-primary">{job.title}</CardTitle>
+                  <CardTitle 
+                    id={`job-title-${job.id}`}
+                    className="text-primary"
+                  >
+                    {job.title}
+                  </CardTitle>
                   <CardDescription>@ {job.company}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex-grow space-y-4">
                   <div className="flex items-center text-sm text-muted-foreground">
-                    <MapPin className="h-4 w-4 mr-2 text-accent" />
-                    {job.location}
+                    <MapPin className="h-4 w-4 mr-2 text-accent" aria-hidden="true" />
+                    <span>{job.location}</span>
                   </div>
                   <div className="flex items-center text-sm text-muted-foreground">
-                    <Briefcase className="h-4 w-4 mr-2 text-accent" />
-                    {job.experience}
+                    <Briefcase className="h-4 w-4 mr-2 text-accent" aria-hidden="true" />
+                    <span>{job.experience}</span>
                   </div>
                   <div className="flex items-center text-sm text-muted-foreground">
-                    <Calendar className="h-4 w-4 mr-2 text-accent" />
-                    Posted on {formatDate(job.postedDate)}
+                    <Calendar className="h-4 w-4 mr-2 text-accent" aria-hidden="true" />
+                    <span>Posted on {formatDate(job.postedDate)}</span>
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-between items-center">
-                  <Badge variant={job.type === 'Full-time' ? 'default' : 'secondary'} className="rounded-none">
+                  <Badge 
+                    variant={job.type === 'Full-time' ? 'default' : 'secondary'} 
+                    className="rounded-none"
+                    aria-label={`Job type: ${job.type}`}
+                  >
                     {job.type}
                   </Badge>
-                  <Button asChild variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-none">
-                    <a href={job.applyLink} target="_blank" rel="noopener noreferrer">Apply_Now</a>
+                  <Button 
+                    asChild 
+                    variant="outline" 
+                    className="border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-none"
+                    aria-label={`Apply for ${job.title} at ${job.company}`}
+                  >
+                    <a 
+                      href={job.applyLink} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                    >
+                      Apply_Now
+                    </a>
                   </Button>
                 </CardFooter>
               </Card>
