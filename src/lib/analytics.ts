@@ -5,6 +5,14 @@ interface AnalyticsEvent {
   timestamp?: number;
 }
 
+// Performance API type extensions
+interface PerformanceEventTiming extends PerformanceEntry {
+  processingStart: number;
+  processingEnd: number;
+  cancelable: boolean;
+  target?: EventTarget;
+}
+
 class Analytics {
   private events: AnalyticsEvent[] = [];
   private isEnabled: boolean = false;
@@ -128,8 +136,12 @@ class Analytics {
 
       const observer = new PerformanceObserver((list) => {
         const entries = list.getEntries();
-        const firstEntry = entries[0];
-        resolve(firstEntry.processingStart - firstEntry.startTime);
+        const firstEntry = entries[0] as PerformanceEventTiming;
+        if (firstEntry && 'processingStart' in firstEntry) {
+          resolve(firstEntry.processingStart - firstEntry.startTime);
+        } else {
+          resolve(0);
+        }
       });
 
       observer.observe({ entryTypes: ['first-input'] });
@@ -147,8 +159,9 @@ class Analytics {
       let clsValue = 0;
       const observer = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
-          if (!(entry as any).hadRecentInput) {
-            clsValue += (entry as any).value;
+          const layoutShiftEntry = entry as PerformanceEntry & { hadRecentInput?: boolean; value?: number };
+          if (!layoutShiftEntry.hadRecentInput && layoutShiftEntry.value) {
+            clsValue += layoutShiftEntry.value;
           }
         }
         resolve(clsValue);
