@@ -98,8 +98,8 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
       return (
         <div className="text-left my-4">
           <div className="flex items-center gap-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span className="text-muted-foreground">Loading authentication...</span>
+            <Loader2 className="h-4 w-4 animate-spin text-primary" />
+            <span className="text-foreground/70">Loading authentication...</span>
           </div>
         </div>
       );
@@ -108,10 +108,10 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
     if (!user) {
       return (
         <div className="text-left my-4">
-          <Alert className="border-accent text-accent-foreground rounded-none">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Authentication Required</AlertTitle>
-            <AlertDescription>
+          <Alert className="border-primary/20 bg-primary/5 text-foreground rounded-none">
+            <AlertCircle className="h-4 w-4 text-primary" />
+            <AlertTitle className="text-foreground font-semibold">Authentication Required</AlertTitle>
+            <AlertDescription className="text-foreground/80">
               Please log in to contribute questions to the community.
             </AlertDescription>
           </Alert>
@@ -122,7 +122,7 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
     return (
       <div className="text-left my-4">
         <AddQuestionForm>
-          <Button variant="outline" className="border-accent text-accent rounded-none">
+          <Button variant="outline" className="border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary rounded-none font-mono">
             <PlusCircle className="mr-2 h-4 w-4" /> contribute.sh
           </Button>
         </AddQuestionForm>
