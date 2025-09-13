@@ -1,3 +1,6 @@
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 import { Terminal } from 'lucide-react';
 import { JobsClient } from './jobs-client';
 import { getJobs } from '@/services/google-sheets';

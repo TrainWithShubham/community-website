@@ -1,4 +1,4 @@
-export const revalidate = 300;
+export const revalidate = 60; // 1 minute for faster updates
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -118,7 +118,7 @@ export default async function Home() {
           </div>
           <div className="space-y-3 md:space-y-4 order-1 md:order-2 text-center md:text-left">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-headline">
-              <Briefcase className="inline-block mr-2 md:mr-3 h-6 w-6 md:h-8 md:w-8 text-primary"/> ./Job-Portal
+              <Briefcase className="inline-block mr-2 md:mr-3 h-6 w-6 md:h-8 md:w-8 text-primary"/> ./JobBoard
             </h2>
             <p className="text-muted-foreground text-sm md:text-base">
               <span className="text-primary">&gt;</span> Find your next role in DevOps, Cloud, or DevSecOps. We feature opportunities for interns, freshers, and experienced professionals.

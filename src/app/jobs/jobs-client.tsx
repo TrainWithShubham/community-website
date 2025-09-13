@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,15 @@ import { type Job } from '@/data/jobs';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Briefcase, Calendar, MapPin } from 'lucide-react';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 
 const experienceLevels = ['All', 'Internship', 'Fresher', '0-2 years', '0-5 years', '3-5 years', '5-10 years'];
 
@@ -15,8 +24,11 @@ interface JobsClientProps {
   recentJobs: Job[];
 }
 
+const ITEMS_PER_PAGE = 6; // Number of jobs per page
+
 export function JobsClient({ recentJobs }: JobsClientProps) {
   const [selectedExperience, setSelectedExperience] = useState('All');
+  const [currentPage, setCurrentPage] = useState(1);
 
   const filteredJobs = useMemo(() => {
     if (selectedExperience === 'All') {
@@ -25,12 +37,70 @@ export function JobsClient({ recentJobs }: JobsClientProps) {
     return recentJobs.filter(job => job.experience === selectedExperience);
   }, [recentJobs, selectedExperience]);
 
+  // Reset to first page when filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedExperience]);
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredJobs.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentJobs = filteredJobs.slice(startIndex, endIndex);
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     });
+  };
+
+  // Generate page numbers for pagination
+  const generatePageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+    
+    if (totalPages <= maxVisiblePages) {
+      // Show all pages if total is less than max visible
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Always show first page
+      pages.push(1);
+      
+      if (currentPage > 3) {
+        pages.push('ellipsis-start');
+      }
+      
+      // Show pages around current page
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+      
+      for (let i = start; i <= end; i++) {
+        if (i !== 1 && i !== totalPages) {
+          pages.push(i);
+        }
+      }
+      
+      if (currentPage < totalPages - 2) {
+        pages.push('ellipsis-end');
+      }
+      
+      // Always show last page
+      if (totalPages > 1) {
+        pages.push(totalPages);
+      }
+    }
+    
+    return pages;
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll to top of jobs section
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -54,9 +124,18 @@ export function JobsClient({ recentJobs }: JobsClientProps) {
       </aside>
 
       <main className="lg:col-span-3">
-        {filteredJobs.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredJobs.map(job => (
+        {/* Results count */}
+        <div className="mb-6 flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            Showing {startIndex + 1}-{Math.min(endIndex, filteredJobs.length)} of {filteredJobs.length} jobs
+            {selectedExperience !== 'All' && ` (filtered by ${selectedExperience})`}
+          </p>
+        </div>
+
+        {currentJobs.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {currentJobs.map(job => (
               <Card key={job.id} className="flex flex-col border-secondary hover:border-primary transition-colors rounded-none">
                 <CardHeader>
                   <CardTitle className="text-primary">{job.title}</CardTitle>
@@ -85,8 +164,64 @@ export function JobsClient({ recentJobs }: JobsClientProps) {
                   </Button>
                 </CardFooter>
               </Card>
-            ))}
-          </div>
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-8">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage > 1) {
+                            handlePageChange(currentPage - 1);
+                          }
+                        }}
+                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+
+                    {generatePageNumbers().map((page, index) => (
+                      <PaginationItem key={index}>
+                        {page === 'ellipsis-start' || page === 'ellipsis-end' ? (
+                          <PaginationEllipsis />
+                        ) : (
+                          <PaginationLink
+                            href="#"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handlePageChange(page as number);
+                            }}
+                            isActive={currentPage === page}
+                            className="cursor-pointer"
+                          >
+                            {page}
+                          </PaginationLink>
+                        )}
+                      </PaginationItem>
+                    ))}
+
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage < totalPages) {
+                            handlePageChange(currentPage + 1);
+                          }
+                        }}
+                        className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
+          </>
         ) : (
           <div className="flex flex-col items-center justify-center text-center border-2 border-dashed border-destructive rounded-none p-12 h-full">
             <h3 className="text-xl font-semibold text-destructive-foreground">`jobs matching query not found`</h3>

@@ -122,7 +122,7 @@ export function JobsTerminalAnimation({ jobs }: JobsTerminalAnimationProps) {
             <div className="w-3 h-3 rounded-full bg-green-500"></div>
           </div>
           <div className="flex-1 text-center text-sm font-medium text-muted-foreground">
-            Job-Portal Terminal
+            JobBoard Terminal
           </div>
         </div>
         <div className="p-4 h-full overflow-y-auto bg-card text-sm font-mono">
@@ -142,7 +142,7 @@ export function JobsTerminalAnimation({ jobs }: JobsTerminalAnimationProps) {
           <div className="w-3 h-3 rounded-full bg-green-500"></div>
         </div>
         <div className="flex-1 text-center text-sm font-medium text-muted-foreground">
-          Job-Portal Terminal
+          JobBoard Terminal
         </div>
       </div>
       
