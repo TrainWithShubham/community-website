@@ -6,8 +6,8 @@ import { analytics } from '@/lib/analytics';
 export function PerformanceMonitor() {
   useEffect(() => {
     // Track page load performance
-    const trackPerformance = () => {
-      const metrics = analytics.getPerformanceMetrics();
+    const trackPerformance = async () => {
+      const metrics = await analytics.getPerformanceMetrics();
       if (metrics) {
         // Track Core Web Vitals
         if (metrics.lcp) {

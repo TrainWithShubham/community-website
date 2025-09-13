@@ -10,6 +10,7 @@ import { ErrorBoundary } from '@/components/error-boundary';
 import { PerformanceMonitor, PerformanceErrorBoundary } from '@/components/performance-monitor';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://community.trainwithshubham.com'),
   title: {
     default: 'TWS Community Hub',
     template: '%s | TWS Community Hub'

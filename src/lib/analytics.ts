@@ -78,7 +78,7 @@ class Analytics {
   }
 
   // Get performance metrics
-  getPerformanceMetrics() {
+  async getPerformanceMetrics() {
     if (typeof window === 'undefined') return null;
 
     const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
@@ -86,9 +86,9 @@ class Analytics {
 
     return {
       // Core Web Vitals
-      lcp: this.getLCP(),
-      fid: this.getFID(),
-      cls: this.getCLS(),
+      lcp: await this.getLCP(),
+      fid: await this.getFID(),
+      cls: await this.getCLS(),
       
       // Navigation timing
       domContentLoaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
