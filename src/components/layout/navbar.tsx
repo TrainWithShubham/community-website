@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Github, LogIn, Menu, X, Home, FileQuestion, Briefcase, Users, Terminal, LogOut } from 'lucide-react';
+import { Github, LogIn, Menu, X, Home, FileQuestion, Briefcase, Users, Terminal, LogOut, Code } from 'lucide-react';
 import { useState } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import {
@@ -22,6 +22,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 const navLinks = [
   { href: '/', label: 'Home', icon: Home },
+  { href: '/projects', label: 'Projects', icon: Code },
   { href: '/interview-questions', label: 'Interview Questions', icon: FileQuestion },
   { href: '/jobs', label: 'Jobs', icon: Briefcase },
   { href: 'https://discord.gg/kGEr9mR5gT', label: 'Join Us', external: true, icon: Users },

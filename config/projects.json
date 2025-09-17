@@ -1,0 +1,51 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2025-01-04T23:58:00.000Z",
+  "projects": [
+    {
+      "id": "90DaysOfDevOps",
+      "name": "90 Days of DevOps",
+      "url": "https://github.com/TrainWithShubham/90DaysOfDevOps",
+      "category": "Programming",
+      "difficulty": "intermediate",
+      "estimatedTime": "90 days",
+      "featured": true
+    },
+    {
+      "id": "community_portfolio",
+      "name": "Community Portfolio",
+      "url": "https://github.com/TrainWithShubham/community_portfolio",
+      "category": "Programming",
+      "difficulty": "beginner",
+      "estimatedTime": "1-2 hours",
+      "featured": true
+    },
+    {
+      "id": "chattingo",
+      "name": "Chattingo - Real-time Chat App",
+      "url": "https://github.com/TrainWithShubham/chattingo",
+      "category": "Programming",
+      "difficulty": "intermediate",
+      "estimatedTime": "2-4 hours",
+      "featured": true
+    },
+    {
+      "id": "community-website",
+      "name": "Community Website",
+      "url": "https://github.com/TrainWithShubham/community-website",
+      "category": "Programming",
+      "difficulty": "beginner",
+      "estimatedTime": "1-2 hours",
+      "featured": false
+    },
+    {
+      "id": "kubestarter",
+      "name": "Kubestarter",
+      "url": "https://github.com/LondheShubham153/kubestarter",
+      "category": "Container",
+      "difficulty": "intermediate",
+      "estimatedTime": "2-3 hours",
+      "featured": true
+    }
+  ]
+}

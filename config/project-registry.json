@@ -1,0 +1,82 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2025-01-04T23:58:00.000Z",
+  "categories": {
+    "Container": {
+      "name": "Container Technologies",
+      "color": "#2496ED",
+      "textColor": "#FFFFFF",
+      "icon": "🐳",
+      "description": "Docker, Kubernetes, Podman containerization"
+    },
+    "Cloud": {
+      "name": "Cloud Platforms",
+      "color": "#FF9900",
+      "textColor": "#000000",
+      "icon": "☁️",
+      "description": "AWS"
+    },
+    "CICD": {
+      "name": "CI/CD",
+      "color": "#22C55E",
+      "textColor": "#000000",
+      "icon": "🔄",
+      "description": "Jenkins, GitLab CI"
+    },
+    "IaC": {
+      "name": "Infrastructure as Code",
+      "color": "#8B5CF6",
+      "textColor": "#FFFFFF",
+      "icon": "🏗️",
+      "description": "Terraform, Ansible, CloudFormation"
+    },
+    "Monitoring": {
+      "name": "Monitoring & Observability",
+      "color": "#F59E0B",
+      "textColor": "#000000",
+      "icon": "📊",
+      "description": "Prometheus, Grafana, ELK Stack"
+    },
+    "Security": {
+      "name": "Security & Compliance",
+      "color": "#EF4444",
+      "textColor": "#FFFFFF",
+      "icon": "🔒",
+      "description": "Vault, SOPS, Security scanning"
+    },
+    "Database": {
+      "name": "Database & Storage",
+      "color": "#06B6D4",
+      "textColor": "#000000",
+      "icon": "🗄️",
+      "description": "MySQL, PostgreSQL, MongoDB"
+    },
+    "Programming": {
+      "name": "Programming & Development",
+      "color": "#6366F1",
+      "textColor": "#FFFFFF",
+      "icon": "💻",
+      "description": "Python, Node.js, Go, Java, Web Development"
+    }
+  },
+  "difficultyLevels": {
+    "beginner": {
+      "color": "#22C55E",
+      "textColor": "#000000",
+      "label": "Beginner",
+      "description": "Perfect for those new to the technology or concept"
+    },
+    "intermediate": {
+      "color": "#F59E0B",
+      "textColor": "#000000",
+      "label": "Intermediate",
+      "description": "Requires some prior knowledge and experience"
+    },
+    "advanced": {
+      "color": "#EF4444",
+      "textColor": "#FFFFFF",
+      "label": "Advanced",
+      "description": "For experienced developers with deep technical knowledge"
+    }
+  }
+}

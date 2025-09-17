@@ -143,4 +143,48 @@ html {
     .card-neo-border {
         @apply rounded-lg border-2 border-primary/30 shadow-2xl shadow-primary/20 transition-all duration-300 hover:border-primary/50 hover:shadow-primary/30;
     }
+
+    /* Project Studio specific styles */
+    .brand-gradient {
+        background: linear-gradient(135deg, #8B5CF6 0%, #F59E0B 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .brand-gradient-subtle {
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(245, 158, 11, 0.05) 100%);
+    }
+
+    .brand-purple {
+        color: #8B5CF6;
+    }
+
+    .brand-yellow {
+        color: #F59E0B;
+    }
+
+    .bg-brand-purple {
+        background-color: #8B5CF6;
+    }
+
+    .bg-brand-yellow {
+        background-color: #F59E0B;
+    }
+
+    .border-brand-purple {
+        border-color: #8B5CF6;
+    }
+
+    .border-brand-yellow {
+        border-color: #F59E0B;
+    }
+
+    .hover\:bg-brand-purple:hover {
+        background-color: #8B5CF6;
+    }
+
+    .hover\:bg-brand-yellow:hover {
+        background-color: #F59E0B;
+    }
 }
