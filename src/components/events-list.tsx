@@ -73,7 +73,7 @@ export function EventsList() {
               const dateLabel = start ? start.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) : 'TBA'
 
               return (
-                <Card key={evt.id || evt.summary} className="bg-card/80 backdrop-blur-sm">
+                <Card key={evt.id || evt.summary} className="bg-card/80 backdrop-blur-sm card-neo-border">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2"><Calendar className="h-4 w-4 text-primary" /> {evt.summary || 'Community Event'}</CardTitle>
                     <CardDescription>{dateLabel}</CardDescription>
@@ -150,7 +150,7 @@ function MiniCalendar({ eventDates }: { eventDates: Set<string> }) {
   }
 
   return (
-    <Card className="bg-card/80 backdrop-blur-sm">
+    <Card className="bg-card/80 backdrop-blur-sm card-neo-border">
       <CardHeader className="flex items-center justify-between">
         <CardTitle className="text-base">{month}</CardTitle>
         <div className="flex gap-2">
