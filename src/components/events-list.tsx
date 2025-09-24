@@ -66,6 +66,24 @@ const extractDiscordLink = (description: string | null): string | null => {
   return null
 }
 
+// Clean description by removing Discord links (since we show them as buttons)
+const cleanDescription = (description: string | null): string | null => {
+  if (!description) return null
+  
+  // Remove Discord invite links from description
+  const discordInviteRegex = /(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li)|discordapp\.com\/invite)\/[a-zA-Z0-9]+/g
+  let cleanedDescription = description.replace(discordInviteRegex, '').trim()
+  
+  // Clean up any leftover HTML tags or formatting
+  cleanedDescription = cleanedDescription
+    .replace(/<a[^>]*>.*?<\/a>/gi, '') // Remove anchor tags
+    .replace(/https?:\/\/[^\s]+/g, '') // Remove any remaining URLs
+    .replace(/\s+/g, ' ') // Clean up multiple spaces
+    .trim()
+  
+  return cleanedDescription || null
+}
+
 function parseDate(value?: { dateTime?: string; date?: string }) {
   if (!value) return null
   if (value.dateTime) return new Date(value.dateTime)
@@ -121,6 +139,7 @@ export function EventsList() {
               // Discord detection and link extraction
               const isDiscord = isDiscordEvent(evt)
               const discordLink = extractDiscordLink(evt.description || null)
+              const cleanedDescription = cleanDescription(evt.description || null)
 
               return (
                 <Card key={evt.id || evt.summary} className="bg-card/80 backdrop-blur-sm card-neo-border">
@@ -150,8 +169,8 @@ export function EventsList() {
                       </div>
                     )}
                     
-                    {evt.description && (
-                      <div className="line-clamp-3 whitespace-pre-wrap text-muted-foreground">{evt.description}</div>
+                    {cleanedDescription && (
+                      <div className="line-clamp-3 whitespace-pre-wrap text-muted-foreground">{cleanedDescription}</div>
                     )}
                   </CardContent>
                   <CardFooter className="flex gap-2">
