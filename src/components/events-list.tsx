@@ -122,7 +122,7 @@ export function EventsList() {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2">
         <div className="max-h-[70vh] overflow-y-auto pr-1">
-          <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
             {events.map(evt => {
               const start = parseDate(evt.start)
               const end = parseDate(evt.end)
@@ -154,7 +154,7 @@ export function EventsList() {
                     </CardTitle>
                     <CardDescription>{dateLabel}</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-2 text-sm">
+                  <CardContent className="space-y-3 text-sm pb-4">
                     {evt.location && (
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <MapPin className="h-4 w-4" /> 
@@ -163,9 +163,9 @@ export function EventsList() {
                     )}
                     
                     {isDiscord && (
-                      <div className="flex items-center gap-2 text-[#5865F2] font-medium">
+                      <div className="flex items-center gap-2 text-[#5865F2] font-medium bg-[#5865F2]/10 px-2 py-1 rounded-md">
                         <DiscordIcon className="h-4 w-4" />
-                        <span>Discord Session</span>
+                        <span className="text-sm">Discord Session</span>
                       </div>
                     )}
                     
@@ -173,25 +173,39 @@ export function EventsList() {
                       <div className="line-clamp-3 whitespace-pre-wrap text-muted-foreground">{cleanedDescription}</div>
                     )}
                   </CardContent>
-                  <CardFooter className="flex gap-2">
-                    {isDiscord && discordLink ? (
-                      <Button variant="default" asChild className="bg-[#5865F2] hover:bg-[#4752C4] text-white">
-                        <a href={discordLink} target="_blank" rel="noopener noreferrer">
-                          <DiscordIcon className="h-4 w-4 mr-2" />
-                          Join Discord
-                        </a>
-                      </Button>
-                    ) : evt.hangoutLink ? (
-                      <Button variant="default" asChild>
-                        <a href={evt.hangoutLink} target="_blank" rel="noopener noreferrer">
-                          <Video className="h-4 w-4 mr-2" /> Join
-                        </a>
-                      </Button>
-                    ) : null}
+                  <CardFooter className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4">
+                    {/* Primary Action Button */}
+                    <div className="flex-1">
+                      {isDiscord && discordLink ? (
+                        <Button 
+                          variant="default" 
+                          asChild 
+                          className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium"
+                        >
+                          <a href={discordLink} target="_blank" rel="noopener noreferrer">
+                            <DiscordIcon className="h-4 w-4 mr-2" />
+                            Join Discord
+                          </a>
+                        </Button>
+                      ) : evt.hangoutLink ? (
+                        <Button variant="default" asChild className="w-full font-medium">
+                          <a href={evt.hangoutLink} target="_blank" rel="noopener noreferrer">
+                            <Video className="h-4 w-4 mr-2" /> Join Meeting
+                          </a>
+                        </Button>
+                      ) : null}
+                    </div>
                     
+                    {/* Secondary Action Button */}
                     {addUrl && (
-                      <Button variant="outline" asChild>
-                        <a href={addUrl} target="_blank" rel="noopener noreferrer">Add to Google Calendar</a>
+                      <Button 
+                        variant="outline" 
+                        asChild 
+                        className="w-full sm:w-auto min-w-[140px] text-sm"
+                      >
+                        <a href={addUrl} target="_blank" rel="noopener noreferrer">
+                          Add to Calendar
+                        </a>
                       </Button>
                     )}
                   </CardFooter>
