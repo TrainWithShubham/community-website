@@ -68,17 +68,8 @@ async function fetchEvents() {
     return events;
   } catch (err: any) {
     trackError(err, 'calendar-events-fetch');
-    const email = process.env.GOOGLE_SA_CLIENT_EMAIL || process.env.GOOGLE_SHEETS_CLIENT_EMAIL;
-    const rawKey = process.env.GOOGLE_SA_PRIVATE_KEY || process.env.GOOGLE_SHEETS_PRIVATE_KEY || '';
-    const diag = {
-      emailPresent: !!email,
-      keyChars: rawKey ? rawKey.length : 0,
-      keyStartsWith: rawKey ? rawKey.slice(0, 30) : '',
-      keyEndsWith: rawKey ? rawKey.slice(-30) : '',
-      calendarIdPresent: !!process.env.GOOGLE_CALENDAR_ID,
-    };
     if (process.env.NODE_ENV !== 'production') {
-      throw new Error(`${err?.message || 'Calendar error'} | diag: ${JSON.stringify(diag)}`);
+      throw err;
     }
     throw err;
   }
