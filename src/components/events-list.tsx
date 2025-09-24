@@ -142,7 +142,7 @@ export function EventsList() {
               const cleanedDescription = cleanDescription(evt.description || null)
 
               return (
-                <Card key={evt.id || evt.summary} className="bg-card/80 backdrop-blur-sm card-neo-border">
+                <Card key={evt.id || evt.summary} className="bg-card/80 backdrop-blur-sm card-neo-border h-fit">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       {isDiscord ? (
@@ -154,7 +154,7 @@ export function EventsList() {
                     </CardTitle>
                     <CardDescription>{dateLabel}</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-3 text-sm pb-4">
+                  <CardContent className="space-y-3 text-sm pb-2">
                     {evt.location && (
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <MapPin className="h-4 w-4" /> 
@@ -173,35 +173,37 @@ export function EventsList() {
                       <div className="line-clamp-3 whitespace-pre-wrap text-muted-foreground">{cleanedDescription}</div>
                     )}
                   </CardContent>
-                  <CardFooter className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4">
+                  <CardFooter className="flex flex-col sm:flex-row gap-3 pt-4">
                     {/* Primary Action Button */}
-                    <div className="flex-1">
-                      {isDiscord && discordLink ? (
-                        <Button 
-                          variant="default" 
-                          asChild 
-                          className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium"
-                        >
-                          <a href={discordLink} target="_blank" rel="noopener noreferrer">
-                            <DiscordIcon className="h-4 w-4 mr-2" />
-                            Join Discord
-                          </a>
-                        </Button>
-                      ) : evt.hangoutLink ? (
-                        <Button variant="default" asChild className="w-full font-medium">
-                          <a href={evt.hangoutLink} target="_blank" rel="noopener noreferrer">
-                            <Video className="h-4 w-4 mr-2" /> Join Meeting
-                          </a>
-                        </Button>
-                      ) : null}
-                    </div>
+                    {isDiscord && discordLink ? (
+                      <Button 
+                        variant="default" 
+                        asChild 
+                        className="flex-1 bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium h-10"
+                      >
+                        <a href={discordLink} target="_blank" rel="noopener noreferrer">
+                          <DiscordIcon className="h-4 w-4 mr-2" />
+                          Join Discord
+                        </a>
+                      </Button>
+                    ) : evt.hangoutLink ? (
+                      <Button 
+                        variant="default" 
+                        asChild 
+                        className="flex-1 font-medium h-10"
+                      >
+                        <a href={evt.hangoutLink} target="_blank" rel="noopener noreferrer">
+                          <Video className="h-4 w-4 mr-2" /> Join Meeting
+                        </a>
+                      </Button>
+                    ) : null}
                     
                     {/* Secondary Action Button */}
                     {addUrl && (
                       <Button 
                         variant="outline" 
                         asChild 
-                        className="w-full sm:w-auto min-w-[140px] text-sm"
+                        className="flex-1 sm:flex-none sm:min-w-[140px] h-10 text-sm"
                       >
                         <a href={addUrl} target="_blank" rel="noopener noreferrer">
                           Add to Calendar
