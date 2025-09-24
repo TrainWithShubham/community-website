@@ -122,7 +122,7 @@ export function EventsList() {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2">
         <div className="max-h-[70vh] overflow-y-auto pr-1">
-          <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2 auto-rows-fr">
             {events.map(evt => {
               const start = parseDate(evt.start)
               const end = parseDate(evt.end)
@@ -142,7 +142,7 @@ export function EventsList() {
               const cleanedDescription = cleanDescription(evt.description || null)
 
               return (
-                <Card key={evt.id || evt.summary} className="bg-card/80 backdrop-blur-sm card-neo-border h-fit">
+                <Card key={evt.id || evt.summary} className="bg-card/80 backdrop-blur-sm card-neo-border flex flex-col h-full">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       {isDiscord ? (
@@ -154,7 +154,7 @@ export function EventsList() {
                     </CardTitle>
                     <CardDescription>{dateLabel}</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-3 text-sm pb-2">
+                  <CardContent className="space-y-3 text-sm pb-2 flex-1">
                     {evt.location && (
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <MapPin className="h-4 w-4" /> 
@@ -170,7 +170,7 @@ export function EventsList() {
                     )}
                     
                     {cleanedDescription && (
-                      <div className="line-clamp-3 whitespace-pre-wrap text-muted-foreground">{cleanedDescription}</div>
+                      <div className="line-clamp-3 whitespace-pre-wrap text-muted-foreground min-h-[3rem]">{cleanedDescription}</div>
                     )}
                   </CardContent>
                   <CardFooter className="flex flex-col sm:flex-row gap-3 pt-4">
