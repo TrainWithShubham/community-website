@@ -20,7 +20,14 @@ import { useAuth } from '@/contexts/auth-context';
 import { Skeleton } from '../ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
-const navLinks = [
+type NavLink = {
+  href: string;
+  label: string;
+  icon: any; // lucide-react icon component
+  external?: boolean;
+}
+
+const navLinks: NavLink[] = [
   { href: '/', label: 'Home', icon: Home },
   { href: '/events', label: 'Events', icon: Calendar },
   { href: '/projects', label: 'Projects', icon: Code },
