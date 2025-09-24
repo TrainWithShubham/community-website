@@ -1,0 +1,18 @@
+# CODEOWNERS - initial setup
+# Adjust owners to your org/team once available. Owners must have write access.
+
+# Global default owner
+*       @iemafzalhassan
+
+# Feature areas
+/src/app/events/**                @iemafzalhassan
+/src/app/api/google-calendar/**   @iemafzalhassan
+/src/features/projects/**         @iemafzalhassan
+/src/app/interview-questions/**   @iemafzalhassan
+/src/components/**                @iemafzalhassan
+/src/ai/**                        @iemafzalhassan
+/src/lib/**                       @iemafzalhassan
+/src/services/**                  @iemafzalhassan
+
+# Repo meta and CI
+/.github/**                       @iemafzalhassan
