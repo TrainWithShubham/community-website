@@ -1,0 +1,12 @@
+type(scope): short imperative summary
+
+Why:
+- ...
+
+What:
+- ...
+
+How:
+- ...
+
+Closes #
