@@ -60,13 +60,23 @@ export async function POST(request: NextRequest) {
     // Actually write to Google Sheets
     try {
       await appendToGoogleSheets(submissionData);
-      
       // Clear the community questions cache to ensure fresh data is fetched
       clearCache('community-questions');
-      
-    } catch (sheetsError) {
-      // Continue with success response but log the error
-      // In production, you might want to handle this differently
+    } catch (sheetsError: any) {
+      const msg = sheetsError?.message || String(sheetsError);
+      console.error('Failed to append to Google Sheets:', msg);
+      const diag = process.env.NODE_ENV !== 'production' ? {
+        projectId: process.env.GOOGLE_SHEETS_PROJECT_ID ? 'set' : 'missing',
+        clientEmail: process.env.GOOGLE_SHEETS_CLIENT_EMAIL ? 'set' : 'missing',
+        keyChars: process.env.GOOGLE_SHEETS_PRIVATE_KEY ? process.env.GOOGLE_SHEETS_PRIVATE_KEY.length : 0,
+        spreadsheetId: process.env.GOOGLE_SHEETS_SPREADSHEET_ID ? 'set' : 'missing',
+      } : undefined;
+      return NextResponse.json({
+        success: false,
+        message: 'Failed to save your question to the sheet.',
+        error: process.env.NODE_ENV !== 'production' ? msg : undefined,
+        diag
+      }, { status: 500, headers });
     }
     
     return NextResponse.json({

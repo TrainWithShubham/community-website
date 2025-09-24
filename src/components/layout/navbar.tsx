@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Github, LogIn, Menu, X, Home, FileQuestion, Briefcase, Users, Terminal, LogOut, Code } from 'lucide-react';
+import { Github, LogIn, Menu, X, Home, FileQuestion, Briefcase, Users, Terminal, LogOut, Code, Calendar } from 'lucide-react';
 import { useState } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import {
@@ -22,10 +22,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 const navLinks = [
   { href: '/', label: 'Home', icon: Home },
+  { href: '/events', label: 'Events', icon: Calendar },
   { href: '/projects', label: 'Projects', icon: Code },
   { href: '/interview-questions', label: 'Interview Questions', icon: FileQuestion },
   { href: '/jobs', label: 'Jobs', icon: Briefcase },
-  { href: 'https://discord.gg/kGEr9mR5gT', label: 'Join Us', external: true, icon: Users },
 ];
 
 export function Navbar() {
@@ -118,12 +118,6 @@ export function Navbar() {
           {renderNavLinks()}
         </nav>
         <div className="flex items-center justify-end space-x-2 ml-4">
-          <Button variant="ghost" size="icon" asChild className="hidden sm:inline-flex">
-            <a href="https://github.com/trainwithshubham" target="_blank" rel="noopener noreferrer">
-              <Github className="h-5 w-5" />
-              <span className="sr-only">GitHub</span>
-            </a>
-          </Button>
           <div className="hidden sm:flex items-center gap-2">
             {loading ? (
                 <Skeleton className="h-8 w-20" />
