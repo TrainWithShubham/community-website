@@ -1,10 +1,10 @@
-# CODEOWNERS - initial setup
-# Adjust owners to your org/team once available. Owners must have write access.
+# CODEOWNERS - TrainWithShubham org
+# Owners must have write access. Prefer teams when available.
 
-# Global default owner
-*       @iemafzalhassan
+# Global default: Owner + Community Manager
+*                       @LondheShubham153 @iemafzalhassan
 
-# Feature areas
+# App features (Afzal leads day-to-day reviews)
 /src/app/events/**                @iemafzalhassan
 /src/app/api/google-calendar/**   @iemafzalhassan
 /src/features/projects/**         @iemafzalhassan
@@ -14,5 +14,6 @@
 /src/lib/**                       @iemafzalhassan
 /src/services/**                  @iemafzalhassan
 
-# Repo meta and CI
-/.github/**                       @iemafzalhassan
+# Repo governance & CI (Owner final review)
+/.github/**                       @LondheShubham153
+/.github/CODEOWNERS               @LondheShubham153
