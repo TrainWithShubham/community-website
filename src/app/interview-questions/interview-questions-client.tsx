@@ -70,7 +70,7 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
 
     if (searchQuery && searchResults?.length === 0) {
       return (
-        <Alert variant="destructive" className="mt-4 border-destructive text-destructive-foreground rounded-none">
+        <Alert variant="destructive" className="mt-4 border-destructive text-destructive-foreground rounded-lg">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>No Results Found</AlertTitle>
           <AlertDescription>
@@ -108,7 +108,7 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
     if (!user) {
       return (
         <div className="text-left my-4">
-          <Alert className="border-primary/20 bg-primary/5 text-foreground rounded-none">
+          <Alert className="border-primary/20 bg-primary/5 text-foreground rounded-lg">
             <AlertCircle className="h-4 w-4 text-primary" />
             <AlertTitle className="text-foreground font-semibold">Authentication Required</AlertTitle>
             <AlertDescription className="text-foreground/80">
@@ -122,7 +122,7 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
     return (
       <div className="text-left my-4">
         <AddQuestionForm>
-          <Button variant="outline" className="border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary rounded-none font-mono">
+          <Button variant="outline" className="border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary font-mono">
             <PlusCircle className="mr-2 h-4 w-4" /> contribute.sh
           </Button>
         </AddQuestionForm>
@@ -137,7 +137,7 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
       setSearchResults(null);
     }} className="w-full">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-border pb-4">
-        <TabsList className="bg-transparent p-0 rounded-none border-0">
+  <TabsList className="bg-transparent p-0 rounded-md border-0">
           <TabsTrigger value="interview">interview.sh</TabsTrigger>
           <TabsTrigger value="scenario">scenario.sh</TabsTrigger>
           <TabsTrigger value="live">live.sh</TabsTrigger>
@@ -153,7 +153,7 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
             onKeyDown={handleKeyDown}
             className="w-full bg-card border-primary/50"
           />
-          <Button onClick={onSearch} disabled={isPending} aria-label="Search" variant="outline" className="border-primary/50 rounded-none">
+          <Button onClick={onSearch} disabled={isPending} aria-label="Search" variant="outline" className="border-primary/50">
             {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
           </Button>
         </div>

@@ -228,8 +228,8 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] rounded-none">
+  <DialogTrigger asChild>{children}</DialogTrigger>
+  <DialogContent className="sm:max-w-[600px] sm:rounded-lg">
         <DialogHeader>
           <DialogTitle>Add a Community Question</DialogTitle>
           <DialogDescription>
@@ -441,7 +441,6 @@ export function AddQuestionForm({ children }: { children: ReactNode }) {
             <DialogFooter className="flex gap-2">
               <Button 
                 type="submit" 
-                className="rounded-none" 
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
