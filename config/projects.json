@@ -55,6 +55,15 @@
       "difficulty": "intermediate",
       "estimatedTime": "2-3 hours",
       "featured": true
+    },
+    {
+      "id": "Google Gemini Clone",
+      "name": "Google Gemini Clone",
+      "url": "https://github.com/amitabh-devops/dev-gemini-clone",
+      "category": "Kubernetes",
+      "difficulty": "advanced",
+      "estimatedTime": "2-3 hours",
+      "featured": true
     }
     
   ]
