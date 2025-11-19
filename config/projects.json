@@ -64,6 +64,15 @@
       "difficulty": "advanced",
       "estimatedTime": "4-5 hours",
       "featured": true
+    },
+    {
+      "id": "Stan's Robot Shop",
+      "name": "Stan's Robot Shop",
+      "url": "https://github.com/amitabh-devops/robot-shop",
+      "category": "Kubernetes",
+      "difficulty": "advanced",
+      "estimatedTime": "5-6 hours",
+      "featured": true
     }
     
   ]
