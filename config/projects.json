@@ -57,7 +57,7 @@
       "featured": true
     },
     {
-      "id": "Google Gemini Clone",
+      "id": "Google-Gemini-Clone",
       "name": "Google Gemini Clone",
       "url": "https://github.com/amitabh-devops/dev-gemini-clone",
       "category": "Kubernetes",
@@ -66,12 +66,21 @@
       "featured": true
     },
     {
-      "id": "Stan's Robot Shop",
+      "id": "Stan's-Robot-Shop",
       "name": "Stan's Robot Shop",
       "url": "https://github.com/amitabh-devops/robot-shop",
       "category": "Kubernetes",
       "difficulty": "advanced",
       "estimatedTime": "5-6 hours",
+      "featured": true
+    },
+    {
+      "id": "DevSecOps-CICD-Pipeline",
+      "name": "DevSecOps CICD Pipeline",
+      "url": "https://github.com/Amitabh-DevOps/secure-ci-cd",
+      "category": "CICD",
+      "difficulty": "beginner",
+      "estimatedTime": "1-2 hours",
       "featured": true
     }
     
