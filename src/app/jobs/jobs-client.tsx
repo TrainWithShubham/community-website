@@ -106,7 +106,7 @@ export function JobsClient({ recentJobs }: JobsClientProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
       <aside className="lg:col-span-1" aria-label="Job filters">
-        <Card className='rounded-none'>
+  <Card className='rounded-lg'>
           <CardHeader>
             <CardTitle>Filter by Experience</CardTitle>
           </CardHeader>
@@ -152,7 +152,7 @@ export function JobsClient({ recentJobs }: JobsClientProps) {
               {currentJobs.map(job => (
               <Card 
                 key={job.id} 
-                className="flex flex-col border-secondary hover:border-primary transition-colors rounded-none"
+                className="flex flex-col border-secondary hover:border-primary transition-colors rounded-lg"
                 role="listitem"
                 aria-labelledby={`job-title-${job.id}`}
               >
@@ -182,7 +182,7 @@ export function JobsClient({ recentJobs }: JobsClientProps) {
                 <CardFooter className="flex justify-between items-center">
                   <Badge 
                     variant={job.type === 'Full-time' ? 'default' : 'secondary'} 
-                    className="rounded-none"
+                    className="rounded-md"
                     aria-label={`Job type: ${job.type}`}
                   >
                     {job.type}
@@ -190,7 +190,7 @@ export function JobsClient({ recentJobs }: JobsClientProps) {
                   <Button 
                     asChild 
                     variant="outline" 
-                    className="border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-none"
+                    className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
                     aria-label={`Apply for ${job.title} at ${job.company}`}
                   >
                     <a 
@@ -262,7 +262,7 @@ export function JobsClient({ recentJobs }: JobsClientProps) {
             )}
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center text-center border-2 border-dashed border-destructive rounded-none p-12 h-full">
+          <div className="flex flex-col items-center justify-center text-center border-2 border-dashed border-destructive rounded-lg p-12 h-full">
             <h3 className="text-xl font-semibold text-destructive-foreground">`jobs matching query not found`</h3>
             <p className="text-muted-foreground mt-2">
               There are no job listings matching your criteria. Try another filter.

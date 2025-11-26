@@ -13,7 +13,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
   return (
     <Link href={`/projects/${encodeURIComponent(project.id)}`}>
       <Card
-        className="h-full hover:shadow-lg transition-all duration-200 cursor-pointer group border-border/50 hover:border-border/80"
+        className="h-full hover:shadow-lg transition-colors duration-200 cursor-pointer group border-secondary hover:border-primary"
         data-testid="project-card"
       >
         <CardHeader className="pb-4">

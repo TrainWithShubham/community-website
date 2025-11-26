@@ -11,10 +11,10 @@ export function QuestionCard({ question, answer, author }: QuestionCardProps) {
     <Accordion
       type="single"
       collapsible
-      className="w-full bg-card/80 backdrop-blur-sm border border-secondary hover:border-primary transition-colors rounded-none p-6"
+      className="w-full bg-card/80 backdrop-blur-sm border border-secondary hover:border-primary transition-colors rounded-lg p-6"
     >
-      <AccordionItem value="item-1" className="border-b-0">
-        <AccordionTrigger className="text-left hover:no-underline hover:bg-secondary/30 rounded-none">
+    <AccordionItem value="item-1" className="border-b-0">
+    <AccordionTrigger className="text-left hover:no-underline hover:bg-secondary/30 rounded-md">
             <div className='flex flex-col text-left w-full'>
                 <p className="text-lg md:text-xl"><span className="text-primary mr-2">$</span> {question}</p>
                 {author && (

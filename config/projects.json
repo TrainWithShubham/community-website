@@ -46,6 +46,34 @@
       "difficulty": "intermediate",
       "estimatedTime": "2-3 hours",
       "featured": true
+    },
+    {
+      "id": "bankapp",
+      "name": "Bank App",
+      "url": "https://github.com/LondheShubham153/Springboot-BankApp",
+      "category": "Kubernetes",
+      "difficulty": "intermediate",
+      "estimatedTime": "4-5 hours",
+      "featured": true
+    },
+    {
+      "id": "Google Gemini Clone",
+      "name": "Google Gemini Clone",
+      "url": "https://github.com/amitabh-devops/dev-gemini-clone",
+      "category": "Kubernetes",
+      "difficulty": "advanced",
+      "estimatedTime": "4-5 hours",
+      "featured": true
+    },
+    {
+      "id": "Stan's Robot Shop",
+      "name": "Stan's Robot Shop",
+      "url": "https://github.com/amitabh-devops/robot-shop",
+      "category": "Kubernetes",
+      "difficulty": "advanced",
+      "estimatedTime": "5-6 hours",
+      "featured": true
     }
+    
   ]
 }

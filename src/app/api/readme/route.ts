@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Try multiple branch names and file paths
-    const branches = ['main', 'master', 'develop']
+    const branches = ['main', 'master', 'develop', 'DevOps']
     const readmePaths = ['README.md', 'readme.md', 'Readme.md']
     
     let content = null

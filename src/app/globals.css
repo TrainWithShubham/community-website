@@ -76,7 +76,8 @@ html {
     --input: 220 15% 86%;
     --ring: 263 72% 55%;
  
-    --radius: 0rem;
+  /* Global border radius token used by Tailwind (mapped in tailwind.config.ts) */
+  --radius: 0.5rem; /* change this to adjust global corner radius (e.g. 0.25rem, 0.5rem, 0.75rem) */
 
     /* Harmonized chart palette for light mode */
     --chart-1: 263 72% 55%;

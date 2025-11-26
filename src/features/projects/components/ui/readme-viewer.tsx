@@ -446,7 +446,24 @@ export function ReadmeViewer({ readmeUrl, projectTitle }: ReadmeViewerProps) {
         <div className="mt-6 pt-4 border-t border-border/50">
           <Button variant="outline" asChild size="sm" className="text-muted-foreground hover:text-foreground">
             <a
-              href={readmeUrl.replace('raw.githubusercontent.com', 'github.com').replace(/\/[^\/]+\/[^\/]+\/[^\/]+\//, '/').replace(/\/[^\/]+$/, '')}
+              href={(() => {
+                try {
+                  // Try to extract owner/repo from common GitHub raw or normal URLs
+                  const rawMatch = readmeUrl.match(/raw\.githubusercontent\.com\/([^\/]+)\/([^\/]+)/i)
+                  const githubMatch = readmeUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/i)
+
+                  const owner = rawMatch?.[1] || githubMatch?.[1]
+                  const repo = rawMatch?.[2] || githubMatch?.[2]
+
+                  if (owner && repo) {
+                    return `https://github.com/${owner}/${repo}`
+                  }
+                } catch (e) {
+                  // fallback to original URL
+                }
+
+                return readmeUrl
+              })()}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2"
