@@ -82,6 +82,15 @@
       "difficulty": "beginner",
       "estimatedTime": "1-2 hours",
       "featured": true
+    },
+    {
+      "id": "GitOps-with-monitoring",
+      "name": "GitOps with Monitoring",
+      "url": "https://github.com/Amitabh-DevOps/GitOps-with-monitoring",
+      "category": "GITOPS",
+      "difficulty": "intermediate",
+      "estimatedTime": "2-3 hours",
+      "featured": true
     }
     
   ]
