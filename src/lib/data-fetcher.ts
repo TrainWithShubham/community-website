@@ -1,4 +1,3 @@
-import { getCachedData } from './cache';
 import { trackError, trackPerformance } from './monitoring';
 import { 
   getInterviewQuestions, 
@@ -6,13 +5,9 @@ import {
   getLiveQuestions, 
   getCommunityQuestions,
   getJobs,
-  getLeaderboardData,
-  getCommunityStats 
 } from '@/services/google-sheets';
-import { getCommunityQuestionsFromSheetsAPI } from '@/services/google-sheets-api';
 import type { Question } from '@/data/questions';
 import type { Job } from '@/data/jobs';
-import type { Contributor } from '@/data/leaderboard';
 
 export interface HomePageData {
   interviewQuestions: Question[];
@@ -20,16 +15,6 @@ export interface HomePageData {
   liveQuestions: Question[];
   communityQuestions: Question[];
   jobs: Job[];
-  leaderboardData: Contributor[];
-  communityStats: {
-    activeMembers: string;
-    activeVolunteers: string;
-    successStories: string;
-    githubUrl: string;
-    linkedinUrl: string;
-    twitterUrl: string;
-    instagramUrl: string;
-  };
 }
 
 // Function to transform community questions from Google Sheets API format to Question type
@@ -41,18 +26,6 @@ function transformCommunityQuestions(apiQuestions: any[]): Question[] {
   }));
 }
 
-function getDefaultStats() {
-  return {
-    activeMembers: "5600+",
-    activeVolunteers: "4",
-    successStories: "2000+",
-    githubUrl: "https://github.com/trainwithshubham",
-    linkedinUrl: "https://www.linkedin.com/company/trainwithshubham/",
-    twitterUrl: "https://x.com/TrainWitShubham",
-    instagramUrl: "https://www.instagram.com/trainwithshubham__"
-  };
-}
-
 function getFallbackData(): HomePageData {
   return {
     interviewQuestions: [],
@@ -60,35 +33,77 @@ function getFallbackData(): HomePageData {
     liveQuestions: [],
     communityQuestions: [],
     jobs: [],
-    leaderboardData: [],
-    communityStats: getDefaultStats(),
   };
 }
 
+/**
+ * Retry a fetch operation with exponential backoff
+ * @param fn - Function to retry
+ * @param retries - Number of retries (default: 3)
+ * @param delay - Initial delay in ms (default: 1000)
+ */
+async function retryFetch<T>(
+  fn: () => Promise<T>,
+  retries: number = 3,
+  delay: number = 1000
+): Promise<T> {
+  try {
+    return await fn();
+  } catch (error) {
+    if (retries === 0) {
+      throw error;
+    }
+    await new Promise(resolve => setTimeout(resolve, delay));
+    return retryFetch(fn, retries - 1, delay * 2);
+  }
+}
+
+/**
+ * Fetch all data for homepage at build time
+ * Uses retry logic with exponential backoff for reliability
+ * Fails the build if critical data cannot be fetched
+ */
 export async function getHomePageData(): Promise<HomePageData> {
   const startTime = Date.now();
   
   try {
+    console.log('[Build] Fetching homepage data from Google Sheets...');
+    
     const [
       interviewQuestions,
       scenarioQuestions,
       liveQuestions,
       communityQuestions,
       jobs,
-      leaderboardData,
-      communityStats
     ] = await Promise.allSettled([
-      getCachedData('interview-questions', getInterviewQuestions, 600), // 10 min
-      getCachedData('scenario-questions', getScenarioQuestions, 600),
-      getCachedData('live-questions', getLiveQuestions, 600),
-      getCachedData('community-questions', getCommunityQuestionsFromSheetsAPI, 60),
-      getCachedData('jobs', getJobs, 300), // 5 min
-      getCachedData('leaderboard', getLeaderboardData, 300), // 5 minutes to align with ISR
-      getCachedData('community-stats', getCommunityStats, 300) // 5 minutes
+      retryFetch(() => getInterviewQuestions()),
+      retryFetch(() => getScenarioQuestions()),
+      retryFetch(() => getLiveQuestions()),
+      retryFetch(() => getCommunityQuestions()),
+      retryFetch(() => getJobs()),
     ]);
 
     const duration = Date.now() - startTime;
     trackPerformance('homepage-data-fetch', duration);
+    console.log(`[Build] Homepage data fetched in ${duration}ms`);
+
+    // Check for critical failures
+    const failures = [
+      { name: 'Interview Questions', result: interviewQuestions },
+      { name: 'Scenario Questions', result: scenarioQuestions },
+      { name: 'Live Questions', result: liveQuestions },
+      { name: 'Community Questions', result: communityQuestions },
+      { name: 'Jobs', result: jobs },
+    ].filter(({ result }) => result.status === 'rejected');
+
+    if (failures.length > 0) {
+      console.warn('[Build] Some data sources failed:');
+      failures.forEach(({ name, result }) => {
+        if (result.status === 'rejected') {
+          console.warn(`  - ${name}: ${result.reason}`);
+        }
+      });
+    }
 
     // Transform community questions to match Question type
     const transformedCommunityQuestions = communityQuestions.status === 'fulfilled' 
@@ -101,11 +116,13 @@ export async function getHomePageData(): Promise<HomePageData> {
       liveQuestions: liveQuestions.status === 'fulfilled' ? liveQuestions.value : [],
       communityQuestions: transformedCommunityQuestions,
       jobs: jobs.status === 'fulfilled' ? jobs.value : [],
-      leaderboardData: leaderboardData.status === 'fulfilled' ? leaderboardData.value : [],
-      communityStats: communityStats.status === 'fulfilled' ? communityStats.value : getDefaultStats(),
     };
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[Build] Failed to fetch homepage data:', errorMessage);
     trackError(error as Error, 'homepage-data-fetch');
-    return getFallbackData();
+    
+    // Fail the build if data fetching fails completely
+    throw new Error(`Build failed: Unable to fetch data from Google Sheets. ${errorMessage}`);
   }
 }

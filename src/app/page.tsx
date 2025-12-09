@@ -1,9 +1,7 @@
-export const revalidate = 60; // 1 minute for faster updates
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Github, Instagram, Linkedin, Twitter, Users, Code, Briefcase, Award, MapPin, MessageSquareQuote, Handshake, TrendingUp, Sparkles, UserCheck, Trophy, Star } from 'lucide-react';
+import { Code, Briefcase, MapPin, MessageSquareQuote, Handshake, TrendingUp, Sparkles, Users } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { TerminalAnimation } from '@/components/terminal-animation';
@@ -15,21 +13,18 @@ import { QuestionsTerminalAnimation } from '@/components/questions-terminal-anim
 import { getHomePageData } from '@/lib/data-fetcher';
 import { SectionDivider } from '@/components/section-divider';
 import { ErrorBoundary } from '@/components/error-boundary';
-import { leaderboardData as fallbackLeaderboardData } from '@/data/leaderboard';
 
 export default async function Home() {
-  // Use optimized data fetcher with caching and parallel requests
+  // Fetch data at build time (no caching, no revalidation)
   const {
     interviewQuestions,
     scenarioQuestions,
     liveQuestions,
     communityQuestions,
     jobs: allJobs,
-    leaderboardData,
-    communityStats
   } = await getHomePageData();
   
-  // Combine all question sources from real-time spreadsheets
+  // Combine all question sources from Google Sheets
   const allQuestions = [
     ...interviewQuestions,
     ...scenarioQuestions,
@@ -37,16 +32,11 @@ export default async function Home() {
     ...communityQuestions
   ];
   
-  // Take first 6 questions for homepage display (2 from each category if available)
+  // Take first 6 questions for homepage display
   const questionSnippets = allQuestions.slice(0, 6);
   
-  // Show all jobs instead of filtering by date since the dates in the sheet are future dates
+  // Show all jobs
   const recentJobs = allJobs;
-
-  // Use fallback leaderboard data if Google Sheets data is empty
-  const displayLeaderboardData = leaderboardData.length > 0 
-    ? leaderboardData 
-    : fallbackLeaderboardData;
 
   return (
     <ErrorBoundary>
@@ -73,40 +63,6 @@ export default async function Home() {
               <TerminalAnimation />
             </ClientOnly>
           </div>
-        </section>
-
-        <SectionDivider />
-
-        {/* Leaderboard Section - Enhanced Responsive Design */}
-        <section className="text-center py-8 md:py-12 scroll-mt-24" id="leaderboard">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 md:mb-8 font-headline">
-            <Award className="inline-block mr-2 md:mr-3 h-6 w-6 md:h-8 md:w-8 text-primary" />
-            ./Volunteer-Leaderboard
-          </h2>
-          <Card className="max-w-full md:max-w-4xl mx-auto bg-card/80 backdrop-blur-sm card-neo-border border-2 border-primary/30 shadow-2xl shadow-primary/20 transition-all duration-300 hover:border-primary/50 hover:shadow-primary/30">
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <Table className="text-sm md:text-base">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[80px] md:w-[100px] text-center">Rank</TableHead>
-                      <TableHead className="text-center">Contributor</TableHead>
-                      <TableHead className="text-center">Contributions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {displayLeaderboardData.map((contributor) => (
-                      <TableRow key={contributor.rank} className="border-border/50">
-                        <TableCell className="font-medium text-accent text-center">{contributor.rank}</TableCell>
-                        <TableCell className="font-medium">{contributor.name}</TableCell>
-                        <TableCell className="text-center text-accent">{contributor.contributions}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
         </section>
 
         <SectionDivider />
@@ -151,64 +107,6 @@ export default async function Home() {
           </div>
         </section>
 
-        <SectionDivider />
-
-        {/* Community Stats Section - Enhanced Responsive Design */}
-        <section className="text-center border-border rounded-lg p-6 md:p-8 lg:p-12 card-neo-border py-8 md:py-12">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 font-headline">Join Our Growing Community</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto mb-6 md:mb-8 text-sm md:text-base">
-            Connect with peers, learn from experts, and accelerate your career. Follow us on our social channels to stay updated.
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-6 md:mb-8 text-left">
-              <Card className="bg-transparent border-0 shadow-none p-4 md:p-6">
-                  <CardHeader className="flex items-center flex-row gap-3 md:gap-4 p-0">
-                      <div className="bg-primary/20 p-2 md:p-3 rounded-md">
-                          <UserCheck className="h-5 w-5 md:h-6 md:w-6 text-primary" />
-                      </div>
-                      <div>
-                          <CardTitle className="text-xl md:text-2xl">{communityStats.activeMembers}</CardTitle>
-                          <CardDescription className="text-sm md:text-base">Active Members</CardDescription>
-                      </div>
-                  </CardHeader>
-              </Card>
-               <Card className="bg-transparent border-0 shadow-none p-4 md:p-6">
-                  <CardHeader className="flex items-center flex-row gap-3 md:gap-4 p-0">
-                      <div className="bg-primary/20 p-2 md:p-3 rounded-md">
-                          <Trophy className="h-5 w-5 md:h-6 md:w-6 text-primary" />
-                      </div>
-                       <div>
-                          <CardTitle className="text-xl md:text-2xl">{communityStats.activeVolunteers}</CardTitle>
-                          <CardDescription className="text-sm md:text-base">Active Volunteers</CardDescription>
-                      </div>
-                  </CardHeader>
-              </Card>
-               <Card className="bg-transparent border-0 shadow-none p-4 md:p-6 sm:col-span-2 lg:col-span-1">
-                  <CardHeader className="flex items-center flex-row gap-3 md:gap-4 p-0">
-                      <div className="bg-primary/20 p-2 md:p-3 rounded-md">
-                          <Star className="h-5 w-5 md:h-6 md:w-6 text-primary" />
-                      </div>
-                       <div>
-                          <CardTitle className="text-xl md:text-2xl">{communityStats.successStories}</CardTitle>
-                          <CardDescription className="text-sm md:text-base">Success Stories</CardDescription>
-                      </div>
-                  </CardHeader>
-              </Card>
-          </div>
-          <div className="flex justify-center gap-4 md:gap-6">
-            <a href={communityStats.githubUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-              <Github size={24} className="md:w-7 md:h-7" />
-            </a>
-            <a href={communityStats.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-              <Linkedin size={24} className="md:w-7 md:h-7" />
-            </a>
-            <a href={communityStats.twitterUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-              <Twitter size={24} className="md:w-7 md:h-7" />
-            </a>
-            <a href={communityStats.instagramUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-              <Instagram size={24} className="md:w-7 md:h-7" />
-            </a>
-          </div>
-        </section>
       </div>
     </ErrorBoundary>
   );

@@ -1,17 +1,15 @@
 
 'use client';
 
-import { useState, useTransition, useMemo, useEffect } from 'react';
-import { AlertCircle, Loader2, Search, PlusCircle } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
+import { AlertCircle, Search, PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { QuestionCard } from '@/components/question-card';
-import { AddQuestionForm } from '@/components/add-question-form';
 import type { Question } from '@/data/questions';
-import { handleSearch } from './actions';
-import { useAuth } from '@/contexts/auth-context';
+import { createQuestionSearch } from '@/lib/client-search';
 
 type QuestionCategory = 'interview' | 'scenario' | 'live' | 'community';
 
@@ -21,54 +19,23 @@ interface InterviewQuestionsClientProps {
 
 export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<Question[] | null>(null);
-  const { user, loading } = useAuth();
   const [activeTab, setActiveTab] = useState<QuestionCategory>('interview');
-  const [isPending, startTransition] = useTransition();
 
+  // Create search instance for current tab's questions
+  const searchInstance = useMemo(() => {
+    return createQuestionSearch(questionsMap[activeTab]);
+  }, [activeTab, questionsMap]);
 
-
+  // Perform client-side search
   const currentQuestions = useMemo(() => {
-    if (searchQuery && searchResults) {
-      return searchResults;
+    if (!searchQuery || searchQuery.trim().length === 0) {
+      return questionsMap[activeTab];
     }
-    return questionsMap[activeTab];
-  }, [activeTab, searchQuery, searchResults, questionsMap]);
-
-  useEffect(() => {
-    if (!searchQuery) {
-      setSearchResults(null);
-    }
-  }, [searchQuery]);
-
-  const onSearch = () => {
-    if (!searchQuery) {
-      setSearchResults(null);
-      return;
-    }
-    startTransition(async () => {
-      const results = await handleSearch(
-        searchQuery, 
-        activeTab, 
-        questionsMap[activeTab],
-        user?.uid
-      );
-      setSearchResults(results);
-    });
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      onSearch();
-    }
-  };
+    return searchInstance.search(searchQuery);
+  }, [searchQuery, activeTab, questionsMap, searchInstance]);
 
   const renderQuestionList = (questions: Question[]) => {
-    if (isPending) {
-      return <div className="flex justify-center items-center p-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
-    }
-
-    if (searchQuery && searchResults?.length === 0) {
+    if (searchQuery && questions.length === 0) {
       return (
         <Alert variant="destructive" className="mt-4 border-destructive text-destructive-foreground rounded-lg">
           <AlertCircle className="h-4 w-4" />
@@ -94,38 +61,22 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
   };
 
   const renderCommunitySection = () => {
-    if (loading) {
-      return (
-        <div className="text-left my-4">
-          <div className="flex items-center gap-2">
-            <Loader2 className="h-4 w-4 animate-spin text-primary" />
-            <span className="text-foreground/70">Loading authentication...</span>
-          </div>
-        </div>
-      );
-    }
-
-    if (!user) {
-      return (
-        <div className="text-left my-4">
-          <Alert className="border-primary/20 bg-primary/5 text-foreground rounded-lg">
-            <AlertCircle className="h-4 w-4 text-primary" />
-            <AlertTitle className="text-foreground font-semibold">Authentication Required</AlertTitle>
-            <AlertDescription className="text-foreground/80">
-              Please log in to contribute questions to the community.
-            </AlertDescription>
-          </Alert>
-        </div>
-      );
-    }
-
     return (
       <div className="text-left my-4">
-        <AddQuestionForm>
-          <Button variant="outline" className="border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary font-mono">
-            <PlusCircle className="mr-2 h-4 w-4" /> contribute.sh
-          </Button>
-        </AddQuestionForm>
+        <Alert className="border-primary/20 bg-primary/5 text-foreground rounded-lg">
+          <AlertCircle className="h-4 w-4 text-primary" />
+          <AlertTitle className="text-foreground font-semibold">Want to Contribute?</AlertTitle>
+          <AlertDescription className="text-foreground/80">
+            <a 
+              href="https://forms.google.com/your-form-url" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-primary hover:underline font-medium"
+            >
+              Submit your question via Google Form
+            </a>
+          </AlertDescription>
+        </Alert>
       </div>
     );
   };
@@ -134,10 +85,9 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
     <Tabs value={activeTab} onValueChange={(value) => {
       setActiveTab(value as QuestionCategory);
       setSearchQuery('');
-      setSearchResults(null);
     }} className="w-full">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-border pb-4">
-  <TabsList className="bg-transparent p-0 rounded-md border-0">
+        <TabsList className="bg-transparent p-0 rounded-md border-0">
           <TabsTrigger value="interview">interview.sh</TabsTrigger>
           <TabsTrigger value="scenario">scenario.sh</TabsTrigger>
           <TabsTrigger value="live">live.sh</TabsTrigger>
@@ -150,11 +100,10 @@ export function InterviewQuestionsClient({ questionsMap }: InterviewQuestionsCli
             placeholder={`grep -i "..."`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
             className="w-full bg-card border-primary/50"
           />
-          <Button onClick={onSearch} disabled={isPending} aria-label="Search" variant="outline" className="border-primary/50">
-            {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+          <Button aria-label="Search" variant="outline" className="border-primary/50">
+            <Search className="h-4 w-4" />
           </Button>
         </div>
       </div>

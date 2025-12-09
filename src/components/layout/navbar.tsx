@@ -4,21 +4,10 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Github, LogIn, Menu, X, Home, FileQuestion, Briefcase, Users, Terminal, LogOut, Code, Calendar } from 'lucide-react';
+import { Github, Menu, Home, FileQuestion, Briefcase, Terminal, Code, Calendar } from 'lucide-react';
 import { useState } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-  DropdownMenuLabel,
-} from "@/components/ui/dropdown-menu"
 import { Separator } from '../ui/separator';
-import { useAuth } from '@/contexts/auth-context';
-import { Skeleton } from '../ui/skeleton';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 type NavLink = {
   href: string;
@@ -37,7 +26,6 @@ const navLinks: NavLink[] = [
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user, loading, signInWithGitHub, signInWithGoogle, logout } = useAuth();
 
   const renderNavLinks = (isMobile = false) => (
     <>
@@ -59,46 +47,7 @@ export function Navbar() {
     </>
   );
 
-  const renderLoginOptions = () => (
-    <>
-        <DropdownMenuItem onClick={() => {signInWithGitHub(); setIsMobileMenuOpen(false);}}>
-            <Github className="mr-2 h-4 w-4" />
-            <span>Login with GitHub</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => {signInWithGoogle(); setIsMobileMenuOpen(false);}}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 h-4 w-4"><path d="M15.5 16.5c-2-1-3.1-2.5-3.5-4.5M12 12h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/><path d="m11.5 7.5-.5 4.5"/></svg>
-            <span>Login with Google</span>
-        </DropdownMenuItem>
-    </>
-  )
 
-  const renderUserMenu = () => (
-    <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                <Avatar className="h-8 w-8">
-                    <AvatarImage src={user?.photoURL || ''} alt={user?.displayName || 'User'} />
-                    <AvatarFallback>{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
-                </Avatar>
-            </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="end" forceMount>
-            <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{user?.displayName}</p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                        {user?.email}
-                    </p>
-                </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => {logout(); setIsMobileMenuOpen(false);}}>
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
-            </DropdownMenuItem>
-        </DropdownMenuContent>
-    </DropdownMenu>
-  );
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -125,24 +74,6 @@ export function Navbar() {
           {renderNavLinks()}
         </nav>
         <div className="flex items-center justify-end space-x-2 ml-4">
-          <div className="hidden sm:flex items-center gap-2">
-            {loading ? (
-                <Skeleton className="h-8 w-20" />
-            ) : user ? (
-                renderUserMenu()
-            ) : (
-              <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                      <Button>
-                          <LogIn className="mr-2 h-4 w-4" /> Login
-                      </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                      {renderLoginOptions()}
-                  </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
           <ThemeToggle />
           <div className="md:hidden">
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
@@ -183,35 +114,6 @@ export function Navbar() {
                   <div className="flex flex-col gap-2">
                     {renderNavLinks(true)}
                     <Separator className="my-2" />
-                    {loading ? (
-                        <Skeleton className="h-10 w-full" />
-                    ) : user ? (
-                        <>
-                           <div className="flex items-center gap-4 px-2 py-1.5">
-                                <Avatar className="h-8 w-8">
-                                    <AvatarImage src={user.photoURL || ''} alt={user.displayName || ''} />
-                                    <AvatarFallback>{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
-                                </Avatar>
-                                <div className="flex flex-col">
-                                    <span className="text-sm font-medium">{user.displayName}</span>
-                                    <span className="text-xs text-muted-foreground">{user.email}</span>
-                                </div>
-                            </div>
-                            <Button onClick={() => {logout(); setIsMobileMenuOpen(false);}} className="w-full justify-start">
-                                <LogOut className="mr-2 h-4 w-4" /> Logout
-                            </Button>
-                        </>
-                    ) : (
-                     <div className="flex flex-col gap-2">
-                        <Button onClick={() => {signInWithGitHub(); setIsMobileMenuOpen(false)}} className="w-full justify-start">
-                            <Github className="mr-2 h-4 w-4" /> Login with GitHub
-                        </Button>
-                        <Button onClick={() => {signInWithGoogle(); setIsMobileMenuOpen(false)}} className="w-full justify-start">
-                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 h-4 w-4"><path d="M15.5 16.5c-2-1-3.1-2.5-3.5-4.5M12 12h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/><path d="m11.5 7.5-.5 4.5"/></svg>
-                            Login with Google
-                        </Button>
-                     </div>
-                    )}
                     <div className="border-t pt-4 mt-2 flex flex-col gap-2">
                          <Button variant="ghost" asChild className="sm:hidden self-start flex items-center gap-2">
                             <a href="https://github.com/trainwithshubham" target="_blank" rel="noopener noreferrer">

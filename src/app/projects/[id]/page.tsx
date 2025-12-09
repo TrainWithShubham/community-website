@@ -11,6 +11,15 @@ interface ProjectPageProps {
   params: Promise<{ id: string }>;
 }
 
+// Generate static params for all projects at build time
+export async function generateStaticParams() {
+  const projects = await simpleProjectService.getProjects();
+  
+  return projects.map((project) => ({
+    id: encodeURIComponent(project.id),
+  }));
+}
+
 export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
   const { id } = await params;
   const decodedId = decodeURIComponent(id);

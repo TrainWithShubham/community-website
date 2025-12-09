@@ -29,8 +29,6 @@ interface GitHubRepoData {
 
 class SimpleProjectService {
   private projectsCache: Project[] | null = null
-  private lastFetch: number = 0
-  private readonly CACHE_DURATION = 15 * 60 * 1000 // 15 minutes
 
   private loadProjectsData(): ProjectsConfig {
     try {
@@ -43,7 +41,7 @@ class SimpleProjectService {
     }
   }
 
-  private async fetchGitHubRepoData(repoUrl: string): Promise<GitHubRepoData | null> {
+  private async fetchGitHubRepoData(repoUrl: string, retries: number = 3): Promise<GitHubRepoData | null> {
     try {
       // Extract owner and repo from GitHub URL
       const match = repoUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/)
@@ -52,15 +50,31 @@ class SimpleProjectService {
       const [, owner, repo] = match
       const apiUrl = `https://api.github.com/repos/${owner}/${repo}`
 
+      // Add delay to avoid rate limiting (1 second between requests)
+      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      const headers: HeadersInit = {
+        'User-Agent': 'TWS-Community/1.0',
+      }
+
+      // Use GitHub token if available for higher rate limits
+      if (process.env.GITHUB_TOKEN) {
+        headers['Authorization'] = `token ${process.env.GITHUB_TOKEN}`
+      }
+
       const response = await fetch(apiUrl, {
-        headers: {
-          'User-Agent': 'TWS-Community/1.0',
-        },
-        next: { revalidate: 3600 }, // Cache for 1 hour
+        headers,
+        cache: 'no-store', // Don't cache during build
       })
 
       if (!response.ok) {
-        console.warn(`Failed to fetch GitHub data for ${repoUrl}: ${response.status}`)
+        if (response.status === 403 && retries > 0) {
+          // Rate limited, wait and retry
+          console.warn(`[Build] Rate limited for ${repoUrl}, retrying in 5 seconds...`)
+          await new Promise(resolve => setTimeout(resolve, 5000))
+          return this.fetchGitHubRepoData(repoUrl, retries - 1)
+        }
+        console.warn(`[Build] Failed to fetch GitHub data for ${repoUrl}: ${response.status}`)
         return null
       }
 
@@ -74,7 +88,12 @@ class SimpleProjectService {
         topics: data.topics || [],
       }
     } catch (error) {
-      console.warn(`Error fetching GitHub data for ${repoUrl}:`, error)
+      if (retries > 0) {
+        console.warn(`[Build] Error fetching GitHub data for ${repoUrl}, retrying...`)
+        await new Promise(resolve => setTimeout(resolve, 2000))
+        return this.fetchGitHubRepoData(repoUrl, retries - 1)
+      }
+      console.warn(`[Build] Error fetching GitHub data for ${repoUrl}:`, error)
       return null
     }
   }
@@ -108,25 +127,28 @@ class SimpleProjectService {
   }
 
   async getProjects(): Promise<Project[]> {
-    const now = Date.now()
-
-    // Return cached data if still valid
-    if (this.projectsCache && now - this.lastFetch < this.CACHE_DURATION) {
+    // Return cached data if already fetched (for build-time)
+    if (this.projectsCache) {
       return this.projectsCache
     }
 
     try {
+      console.log('[Build] Fetching projects from GitHub API...')
       const config = this.loadProjectsData()
-      const projects = await Promise.all(
-        config.projects.map(project => this.convertToProject(project))
-      )
+      
+      // Fetch projects sequentially to avoid rate limiting
+      const projects: Project[] = []
+      for (const projectData of config.projects) {
+        const project = await this.convertToProject(projectData)
+        projects.push(project)
+      }
       
       this.projectsCache = projects
-      this.lastFetch = now
+      console.log(`[Build] Successfully fetched ${projects.length} projects`)
       return projects
     } catch (error) {
-      console.error('Error loading projects:', error)
-      return []
+      console.error('[Build] Error loading projects:', error)
+      throw new Error(`Failed to load projects: ${error}`)
     }
   }
 
@@ -161,17 +183,11 @@ class SimpleProjectService {
     )
   }
 
-  // Preload projects for better performance
+  // Preload projects for build-time generation
   async preloadProjects(): Promise<void> {
     if (!this.projectsCache) {
       await this.getProjects()
     }
-  }
-
-  // Clear cache when needed
-  clearCache(): void {
-    this.projectsCache = null
-    this.lastFetch = 0
   }
 }
 

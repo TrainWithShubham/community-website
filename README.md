@@ -1,24 +1,29 @@
 ## TrainWithShubham Community Website
 
-A Next.js app that powers community learning: events, projects, jobs, and interview prep. Built for contributors to learn by shipping real features with clean engineering practices.
+A static Next.js site that powers community learning: events, projects, jobs, and interview prep. Deployed to GitHub Pages with automated hourly rebuilds to fetch fresh data.
 
 ### Key Features
-- Events: Google Calendar-backed events with server routes (`src/app/api/google-calendar/*`) and UI (`src/app/events`)
-- Projects: Advanced search, filters, README viewer (`src/features/projects`)
-- Interview Questions: Pagination and actions (`src/app/interview-questions`)
-- Shared UI: Shadcn-based components (`src/components/ui`)
-- Infra/Utils: Caching, rate-limiting, analytics (`src/lib`), external services (`src/services`)
-- AI: Genkit flows (`src/ai`)
+- **Events**: Community calendar with Google Calendar integration
+- **Projects**: GitHub-powered project catalog with README viewer and metadata (stars, forks, topics)
+- **Interview Questions**: Client-side fuzzy search with Fuse.js for DevOps/Cloud interview prep
+- **Jobs**: Community job board with latest opportunities
+- **Static Site**: Fully static export deployed to GitHub Pages (zero hosting cost)
+- **Automated Deployment**: GitHub Actions workflow rebuilds site hourly with fresh data
 
-### Architecture Map
+### Architecture
+- **Static Site Generation**: All pages pre-rendered at build time
+- **Client-Side Search**: Fuse.js for fuzzy search (no server required)
+- **Build-Time Data Fetching**: Google Sheets CSV data fetched during build
+- **GitHub API Integration**: Project metadata fetched at build time with Octokit
+- **Automated Deployment**: GitHub Actions workflow handles everything
+
 ```
 src/
-  app/                    # Next.js App Router pages & API routes
+  app/                    # Next.js App Router pages (static export)
   components/             # Shared components (ui, layout, animations)
-  features/projects/      # Project listing feature modules
-  lib/                    # Core libs: cache, env, analytics, sheets
-  services/               # External service wrappers
-  ai/                     # Genkit integration & flows
+  features/projects/      # Project listing with GitHub integration
+  lib/                    # Core libs: client-search, env, data-fetcher
+  services/               # External service wrappers (Google Sheets)
 ```
 
 ### Getting Started
@@ -28,10 +33,39 @@ npm run dev
 # visit http://localhost:3000
 ```
 
+### Deployment
+
+**GitHub Pages (Automated)**
+
+The site automatically deploys to GitHub Pages via GitHub Actions:
+
+1. **One-Time Setup**:
+   - Go to repository Settings > Pages
+   - Set Source to "GitHub Actions"
+   - Site will be available at `https://<username>.github.io/<repo-name>`
+
+2. **Automatic Deployment**:
+   - Push to `main` branch triggers immediate deployment
+   - Hourly cron job rebuilds site with fresh Google Sheets data
+   - Manual deployment available via GitHub Actions UI
+
+3. **Optional: Custom Domain**:
+   - Add CNAME file to `public/` directory with your domain
+   - Configure DNS records to point to GitHub Pages
+   - Enable HTTPS in repository settings
+
 ### Environment Variables
-- Server: `GOOGLE_SHEETS_*`, `GOOGLE_SA_*`, `GOOGLE_CALENDAR_ID`, `APP_BASE_URL`, `REVALIDATE_SECRET`, `GOOGLE_AI_API_KEY`
-- Client: `NEXT_PUBLIC_FIREBASE_*`
-- Add them in Vercel Project (Production/Preview) and locally in `.env.local`.
+
+**Required for Build** (GitHub Repository Secrets):
+- `GITHUB_TOKEN`: Automatically provided by GitHub Actions (for higher API rate limits)
+
+**Optional**:
+- Google Sheets URLs are configured with defaults in `src/lib/env.ts`
+- Add custom URLs as repository secrets if needed
+
+**Local Development**:
+- Create `.env.local` for any custom configuration
+- No authentication required (Firebase/Genkit removed)
 
 ### Contributing (Quickstart)
 - Create a branch from `main`
@@ -74,3 +108,30 @@ ci(repo): enforce semantic PR titles and commit messages
 - Performance budgets in CI
 
 See `CONTRIBUTING.md` for the full guide.
+
+
+### Migration Notes
+
+**From Vercel to GitHub Pages**:
+- ✅ Hosting cost reduced from $20/month to $0/month ($240/year savings)
+- ✅ Fully static site (no server-side rendering)
+- ✅ Client-side search with Fuse.js (replaced Genkit AI)
+- ✅ Build-time data fetching (replaced ISR)
+- ✅ GitHub Actions automation (replaced Vercel deployments)
+- ✅ Removed Firebase Authentication (replaced with Google Form links)
+- ✅ Bundle size reduced by 30%+
+
+**Key Changes**:
+- All data fetched at build time from Google Sheets CSV endpoints
+- Projects metadata fetched from GitHub API during build
+- Search runs entirely in browser (no API calls)
+- Site rebuilds hourly to fetch fresh data
+- No manual deployment steps required
+
+### GitHub API Rate Limiting
+
+The build process fetches project metadata from GitHub API:
+- **Unauthenticated**: 60 requests/hour
+- **Authenticated** (with GITHUB_TOKEN): 5000 requests/hour
+- The workflow automatically uses GITHUB_TOKEN for higher limits
+- Projects are fetched sequentially with 1-second delays to avoid rate limiting

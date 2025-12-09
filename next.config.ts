@@ -1,6 +1,9 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  // Static export configuration for GitHub Pages
+  output: 'export',
+  
   // Enable proper error checking in production
   typescript: {
     ignoreBuildErrors: process.env.NODE_ENV === 'development',
@@ -77,71 +80,9 @@ const nextConfig: NextConfig = {
     return config;
   },
   
-  // Image optimization
+  // Image optimization - unoptimized for static export
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'placehold.co',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'lh3.googleusercontent.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'raw.githubusercontent.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'github.com',
-        port: '',
-        pathname: '/**',
-      },
-    ],
-    formats: ['image/webp', 'image/avif'],
-  },
-  
-  // Security headers
-  async headers() {
-    return [
-      {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin',
-          },
-          {
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()',
-          },
-          // Fix COOP policy for Firebase Auth popups
-          {
-            key: 'Cross-Origin-Opener-Policy',
-            value: 'unsafe-none',
-          },
-          {
-            key: 'Cross-Origin-Embedder-Policy',
-            value: 'unsafe-none',
-          },
-        ],
-      },
-    ];
+    unoptimized: true,
   },
   
   // Compression
@@ -149,9 +90,6 @@ const nextConfig: NextConfig = {
   
   // Power by header
   poweredByHeader: false,
-  
-  // Server external packages
-  serverExternalPackages: ['@genkit-ai/core', 'genkit', '@genkit-ai/googleai'],
 };
 
 export default nextConfig;

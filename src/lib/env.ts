@@ -8,40 +8,18 @@ const DEFAULT_SHEET_URLS = {
   INTERVIEW_SHEET_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKXulHlDEFD1f3mVxbNgtk5_qfewFBIIN0s-XOYXXhOa2W-T9mmkvmbZi_SMqk0EpUhZbpFKhOMZDh/pub?output=csv',
   LIVE_SHEET_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTX8qvtRs3zOsCtecGKHtcrqAAq8akht-drKxmkxCFBxxYEwWiG1_gqR8TY1fT757wqDIrzviEdbUpj/pub?output=csv',
   COMMUNITY_SHEET_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTS9P-csRa0DxN4W3DYQ-Jd1216fI0EhUmKEeBVhDNOgZmVTJPxTUFbY52SjpuORhaHYRkkc66IYLsD/pub?output=csv',
-  LEADERBOARD_SHEET_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQl3-ej0Y-Y6apt3lJOpnj1y9B6wXcxqOi3OLCQJ-sDeEoWVUc3Kz12F8p3cYixrwjpzYLjds790La4/pub?output=csv',
   JOBS_SHEET_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTXG1tfJqAN5IqlJqpvPWnOMVlCEKCYIgSfddrb30wZndYyn4rl2KSznKhx8D1GvdJmG040p1KA983u/pub?output=csv',
-  COMMUNITY_STATS_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRX5qvUPTswosvphvap35loiZh754Enf45-A-IH3qNbxlVJY7oOqtD1YehFU9mXb8dStOq4vjA8CESX/pub?output=csv',
 };
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  
-  // Firebase Configuration
-  NEXT_PUBLIC_FIREBASE_PROJECT_ID: z.string().min(1),
-  NEXT_PUBLIC_FIREBASE_APP_ID: z.string().min(1),
-  NEXT_PUBLIC_FIREBASE_API_KEY: z.string().min(1),
-  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: z.string().min(1),
-  NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: z.string().min(1),
-  NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: z.string().optional(),
-  NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: z.string().optional(),
-  
-  // Google AI Configuration
-  GOOGLE_AI_API_KEY: z.string().min(1).optional(),
-  
-  // Google Sheets API Configuration
-  GOOGLE_SHEETS_PROJECT_ID: z.string().min(1).optional(),
-  GOOGLE_SHEETS_CLIENT_EMAIL: z.string().email().optional(),
-  GOOGLE_SHEETS_PRIVATE_KEY: z.string().min(1).optional(),
-  GOOGLE_SHEETS_SPREADSHEET_ID: z.string().min(1).optional(),
   
   // Google Sheets Configuration with fallbacks
   SCENARIO_SHEET_URL: z.string().url().min(1).default(DEFAULT_SHEET_URLS.SCENARIO_SHEET_URL),
   INTERVIEW_SHEET_URL: z.string().url().min(1).default(DEFAULT_SHEET_URLS.INTERVIEW_SHEET_URL),
   LIVE_SHEET_URL: z.string().url().min(1).default(DEFAULT_SHEET_URLS.LIVE_SHEET_URL),
   COMMUNITY_SHEET_URL: z.string().url().min(1).default(DEFAULT_SHEET_URLS.COMMUNITY_SHEET_URL),
-  LEADERBOARD_SHEET_URL: z.string().url().min(1).default(DEFAULT_SHEET_URLS.LEADERBOARD_SHEET_URL),
   JOBS_SHEET_URL: z.string().url().min(1).default(DEFAULT_SHEET_URLS.JOBS_SHEET_URL),
-  COMMUNITY_STATS_URL: z.string().url().min(1).default(DEFAULT_SHEET_URLS.COMMUNITY_STATS_URL),
 });
 
 // Safe environment parsing with fallbacks
@@ -103,9 +81,7 @@ export function getSheetUrls() {
     interview: env.INTERVIEW_SHEET_URL,
     live: env.LIVE_SHEET_URL,
     community: env.COMMUNITY_SHEET_URL,
-    leaderboard: env.LEADERBOARD_SHEET_URL,
     jobs: env.JOBS_SHEET_URL,
-    communityStats: env.COMMUNITY_STATS_URL,
   };
 }
 
