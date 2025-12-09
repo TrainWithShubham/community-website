@@ -64,7 +64,7 @@ class SimpleProjectService {
 
       const response = await fetch(apiUrl, {
         headers,
-        cache: 'no-store', // Don't cache during build
+        next: { revalidate: false }, // Static generation - fetch once at build time
       })
 
       if (!response.ok) {

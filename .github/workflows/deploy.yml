@@ -44,8 +44,8 @@ jobs:
       - name: Build static site
         run: npm run build
         env:
-          # GitHub token for higher API rate limits (optional but recommended)
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          # GitHub token for higher API rate limits (uses built-in GITHUB_TOKEN)
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Add any other required environment variables here
           # Example: GOOGLE_SHEETS_API_KEY: ${{ secrets.GOOGLE_SHEETS_API_KEY }}
       
