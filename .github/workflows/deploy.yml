@@ -52,8 +52,10 @@ jobs:
           # Add any other required environment variables here
           # Example: GOOGLE_SHEETS_API_KEY: ${{ secrets.GOOGLE_SHEETS_API_KEY }}
       
-      - name: Create .nojekyll file
-        run: touch out/.nojekyll
+      - name: Create .nojekyll and CNAME files
+        run: |
+          touch out/.nojekyll
+          echo "community.trainwithshubham.com" > out/CNAME
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

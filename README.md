@@ -35,24 +35,14 @@ npm run dev
 
 ### Deployment
 
-**GitHub Pages (Automated)**
+**Live Site**: `https://community.trainwithshubham.com`
 
 The site automatically deploys to GitHub Pages via GitHub Actions:
+- Push to `main` branch triggers immediate deployment
+- Hourly rebuilds fetch fresh data from Google Sheets
+- Manual deployment available via GitHub Actions UI
 
-1. **One-Time Setup**:
-   - Go to repository Settings > Pages
-   - Set Source to "GitHub Actions"
-   - Site will be available at `https://<username>.github.io/<repo-name>`
-
-2. **Automatic Deployment**:
-   - Push to `main` branch triggers immediate deployment
-   - Hourly cron job rebuilds site with fresh Google Sheets data
-   - Manual deployment available via GitHub Actions UI
-
-3. **Optional: Custom Domain**:
-   - Add CNAME file to `public/` directory with your domain
-   - Configure DNS records to point to GitHub Pages
-   - Enable HTTPS in repository settings
+**See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for complete deployment guide including custom domain setup.**
 
 ### Environment Variables
 
@@ -110,28 +100,18 @@ ci(repo): enforce semantic PR titles and commit messages
 See `CONTRIBUTING.md` for the full guide.
 
 
-### Migration Notes
+### Documentation
 
-**From Vercel to GitHub Pages**:
-- ✅ Hosting cost reduced from $20/month to $0/month ($240/year savings)
-- ✅ Fully static site (no server-side rendering)
-- ✅ Client-side search with Fuse.js (replaced Genkit AI)
-- ✅ Build-time data fetching (replaced ISR)
-- ✅ GitHub Actions automation (replaced Vercel deployments)
-- ✅ Removed Firebase Authentication (replaced with Google Form links)
-- ✅ Bundle size reduced by 30%+
+- **[Deployment Guide](docs/DEPLOYMENT.md)** - Complete deployment instructions, custom domain setup, troubleshooting
+- **[Migration Report](docs/MIGRATION.md)** - Vercel to GitHub Pages migration details, cost savings, architecture changes
 
-**Key Changes**:
-- All data fetched at build time from Google Sheets CSV endpoints
-- Projects metadata fetched from GitHub API during build
-- Search runs entirely in browser (no API calls)
-- Site rebuilds hourly to fetch fresh data
-- No manual deployment steps required
+### Migration Summary
 
-### GitHub API Rate Limiting
+Migrated from Vercel to GitHub Pages (December 2024):
+- ✅ $240/year cost savings (free hosting)
+- ✅ 30%+ bundle size reduction
+- ✅ Fully static site with automated hourly rebuilds
+- ✅ Client-side search (Fuse.js)
+- ✅ Build-time data fetching
 
-The build process fetches project metadata from GitHub API:
-- **Unauthenticated**: 60 requests/hour
-- **Authenticated** (with GITHUB_TOKEN): 5000 requests/hour
-- The workflow automatically uses GITHUB_TOKEN for higher limits
-- Projects are fetched sequentially with 1-second delays to avoid rate limiting
+**See [docs/MIGRATION.md](docs/MIGRATION.md) for complete migration report.**

@@ -26,16 +26,6 @@ function transformCommunityQuestions(apiQuestions: any[]): Question[] {
   }));
 }
 
-function getFallbackData(): HomePageData {
-  return {
-    interviewQuestions: [],
-    scenarioQuestions: [],
-    liveQuestions: [],
-    communityQuestions: [],
-    jobs: [],
-  };
-}
-
 /**
  * Retry a fetch operation with exponential backoff
  * @param fn - Function to retry

@@ -4,10 +4,6 @@ const nextConfig: NextConfig = {
   // Static export configuration for GitHub Pages
   output: 'export',
   
-  // GitHub Pages deployment configuration
-  basePath: '/community-website',
-  assetPrefix: '/community-website/',
-  
   // Enable proper error checking in production
   typescript: {
     ignoreBuildErrors: process.env.NODE_ENV === 'development',
