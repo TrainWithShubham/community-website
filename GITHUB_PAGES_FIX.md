@@ -81,12 +81,14 @@ This should complete without errors and generate the `out/` directory.
 
 ## Deployment
 
-Simply push to the `gh-pages` branch:
+Simply push to the `main` branch:
 ```bash
 git add .
 git commit -m "fix: resolve GitHub API auth and static generation issues"
-git push origin gh-pages
+git push origin main
 ```
+
+**Note**: The workflow triggers on pushes to `main` branch, not `gh-pages`. The `gh-pages` branch is only used internally by GitHub Actions to store the deployed static files.
 
 The GitHub Actions workflow will automatically build and deploy.
 
