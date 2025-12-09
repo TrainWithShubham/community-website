@@ -4,7 +4,7 @@ on:
   # Trigger on push to main branch
   push:
     branches:
-      - gh-pages
+      - main
   
   # Trigger hourly to fetch fresh data from Google Sheets
   schedule:
