@@ -1,24 +1,29 @@
 ## TrainWithShubham Community Website
 
-A Next.js app that powers community learning: events, projects, jobs, and interview prep. Built for contributors to learn by shipping real features with clean engineering practices.
+A static Next.js site that powers community learning: events, projects, jobs, and interview prep. Deployed to GitHub Pages with automated hourly rebuilds to fetch fresh data.
 
 ### Key Features
-- Events: Google Calendar-backed events with server routes (`src/app/api/google-calendar/*`) and UI (`src/app/events`)
-- Projects: Advanced search, filters, README viewer (`src/features/projects`)
-- Interview Questions: Pagination and actions (`src/app/interview-questions`)
-- Shared UI: Shadcn-based components (`src/components/ui`)
-- Infra/Utils: Caching, rate-limiting, analytics (`src/lib`), external services (`src/services`)
-- AI: Genkit flows (`src/ai`)
+- **Events**: Community calendar with Google Calendar integration
+- **Projects**: GitHub-powered project catalog with README viewer and metadata (stars, forks, topics)
+- **Interview Questions**: Client-side fuzzy search with Fuse.js for DevOps/Cloud interview prep
+- **Jobs**: Community job board with latest opportunities
+- **Static Site**: Fully static export deployed to GitHub Pages (zero hosting cost)
+- **Automated Deployment**: GitHub Actions workflow rebuilds site hourly with fresh data
 
-### Architecture Map
+### Architecture
+- **Static Site Generation**: All pages pre-rendered at build time
+- **Client-Side Search**: Fuse.js for fuzzy search (no server required)
+- **Build-Time Data Fetching**: Google Sheets CSV data fetched during build
+- **GitHub API Integration**: Project metadata fetched at build time with Octokit
+- **Automated Deployment**: GitHub Actions workflow handles everything
+
 ```
 src/
-  app/                    # Next.js App Router pages & API routes
+  app/                    # Next.js App Router pages (static export)
   components/             # Shared components (ui, layout, animations)
-  features/projects/      # Project listing feature modules
-  lib/                    # Core libs: cache, env, analytics, sheets
-  services/               # External service wrappers
-  ai/                     # Genkit integration & flows
+  features/projects/      # Project listing with GitHub integration
+  lib/                    # Core libs: client-search, env, data-fetcher
+  services/               # External service wrappers (Google Sheets)
 ```
 
 ### Getting Started
@@ -28,10 +33,29 @@ npm run dev
 # visit http://localhost:3000
 ```
 
+### Deployment
+
+**Live Site**: `https://community.trainwithshubham.com`
+
+The site automatically deploys to GitHub Pages via GitHub Actions:
+- Push to `main` branch triggers immediate deployment
+- Hourly rebuilds fetch fresh data from Google Sheets
+- Manual deployment available via GitHub Actions UI
+
+**See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for complete deployment guide including custom domain setup.**
+
 ### Environment Variables
-- Server: `GOOGLE_SHEETS_*`, `GOOGLE_SA_*`, `GOOGLE_CALENDAR_ID`, `APP_BASE_URL`, `REVALIDATE_SECRET`, `GOOGLE_AI_API_KEY`
-- Client: `NEXT_PUBLIC_FIREBASE_*`
-- Add them in Vercel Project (Production/Preview) and locally in `.env.local`.
+
+**Required for Build** (GitHub Repository Secrets):
+- `GITHUB_TOKEN`: Automatically provided by GitHub Actions (for higher API rate limits)
+
+**Optional**:
+- Google Sheets URLs are configured with defaults in `src/lib/env.ts`
+- Add custom URLs as repository secrets if needed
+
+**Local Development**:
+- Create `.env.local` for any custom configuration
+- No authentication required (Firebase/Genkit removed)
 
 ### Contributing (Quickstart)
 - Create a branch from `main`
@@ -74,3 +98,20 @@ ci(repo): enforce semantic PR titles and commit messages
 - Performance budgets in CI
 
 See `CONTRIBUTING.md` for the full guide.
+
+
+### Documentation
+
+- **[Deployment Guide](docs/DEPLOYMENT.md)** - Complete deployment instructions, custom domain setup, troubleshooting
+- **[Migration Report](docs/MIGRATION.md)** - Vercel to GitHub Pages migration details, cost savings, architecture changes
+
+### Migration Summary
+
+Migrated from Vercel to GitHub Pages (December 2024):
+- ✅ $240/year cost savings (free hosting)
+- ✅ 30%+ bundle size reduction
+- ✅ Fully static site with automated hourly rebuilds
+- ✅ Client-side search (Fuse.js)
+- ✅ Build-time data fetching
+
+**See [docs/MIGRATION.md](docs/MIGRATION.md) for complete migration report.**

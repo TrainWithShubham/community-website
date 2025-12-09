@@ -5,7 +5,6 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { Toaster } from "@/components/ui/toaster"
-import { AuthProvider } from '@/contexts/auth-context';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { PerformanceMonitor, PerformanceErrorBoundary } from '@/components/performance-monitor';
 
@@ -118,8 +117,7 @@ export default function RootLayout({
         >
           <PerformanceErrorBoundary>
             <ErrorBoundary>
-              <AuthProvider>
-                <div className="flex min-h-screen flex-col">
+              <div className="flex min-h-screen flex-col">
                   {/* Skip Links for Accessibility */}
                   <a 
                     href="#main-content" 
@@ -141,7 +139,6 @@ export default function RootLayout({
                 </div>
                 <Toaster />
                 <PerformanceMonitor />
-              </AuthProvider>
             </ErrorBoundary>
           </PerformanceErrorBoundary>
         </ThemeProvider>

@@ -1,6 +1,5 @@
 import { InterviewQuestionsClient } from './interview-questions-client';
 import { getInterviewQuestions, getScenarioQuestions, getLiveQuestions, getCommunityQuestions } from '@/services/google-sheets';
-import { getCommunityQuestionsFromSheetsAPI } from '@/services/google-sheets-api';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -24,7 +23,7 @@ export default async function InterviewQuestionsPage() {
     getInterviewQuestions(),
     getScenarioQuestions(),
     getLiveQuestions(),
-    getCommunityQuestionsFromSheetsAPI(), // Use Google Sheets API instead of CSV
+    getCommunityQuestions(),
   ]);
 
   const questionsMap = {

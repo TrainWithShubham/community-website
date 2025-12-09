@@ -2,15 +2,6 @@ import { Metadata } from 'next';
 import { simpleProjectService } from '@/features/projects/lib/services/simple-project-service';
 import { DynamicProjectsClient } from '@/features/projects/components/ui/dynamic-components';
 
-interface ProjectsPageProps {
-  searchParams: Promise<{
-    q?: string;
-    difficulty?: string;
-    category?: string;
-    page?: string;
-  }>;
-}
-
 export const metadata: Metadata = {
   title: 'DevOps Projects | TWS Community Hub',
   description: 'Hands-on DevOps projects to master your skills. Explore real-world projects from TrainWithShubham repositories with advanced search and filtering.',
@@ -22,9 +13,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function ProjectsPage({ searchParams }: ProjectsPageProps) {
-  const params = await searchParams;
-
+export default async function ProjectsPage() {
   // Preload projects for better performance
   await simpleProjectService.preloadProjects();
   const projects = await simpleProjectService.getProjects();
@@ -51,16 +40,13 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
       <div className="container mx-auto px-4 pb-8">
         <DynamicProjectsClient
           projects={projects}
-          initialQuery={params.q}
+          initialQuery={undefined}
           initialFilters={{
-            difficulty: params.difficulty,
-            category: params.category,
+            difficulty: undefined,
+            category: undefined,
           }}
         />
       </div>
     </div>
   );
 }
-
-// Enable static generation for better performance
-export const revalidate = 900; // 15 minutes

@@ -1,22 +1,11 @@
 
 import { Question } from "@/data/questions";
-import { Contributor } from "@/data/leaderboard";
 import { Job } from "@/data/jobs";
 import { getSheetUrls } from "@/lib/env";
 import Papa from "papaparse";
 
 // Get sheet URLs from environment variables with type safety
 const sheetUrls = getSheetUrls();
-
-export type CommunityStats = {
-  activeMembers: string;
-  activeVolunteers: string;
-  successStories: string;
-  githubUrl: string;
-  linkedinUrl: string;
-  twitterUrl: string;
-  instagramUrl: string;
-}
 
 
 async function fetchCSV(url: string): Promise<string> {
@@ -252,49 +241,6 @@ export async function getCommunityQuestions(): Promise<Question[]> {
   }
 }
 
-export async function getLeaderboardData(): Promise<Contributor[]> {
-  try {
-    const csvText = await fetchCSV(sheetUrls.leaderboard);
-    
-    const parsed = Papa.parse(csvText, {
-      header: true,
-      skipEmptyLines: true,
-      dynamicTyping: false, // Keep as string to handle "pts" suffix
-    });
-
-    // Filter out rows that are empty or don't have a name.
-    const validData = parsed.data.filter((row: any) => {
-      const hasValidData = row.name && row.rank && row.contributions;
-      return hasValidData;
-    });
-
-    const processedData = validData.map((row: any) => {
-      // Clean up contributions field - remove "pts" suffix and any trailing characters
-      let contributions = row.contributions;
-      if (typeof contributions === 'string') {
-        // Remove "pts" suffix and any trailing characters like "%"
-        contributions = contributions.replace(/\s*pts\s*.*$/i, '').trim();
-      }
-      
-      // Convert to number, default to 0 if invalid
-      const contributionsNum = parseInt(contributions) || 0;
-      
-      const contributor = {
-        rank: parseInt(row.rank) || 0,
-        name: row.name || 'Anonymous',
-        contributions: contributionsNum,
-      };
-      
-      return contributor;
-    });
-
-    return processedData;
-
-  } catch (error) {
-    return [];
-  }
-}
-
 export async function getJobs(): Promise<Job[]> {
   try {
     const csvText = await fetchCSV(sheetUrls.jobs);
@@ -327,49 +273,4 @@ export async function getJobs(): Promise<Job[]> {
   }
 }
 
-export async function getCommunityStats(): Promise<CommunityStats> {
-    const defaultStats: CommunityStats = {
-        activeMembers: "5600+",
-        activeVolunteers: "4",
-        successStories: "2000+",
-        githubUrl: "https://github.com/trainwithshubham",
-        linkedinUrl: "https://www.linkedin.com/company/trainwithshubham/",
-        twitterUrl: "https://x.com/TrainWitShubham",
-        instagramUrl: "https://www.instagram.com/trainwithshubham__"
-    };
 
-    try {
-        const csvText = await fetchCSV(sheetUrls.communityStats);
-        
-        const parsed = Papa.parse(csvText, {
-            header: true,
-            skipEmptyLines: true,
-        });
-
-        if (parsed.errors.length > 0) {
-            return defaultStats;
-        }
-
-        // Get the first row of data (assuming single row)
-        const row = parsed.data[0] as any;
-        if (!row) {
-            return defaultStats;
-        }
-
-        // Map the actual CSV column names to our expected structure
-        const stats: CommunityStats = {
-            activeMembers: row.discord_members || defaultStats.activeMembers,
-            activeVolunteers: row.discord_volunteers || defaultStats.activeVolunteers,
-            successStories: row.success_stories || defaultStats.successStories,
-            githubUrl: row.github_url || defaultStats.githubUrl,
-            linkedinUrl: row.linkedin_url || defaultStats.linkedinUrl,
-            twitterUrl: row.twitter_url || defaultStats.twitterUrl,
-            instagramUrl: row.instagram_url || defaultStats.instagramUrl
-        };
-
-        return stats;
-
-    } catch (error) {
-        return defaultStats;
-    }
-}
