@@ -2,7 +2,23 @@
 
 ## Issues Fixed
 
-### 1. GitHub API 401 Authentication Errors
+### 1. Missing Environment Configuration
+**Problem**: The deployment job was missing the required `environment` configuration, causing the error:
+```
+Missing environment. Ensure your workflow's deployment job has an environment.
+```
+
+**Solution**: Added the `environment` block to the job configuration:
+
+```yaml
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+```
+
+### 2. GitHub API 401 Authentication Errors
 **Problem**: The workflow was using `secrets.GH_TOKEN` which doesn't exist by default.
 
 **Solution**: Changed to use `secrets.GITHUB_TOKEN` which is automatically provided by GitHub Actions with appropriate permissions.
@@ -15,7 +31,7 @@ GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-### 2. Static Generation Error (Dynamic Rendering)
+### 3. Static Generation Error (Dynamic Rendering)
 **Problem**: Using `cache: 'no-store'` in fetch calls prevented Next.js from generating static pages, causing the error:
 ```
 Route /projects with `dynamic = "error"` couldn't be rendered statically because it used `revalidate: 0`
