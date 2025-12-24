@@ -91,6 +91,24 @@
       "difficulty": "intermediate",
       "estimatedTime": "2-3 hours",
       "featured": true
+    },
+    {
+      "id": "aws-devops",
+      "name": "AWS DevOps",
+      "url": "https://github.com/Amitabh-DevOps/aws-devops",
+      "category": "Cloud",
+      "difficulty": "beginner",
+      "estimatedTime": "1-2 hours",
+      "featured": true
+    },
+    {
+      "id": "e-commerce",
+      "name": "ShopHub E-commerce Application",
+      "url": "https://github.com/Amitabh-DevOps/E-commerce",
+      "category": "Kubernetes",
+      "difficulty": "advanced",
+      "estimatedTime": "4-5 hours",
+      "featured": true
     }
   ]
 }
