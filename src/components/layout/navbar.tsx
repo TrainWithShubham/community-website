@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Github, Menu, Home, FileQuestion, Briefcase, Terminal, Code, Calendar } from 'lucide-react';
+import { Github, Menu, Home, FileQuestion, Briefcase, Terminal, Code, Calendar, Trophy } from 'lucide-react';
 import { useState } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '../ui/separator';
@@ -22,6 +22,7 @@ const navLinks: NavLink[] = [
   { href: '/projects', label: 'Projects', icon: Code },
   { href: '/interview-questions', label: 'Interview Questions', icon: FileQuestion },
   { href: '/jobs', label: 'Jobs', icon: Briefcase },
+  { href: '/heroes', label: 'Heroes', icon: Trophy },
 ];
 
 export function Navbar() {
