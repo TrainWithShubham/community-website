@@ -151,6 +151,19 @@ export const heroes: Hero[] = [
     socialLinks: {
       linkedin: 'https://www.linkedin.com/in/muhammadabdullahabrar/',
     }
+  },
+  {
+    id: 'madhup-pandey',
+    name: 'Madhup Pandey',
+    title: 'DevOps Engineer',
+    photo: '/heroes/madhup-pandey.jpeg',
+    location: 'Pune, Maharashtra',
+    heroSince: '2026-01-15',
+    about: 'DevOps Engineer| GitLab PSE Certified | AWS | Kubernetes | CI/CD | Terraform | Jenkins | GitLab | Site Reliability | Helping Companies Ship Faster with Scalable & Secure Cloud Infrastructure',
+    tier: 'devops',
+    socialLinks: {
+      linkedin: 'https://www.linkedin.com/in/madhup-pandey/',
+    }
   }
   // More heroes can be added here
 ];
