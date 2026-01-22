@@ -80,7 +80,7 @@
     "cz-git": "^1.12.0",
     "eslint": "9.39.1",
     "eslint-config-next": "16.0.8",
-    "fast-check": "^3.24.3",
+    "fast-check": "^3.23.2",
     "husky": "^9.1.7",
     "jsdom": "^26.0.0",
     "postcss": "^8",
