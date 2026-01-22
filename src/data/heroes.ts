@@ -129,7 +129,7 @@ export const heroes: Hero[] = [
     id: 'kislay-srivastava',
     name: 'Kisalay Srivastava',
     title: 'Full Stack + DevOps Engineer',
-    photo: '/heroes/kisalaya-srivastava.jpeg',
+    photo: '/heroes/kisalay-srivastava.jpeg',
     location: 'Pune, Maharashtra',
     heroSince: '2026-01-15',
     about: 'Full Stack + DevOps Engineer | Ex-Data Scientist | Java, Spring Boot, React, Node.js | AWS/GCP/Azure | Docker | Kubernetes | CI/CD | Terraform | Oracle Cloud Certified | NLP, ML, System Design',
