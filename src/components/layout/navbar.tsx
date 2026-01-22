@@ -48,24 +48,29 @@ export function Navbar() {
     </>
   );
 
+  const Logo = ({ className = "", onClick }: { className?: string; onClick?: () => void }) => (
+    <Link 
+      href="/" 
+      className={`font-bold flex items-center space-x-2 ${className}`}
+      onClick={onClick}
+      aria-label="TWS Community Hub - Home"
+    >
+      <Terminal className="h-6 w-6 text-primary" aria-hidden="true" />
+      <span className={className.includes('text-sm') ? 'text-sm' : ''}>
+        <span className="text-primary">TrainWithShubham</span>
+        <span className="text-accent">@</span>
+        <span className="text-green-500">Community</span>
+        <span>:~#</span>
+      </span>
+    </Link>
+  );
+
 
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
-        <Link 
-          href="/" 
-          className="mr-auto flex items-center space-x-2"
-          aria-label="TWS Community Hub - Home"
-        >
-          <Terminal className="h-6 w-6 text-primary" aria-hidden="true" />
-          <span className="font-bold sm:inline-block">
-            <span className="text-primary">TrainWithShubham</span>
-            <span className="text-accent">@</span>
-            <span className="text-green-500">Community</span>
-            <span>:~#</span>
-          </span>
-        </Link>
+        <Logo className="mr-auto sm:inline-block" />
         <nav 
           id="navigation"
           className="hidden md:flex items-center gap-1 text-sm"
@@ -97,20 +102,7 @@ export function Navbar() {
               >
                 <div className="p-4">
                   <div className="flex justify-between items-center mb-6">
-                     <Link 
-                       href="/" 
-                       className="font-bold flex items-center space-x-2" 
-                       onClick={() => setIsMobileMenuOpen(false)}
-                       aria-label="TWS Community Hub - Home"
-                     >
-                        <Terminal className="h-6 w-6 text-primary" aria-hidden="true" />
-                        <span className="text-sm">
-                            <span className="text-primary">TrainWithShubham</span>
-                            <span className="text-accent">@</span>
-                            <span className="text-green-500">Community</span>
-                            <span>:~#</span>
-                        </span>
-                      </Link>
+                    <Logo className="text-sm" onClick={() => setIsMobileMenuOpen(false)} />
                   </div>
                   <div className="flex flex-col gap-2">
                     {renderNavLinks(true)}
