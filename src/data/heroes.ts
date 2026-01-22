@@ -124,6 +124,33 @@ export const heroes: Hero[] = [
       github: 'https://github.com/anas',
       linkedin: 'https://www.linkedin.com/in/muhammad-anas-a35b1a334/'
     }
+  },
+  {
+    id: 'kislay-srivastava',
+    name: 'Kisalay Srivastava',
+    title: 'Full Stack + DevOps Engineer',
+    photo: '/heroes/kisalaya-srivastava.jpeg',
+    location: 'Pune, Maharashtra',
+    heroSince: '2026-01-15',
+    about: 'Full Stack + DevOps Engineer | Ex-Data Scientist | Java, Spring Boot, React, Node.js | AWS/GCP/Azure | Docker | Kubernetes | CI/CD | Terraform | Oracle Cloud Certified | NLP, ML, System Design',
+    tier: 'devops',
+    socialLinks: {
+      linkedin: 'https://www.linkedin.com/in/kisalay-srivastava-46b243196/',
+      blog: 'https://medium.com/@kisalaykisu'
+    }
+  },
+  {
+    id: 'abdullah-abrar',
+    name: 'Muhammad Abdullah Abrar',
+    title: 'DevOps Engineer',
+    photo: '/heroes/abdullah-abrar.jpeg',
+    location: 'Islamabad, Pakistan',
+    heroSince: '2026-01-15',
+    about: 'DevOps Engineer | Cloud Engineer | Deploying Scalable Production-ready Applications | CI/CD | Kubernetes | Python | Linux',
+    tier: 'devops',
+    socialLinks: {
+      linkedin: 'https://www.linkedin.com/in/muhammadabdullahabrar/',
+    }
   }
   // More heroes can be added here
 ];
