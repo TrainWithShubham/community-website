@@ -121,7 +121,7 @@ export const heroes: Hero[] = [
     about: 'DevOps Engineer @ Zynex Solutions | Focus on AI-Driven Automation & Cloud Scalability | Continuous Delivery, Containerization & Cloud Native Ops',
     tier: 'automation',
     socialLinks: {
-      github: 'https://github.com/anas',
+      github: 'https://github.com/yo-its-anas',
       linkedin: 'https://www.linkedin.com/in/muhammad-anas-a35b1a334/'
     }
   },
