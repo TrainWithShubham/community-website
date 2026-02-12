@@ -3,6 +3,8 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   // Static export configuration for GitHub Pages
   output: 'export',
+  basePath: '/community-website',      // GitHub Pages repo path
+  assetPrefix: '/community-website/',   // Asset URL prefix
   
   // Enable proper error checking in production
   typescript: {
