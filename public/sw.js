@@ -1,8 +1,7 @@
-const CACHE_NAME = 'tws-community-v1';
+const CACHE_NAME = 'tws-community-v2';
 const urlsToCache = [
   '/',
   '/jobs',
-  '/interview-questions',
   '/favicon.ico',
   '/favicon.svg',
   '/manifest.json',
@@ -20,13 +19,24 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Fetch event - serve from cache when offline
+// Fetch event - network first, then cache fallback
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request)
+    fetch(event.request)
       .then((response) => {
-        // Return cached version or fetch from network
-        return response || fetch(event.request);
+        // Clone the response before caching
+        const responseToCache = response.clone();
+        
+        // Cache the response for offline use
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseToCache);
+        });
+        
+        return response;
+      })
+      .catch(() => {
+        // If network fails, try cache
+        return caches.match(event.request);
       })
   );
 });

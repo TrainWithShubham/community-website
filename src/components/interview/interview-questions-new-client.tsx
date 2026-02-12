@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import { Search, AlertCircle, Download, RefreshCw, Loader2 } from 'lucide-react';

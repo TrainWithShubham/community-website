@@ -13,6 +13,10 @@ on:
   # Allow manual trigger from GitHub UI
   workflow_dispatch:
 
+  # Trigger on interview-questions repo update
+  repository_dispatch:
+    types: [interview-questions-updated]
+
 # Sets permissions for GitHub Pages deployment
 permissions:
   contents: read
