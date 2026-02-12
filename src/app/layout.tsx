@@ -56,18 +56,18 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-      { url: '/favicon-48x48.png', sizes: '48x48', type: 'image/png' },
+      { url: '/community-website/favicon.ico', sizes: 'any' },
+      { url: '/community-website/favicon.svg', type: 'image/svg+xml' },
+      { url: '/community-website/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/community-website/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/community-website/favicon-48x48.png', sizes: '48x48', type: 'image/png' },
     ],
     apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+      { url: '/community-website/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
-    shortcut: '/favicon.ico',
+    shortcut: '/community-website/favicon.ico',
   },
-  manifest: '/manifest.json',
+  manifest: '/community-website/manifest.json',
   category: 'technology',
   classification: 'Community Platform',
 };
@@ -91,23 +91,6 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="TWS Community" />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js')
-                    .then(function(registration) {
-                      console.log('SW registered: ', registration);
-                    })
-                    .catch(function(registrationError) {
-                      console.log('SW registration failed: ', registrationError);
-                    });
-                });
-              }
-            `,
-          }}
-        />
       </head>
       <body className="font-code antialiased" suppressHydrationWarning>
         <ThemeProvider
