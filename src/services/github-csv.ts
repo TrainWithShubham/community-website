@@ -17,7 +17,7 @@ export interface InterviewQuestion {
 
 // GitHub repository for interview questions
 // Default to TrainWithShubham for production
-const GITHUB_OWNER = process.env.NEXT_PUBLIC_INTERVIEW_REPO_OWNER || 'arcadep0156';
+const GITHUB_OWNER = process.env.NEXT_PUBLIC_INTERVIEW_REPO_OWNER || 'TrainWithShubham';
 const GITHUB_REPO = process.env.NEXT_PUBLIC_INTERVIEW_REPO_NAME || 'interview-questions';
 const GITHUB_BRANCH = process.env.NEXT_PUBLIC_INTERVIEW_REPO_BRANCH || 'main';
 
@@ -30,6 +30,7 @@ const CSV_FILES = {
   // Add more categories as they become available
   // cloud: `${GITHUB_RAW_BASE}/cloud/cloud-interview-questions.csv`,
   // aws: `${GITHUB_RAW_BASE}/aws/aws-interview-questions.csv`,
+  
 };
 
 /**

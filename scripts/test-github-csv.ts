@@ -1,5 +1,5 @@
 async function testGitHubCSV() {
-  const CSV_URL = 'https://raw.githubusercontent.com/arcadep0156/interview-questions/main/devops/interview-questions.csv';
+  const CSV_URL = 'https://raw.githubusercontent.com/TrainWithShubham/interview-questions/main/devops/interview-questions.csv';
 
   try {
     const res = await fetch(CSV_URL);

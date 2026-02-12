@@ -1,7 +1,8 @@
-const CACHE_NAME = 'tws-community-v2';
+const CACHE_NAME = 'tws-community-v3';
 const urlsToCache = [
   '/',
   '/jobs',
+  '/interview-questions',
   '/favicon.ico',
   '/favicon.svg',
   '/manifest.json',
