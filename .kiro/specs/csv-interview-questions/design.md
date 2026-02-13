@@ -1,98 +1,87 @@
-# CSV-Based Interview Questions - Technical Design
+# Design Document: GitHub CSV Migration
 
-## System Architecture
+## Overview
+
+This design document outlines the technical approach for completing the migration from Google Sheets to GitHub CSV for the interview questions system. The GitHub CSV service is already implemented and actively used by the interview questions page. This migration focuses on removing legacy Google Sheets code, updating the data fetcher for the homepage, and cleaning up environment configuration while preserving the Jobs feature's Google Sheets integration.
+
+### Current State
+
+- **GitHub CSV Service**: Fully implemented at `src/services/github-csv.ts` with `getAllInterviewQuestions()` and `getFilterOptions()`
+- **Interview Questions Page**: Already using GitHub CSV service (`src/app/interview-questions/page.tsx`)
+- **Google Sheets Service**: Contains legacy interview question functions that are no longer used by the main page but may be used by the homepage data fetcher
+- **Data Fetcher**: Currently imports and calls Google Sheets functions for homepage data
+- **Environment Config**: Contains sheet URLs for interview questions that are no longer needed
+
+### Migration Goals
+
+1. Remove all Google Sheets interview question functions from `src/services/google-sheets.ts`
+2. Update `src/lib/data-fetcher.ts` to use GitHub CSV service
+3. Clean up environment variables in `src/lib/env.ts`
+4. Remove or update static fallback data in `src/data/questions.ts`
+5. Preserve Jobs integration with Google Sheets (out of scope for this migration)
+
+## Architecture
+
+### Service Layer Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    GitHub Repositories                          │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  interview-questions Repository (CSV Source)                    │
-│  ├── devops/interview-questions.csv (5 questions)               │
-│  ├── .github/workflows/trigger-deploy.yml                       │
-│  └── README.md                                                  │
-│                                                                 │
-│                           │                                     │
-│                           │ PR Merge                            │
-│                           ▼                                     │
-│                                                                 │
-│  ┌─────────────────────────────────────────────────┐            │
-│  │ GitHub Actions: trigger-deploy.yml              │            │
-│  │ - Triggered on CSV file changes                 │            │
-│  │ - Sends repository_dispatch webhook             │            │
-│  │ - Event type: interview-questions-updated       │            │
-│  └─────────────────────────────────────────────────┘            │
-│                           │                                     │
-│                           │ Webhook                             │
-│                           ▼                                     │
-│                                                                 │
-│  community-website Repository (Next.js App)                     │
-│  ├── src/app/interview-questions/page.tsx                       │
-│  ├── src/components/interview/                                  │
-│  │   ├── interview-questions-new-client.tsx                     │
-│  │   ├── interview-question-card.tsx                            │
-│  │   └── question-filters.tsx                                   │
-│  ├── src/services/github-csv.ts                                 │
-│  └── .github/workflows/deploy.yml                               │
-│                                                                 │
-│                           │                                     │
-│                           │ Rebuild & Deploy                    │
-│                           ▼                                     │
-│                                                                 |
-│  ┌─────────────────────────────────────────────────┐            │
-│  │ GitHub Actions: deploy.yml                      │            │
-│  │ - Build Next.js (static export)                 │            │
-│  │ - Deploy to GitHub Pages                        │            │
-│  │ - Time: ~2-3 minutes                            │            │
-│  └─────────────────────────────────────────────────┘            │
-│                           │                                     │
-└───────────────────────────┼─────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────────┐
-│          GitHub Pages (Production)                               │
-│  https://<username>.github.io/community-website/                │
-│                                                                   │
-│  User visits → Static HTML loads → Client-side fetch            │
-│                                                                   │
-│  fetch(https://raw.githubusercontent.com/<username>/            │
-│        interview-questions/main/devops/                          │
-│         interview-questions.csv)                           │
-│                           │                                       │
-│                           ▼                                       │
-│  Parse CSV → Display questions → Enable search/filter           │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                     Application Layer                        │
+│  ┌──────────────────────┐      ┌──────────────────────┐    │
+│  │ Interview Questions  │      │     Homepage         │    │
+│  │       Page           │      │   (Data Fetcher)     │    │
+│  └──────────┬───────────┘      └──────────┬───────────┘    │
+└─────────────┼──────────────────────────────┼────────────────┘
+              │                              │
+              │                              │
+┌─────────────┼──────────────────────────────┼────────────────┐
+│             │      Service Layer           │                │
+│             ▼                              ▼                │
+│  ┌─────────────────────┐      ┌─────────────────────┐      │
+│  │  GitHub CSV Service │      │ Google Sheets       │      │
+│  │                     │      │ Service (Jobs only) │      │
+│  │ - getAllInterview   │      │                     │      │
+│  │   Questions()       │      │ - getJobs()         │      │
+│  │ - getFilterOptions()│      │                     │      │
+│  └─────────┬───────────┘      └─────────┬───────────┘      │
+└────────────┼──────────────────────────────┼─────────────────┘
+             │                              │
+             ▼                              ▼
+┌────────────────────────────────────────────────────────────┐
+│                    External Data Sources                    │
+│  ┌──────────────────┐          ┌──────────────────┐        │
+│  │ GitHub Repository│          │  Google Sheets   │        │
+│  │  (CSV Files)     │          │   (Jobs Data)    │        │
+│  └──────────────────┘          └──────────────────┘        │
+└────────────────────────────────────────────────────────────┘
 ```
 
-## Component Architecture
+### Data Flow
 
-### Page Component
-**File**: `src/app/interview-questions/page.tsx`
-- **Type**: Server Component (static export)
-- **Purpose**: Layout and metadata
-- **Data**: Passes empty initial state to client component
-- **Rendering**: Static HTML at build time
+**Before Migration (Current State for Homepage):**
+```
+Homepage → Data Fetcher → Google Sheets Service → Google Sheets API
+```
 
-### Client Component
-**File**: `src/components/interview/interview-questions-new-client.tsx`
-- **Type**: Client Component (`'use client'`)
-- **State Management**:
-  - `questions`: Array of InterviewQuestion objects
-  - `filterOptions`: Available filter values (companies, years, etc.)
-  - `isLoading`: Initial load state
-  - `isRefreshing`: Manual refresh state
-  - `searchQuery`: Search input value
-  - `filters`: Active filter selections
-- **Effects**:
-  - `useEffect`: Fetch questions on mount if not provided
-- **Computed Values**:
-  - `fuse`: Memoized Fuse.js instance for search
-  - `filteredQuestions`: Memoized filtered and searched results
+**After Migration:**
+```
+Homepage → Data Fetcher → GitHub CSV Service → GitHub Raw Content
+```
 
-### Service Layer
-**File**: `src/services/github-csv.ts`
+**Jobs Flow (Unchanged):**
+```
+Jobs Page → Google Sheets Service → Google Sheets API
+```
+
+## Components and Interfaces
+
+### 1. GitHub CSV Service (`src/services/github-csv.ts`)
+
+**Status**: Already implemented, no changes needed
+
+**Interface**:
 ```typescript
-export interface InterviewQuestion {
+interface InterviewQuestion {
   company: string;
   year: string;
   contributor: string;
@@ -102,286 +91,537 @@ export interface InterviewQuestion {
   question: string;
 }
 
-// Fetch and parse CSV
-export async function getAllInterviewQuestions(): Promise<InterviewQuestion[]>
+// Fetch all interview questions from GitHub CSV
+function getAllInterviewQuestions(): Promise<InterviewQuestion[]>
 
-// Extract unique filter options
-export function getFilterOptions(questions: InterviewQuestion[]): FilterOptions
-```
-
-## Data Flow
-
-### Initial Page Load
-```
-1. User visits /interview-questions
-2. Static HTML loads (from build time)
-3. Client component mounts with empty questions array
-4. useEffect triggers → loadQuestions()
-5. Fetch CSV from GitHub raw URL
-6. Parse CSV with Papa Parse
-7. Update state → questions, filterOptions
-8. Loading state → false
-9. Render question cards
-```
-
-### Manual Refresh
-```
-1. User clicks "Refresh" button
-2. isRefreshing → true (spinner starts)
-3. Fetch CSV from GitHub raw URL
-4. Wait minimum 1 second (UX delay)
-5. Parse CSV with Papa Parse
-6. Update state → questions, filterOptions
-7. isRefreshing → false (spinner stops)
-8. Re-render with new data
-```
-
-### Search/Filter
-```
-1. User types in search box OR selects filter
-2. State updates (searchQuery or filters)
-3. useMemo recalculates filteredQuestions
-4. Apply filters first (company, year, role, etc.)
-5. Apply fuzzy search if query exists
-6. Re-render filtered results
-```
-
-### Export CSV
-```
-1. User clicks "Export CSV" button
-2. Convert filteredQuestions to CSV string
-3. Create Blob with text/csv MIME type
-4. Create download link
-5. Trigger download
-6. Clean up URL object
-```
-
-## GitHub Actions Workflows
-
-### trigger-deploy.yml (interview-questions repo)
-```yaml
-name: Trigger Community Website Rebuild
-
-on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'devops/**'
-      - '**.csv'
-
-jobs:
-  trigger-rebuild:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger Community Website Rebuild
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          token: ${{ secrets.TRIGGER_TOKEN }}
-          repository: <username>/community-website
-          event-type: interview-questions-updated
-          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
-```
-
-**Secrets Required**:
-- `TRIGGER_TOKEN`: Personal Access Token with `repo` and `workflow` scopes
-
-### deploy.yml (community-website repo)
-```yaml
-name: Deploy to GitHub Pages
-
-on:
-  push:
-    branches:
-      - main
-  schedule:
-    - cron: '0 * * * *'  # Every hour
-  workflow_dispatch:
-  repository_dispatch:
-    types: [interview-questions-updated]
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - Checkout repository
-      - Setup Node.js 20
-      - Install dependencies (npm ci)
-      - Build Next.js (npm run build)
-      - Upload artifact
-      - Deploy to GitHub Pages
-```
-
-**Configuration**:
-- GitHub Pages enabled
-- Source: GitHub Actions
-- Branch: Not applicable (Actions)
-
-## CSS Customizations
-
-### Slow Spin Animation
-**File**: `src/app/globals.css`
-```css
-@keyframes spin-slow {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin-slow {
-  animation: spin-slow 2s linear infinite;
+// Extract unique filter values from questions
+function getFilterOptions(questions: InterviewQuestion[]): {
+  companies: string[];
+  years: string[];
+  roles: string[];
+  experiences: string[];
+  topics: string[];
+  contributors: string[];
 }
 ```
 
-**Usage**: Applied to RefreshCw icon when `isRefreshing` is true
+**Implementation Details**:
+- Fetches CSV from GitHub raw URL: `https://raw.githubusercontent.com/{owner}/{repo}/{branch}/devops/interview-questions.csv`
+- Uses Papa Parse library for CSV parsing
+- Includes 15-second timeout for requests
+- Returns empty array on errors (graceful degradation)
+- Supports future expansion to multiple CSV files (cloud, AWS, etc.)
 
-## Environment Configuration
+### 2. Google Sheets Service (`src/services/google-sheets.ts`)
 
-### next.config.ts
+**Changes Required**: Remove interview question functions, keep Jobs functionality
+
+**Functions to Remove**:
+- `getInterviewQuestions()` - Standard interview questions
+- `getScenarioQuestions()` - Scenario-based questions
+- `getLiveQuestions()` - Live interview questions
+- `getCommunityQuestions()` - Community contributed questions
+
+**Functions to Preserve**:
+- `getJobs()` - Job listings (used by Jobs page)
+- `fetchCSV()` - Helper function for fetching CSV from Google Sheets (if used by getJobs)
+- `formatAnswerSection()` - Helper function for formatting (if used by getJobs)
+
+**Updated Interface**:
 ```typescript
-const nextConfig: NextConfig = {
-  output: 'export',                    // Static export for GitHub Pages
-//   basePath: '/community-website',      // GitHub Pages repo path
-//   assetPrefix: '/community-website',   // Asset URL prefix
-  images: {
-    unoptimized: true,                 // Required for static export
-  },
+// Only Jobs-related functionality remains
+function getJobs(): Promise<Job[]>
+
+// Helper functions (only if used by getJobs)
+function fetchCSV(url: string): Promise<string>
+```
+
+### 3. Data Fetcher (`src/lib/data-fetcher.ts`)
+
+**Changes Required**: Replace Google Sheets imports with GitHub CSV imports
+
+**Current Implementation**:
+```typescript
+import { 
+  getInterviewQuestions, 
+  getScenarioQuestions, 
+  getLiveQuestions, 
+  getCommunityQuestions,
+  getJobs,
+} from '@/services/google-sheets';
+
+// Fetches all question types separately
+const [interviewQuestions, scenarioQuestions, liveQuestions, communityQuestions, jobs] = 
+  await Promise.allSettled([...]);
+```
+
+**New Implementation**:
+```typescript
+import { getAllInterviewQuestions } from '@/services/github-csv';
+import { getJobs } from '@/services/google-sheets';
+
+// Fetch consolidated interview questions from GitHub CSV
+const [allInterviewQuestions, jobs] = await Promise.allSettled([
+  retryFetch(() => getAllInterviewQuestions()),
+  retryFetch(() => getJobs()),
+]);
+```
+
+**Updated Interface**:
+```typescript
+interface HomePageData {
+  interviewQuestions: InterviewQuestion[]; // Consolidated from GitHub CSV
+  jobs: Job[];
+}
+
+function getHomePageData(): Promise<HomePageData>
+```
+
+**Key Changes**:
+- Consolidate all interview question types into single `interviewQuestions` array
+- Remove separate fields for scenario, live, and community questions
+- Simplify Promise.allSettled to only fetch two data sources
+- Update return type to reflect new structure
+
+### 4. Environment Configuration (`src/lib/env.ts`)
+
+**Changes Required**: Remove interview question sheet URLs, keep Jobs URL
+
+**Environment Variables to Remove**:
+- `SCENARIO_SHEET_URL`
+- `INTERVIEW_SHEET_URL`
+- `LIVE_SHEET_URL`
+- `COMMUNITY_SHEET_URL`
+
+**Environment Variables to Preserve**:
+- `JOBS_SHEET_URL`
+
+**New GitHub CSV Environment Variables** (already exist):
+- `NEXT_PUBLIC_INTERVIEW_REPO_OWNER` (default: 'TrainWithShubham')
+- `NEXT_PUBLIC_INTERVIEW_REPO_NAME` (default: 'interview-questions')
+- `NEXT_PUBLIC_INTERVIEW_REPO_BRANCH` (default: 'main')
+
+**Updated Schema**:
+```typescript
+const envSchema = z.object({
+  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  
+  // Google Sheets - Jobs only
+  JOBS_SHEET_URL: z.string().url().min(1).default(DEFAULT_JOBS_SHEET_URL),
+  
+  // GitHub CSV - Interview Questions (public, no auth needed)
+  NEXT_PUBLIC_INTERVIEW_REPO_OWNER: z.string().default('TrainWithShubham'),
+  NEXT_PUBLIC_INTERVIEW_REPO_NAME: z.string().default('interview-questions'),
+  NEXT_PUBLIC_INTERVIEW_REPO_BRANCH: z.string().default('main'),
+});
+
+function getSheetUrls() {
+  return {
+    jobs: env.JOBS_SHEET_URL,
+  };
+}
+```
+
+### 5. Static Fallback Data (`src/data/questions.ts`)
+
+**Changes Required**: Evaluate usage and remove or deprecate
+
+**Current State**:
+- Contains hardcoded `Question` type
+- Contains `allQuestions` array with 4 sample questions
+- Contains empty `communityQuestions` array
+- Imported by `google-sheets.ts` for the `Question` type
+
+**Decision Logic**:
+1. Check if `Question` type is used elsewhere
+2. Check if `allQuestions` or `communityQuestions` arrays are referenced
+3. If only type is used, move type to a shared location or inline it
+4. If arrays are not used, remove the entire file
+5. If arrays are used, add deprecation comment
+
+**Recommended Action**:
+- The `Question` type from `src/data/questions.ts` has a different structure than `InterviewQuestion` from GitHub CSV
+- `Question` has: `question`, `answer?`, `author?`
+- `InterviewQuestion` has: `company`, `year`, `contributor`, `role`, `experience`, `topic`, `question`
+- These are incompatible types for different purposes
+- If `Question` type is still needed for other features, keep it
+- If not, remove the file entirely
+
+## Data Models
+
+### InterviewQuestion (GitHub CSV)
+
+```typescript
+interface InterviewQuestion {
+  company: string;      // Company where question was asked (e.g., "Google", "Amazon")
+  year: string;         // Year question was asked (e.g., "2024", "2023")
+  contributor: string;  // Person who contributed the question (e.g., "John Doe", "Anonymous")
+  role: string;         // Job role (e.g., "DevOps Engineer", "SRE")
+  experience: string;   // Experience level (e.g., "Junior", "Senior", "Mid-level")
+  topic: string;        // Technical topic (e.g., "Docker", "Kubernetes", "CI/CD")
+  question: string;     // The actual interview question text
+}
+```
+
+**Validation Rules**:
+- All fields are required (enforced by CSV parsing)
+- Empty or missing values default to sensible fallbacks:
+  - `company`: "Unknown"
+  - `year`: "N/A"
+  - `contributor`: "Anonymous"
+  - `role`: "N/A"
+  - `experience`: "N/A"
+  - `topic`: "General"
+  - `question`: Must not be empty (filtered out if empty)
+
+### Question (Legacy Type)
+
+```typescript
+type Question = {
+  question: string;
+  answer?: string;
+  author?: string;
 };
 ```
 
-### Metadata Updates
-All favicon and manifest URLs prefixed with `/community-website/` for GitHub Pages compatibility.
+**Usage**: 
+- Used by Google Sheets service for formatted Q&A with answers
+- Different structure from `InterviewQuestion`
+- May be used by components that display questions with answers
+- Should be evaluated for continued necessity
 
-## Performance Optimizations
+### Job (Unchanged)
 
-### Client-Side Fetching
-- **Why**: Static export doesn't support ISR (revalidate)
-- **Benefit**: No build-time network dependency
-- **Trade-off**: Initial load requires client-side fetch
-
-### Memoization
-- **fuse**: Recreated only when questions array changes
-- **filteredQuestions**: Recalculated only when questions, filters, or search changes
-- **Benefit**: Prevents unnecessary re-computation
-
-### Minimum Refresh Delay
-- **Duration**: 1 second
-- **Why**: Ensures spinner is visible even on fast connections
-- **Implementation**: `Promise.all([fetch, setTimeout])`
-
-## Error Handling
-
-### Fetch Errors
 ```typescript
-try {
-  const fetchedQuestions = await getAllInterviewQuestions();
-  setQuestions(fetchedQuestions);
-} catch (error) {
-  console.error('Failed to load questions:', error);
-  // Questions remain empty, user sees "No Results Found" alert
+interface Job {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  experience: string;
+  type: string;
+  postedDate: string;
+  applyLink: string;
 }
 ```
 
-### Empty State
-- **Condition**: `filteredQuestions.length === 0`
-- **Display**: Alert with message (search vs. filter)
-- **Action**: Suggests clearing filters or trying different search
+**Note**: Jobs data model remains unchanged as it continues using Google Sheets.
 
-## Security Considerations
+### HomePageData (Updated)
 
-### Public Data
-- CSV files are public (GitHub raw URLs)
-- No sensitive data in questions
-- No authentication required
+**Before**:
+```typescript
+interface HomePageData {
+  interviewQuestions: Question[];
+  scenarioQuestions: Question[];
+  liveQuestions: Question[];
+  communityQuestions: Question[];
+  jobs: Job[];
+}
+```
 
-### GitHub Token
-- PAT stored as GitHub Secret
-- Scopes: `repo`, `workflow`
-- Only accessible to GitHub Actions
-- Never exposed in client code
+**After**:
+```typescript
+interface HomePageData {
+  interviewQuestions: InterviewQuestion[];  // Consolidated from GitHub CSV
+  jobs: Job[];
+}
+```
 
-### CORS
-- GitHub raw URLs allow cross-origin requests
-- No CORS proxy needed
-- Works from any domain
+**Migration Impact**:
+- Homepage components must be updated to handle consolidated interview questions
+- Components expecting separate question types need refactoring
+- Filter and display logic should work with `InterviewQuestion` structure
+
+
+## Correctness Properties
+
+A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.
+
+### Property Reflection
+
+After analyzing all acceptance criteria, I identified the following testable properties and examples:
+
+**Testable Items**:
+- 1.5, 2.5: Jobs functionality preservation (can be combined)
+- 2.3: Data structure consolidation
+- 2.4: Error handling
+- 3.5, 3.6, 3.7: Environment configuration (can be combined)
+- 6.1, 6.3, 6.4, 6.5, 6.6: Interview questions page functionality (integration tests)
+- 6.2: Field display (property)
+- 7.1: Data schema validation (property)
+- 7.3, 7.4: UI compatibility (integration tests)
+
+**Redundancy Analysis**:
+- Properties 1.5 and 2.5 both test that Jobs functionality is preserved - these can be combined into one comprehensive test
+- Properties 3.5, 3.6, and 3.7 all test environment configuration - these can be combined into one test
+- Properties 6.1, 6.3, 6.4, 6.5, 6.6 are all integration tests for the interview questions page - these can be grouped
+- Properties 7.3 and 7.4 both test UI compatibility - these can be combined
+
+**Final Properties**:
+After reflection, we have 2 universal properties and several integration test examples.
+
+### Universal Properties
+
+**Property 1: Interview Question Schema Completeness**
+
+*For any* interview question returned by `getAllInterviewQuestions()`, the question object must contain all required fields: company, year, contributor, role, experience, topic, and question.
+
+**Validates: Requirements 7.1**
+
+**Rationale**: This property ensures data integrity across all interview questions fetched from GitHub CSV. Every question must have the complete set of fields to support filtering, display, and export functionality.
+
+**Property 2: Displayed Questions Include All Fields**
+
+*For any* interview question displayed in the UI, the rendered output must include visible representations of all fields: company, year, role, experience, topic, question, and contributor.
+
+**Validates: Requirements 6.2**
+
+**Rationale**: This property ensures that the UI correctly displays all available information for each question, providing users with complete context for interview preparation.
+
+### Integration Test Examples
+
+The following are specific integration tests that validate the migration was successful:
+
+**Example 1: Jobs Functionality Preserved**
+
+Given the migration is complete, when the Jobs page loads, then it should successfully fetch and display job listings from Google Sheets.
+
+**Validates: Requirements 1.5, 2.5**
+
+**Example 2: Data Structure Consolidation**
+
+Given the data fetcher is updated, when `getHomePageData()` is called, then it should return an object with `interviewQuestions` as a single array (not separate scenario/live/community arrays) and `jobs` as an array.
+
+**Validates: Requirements 2.3**
+
+**Example 3: Error Handling**
+
+Given the GitHub CSV service is unavailable, when the data fetcher attempts to fetch interview questions, then it should return an empty array without throwing an error.
+
+**Validates: Requirements 2.4**
+
+**Example 4: Environment Configuration**
+
+Given the environment configuration is updated, when `getSheetUrls()` is called, then it should return an object containing only the `jobs` property, and environment validation should not produce warnings about missing interview question sheet URLs.
+
+**Validates: Requirements 3.5, 3.6, 3.7**
+
+**Example 5: Interview Questions Page Loads**
+
+Given the migration is complete, when a user navigates to `/interview-questions`, then the page should successfully load and display interview questions from GitHub CSV.
+
+**Validates: Requirements 6.1**
+
+**Example 6: Filter Options Generated**
+
+Given interview questions are loaded, when `getFilterOptions()` is called with the questions array, then it should return an object with arrays for companies, years, roles, experiences, topics, and contributors.
+
+**Validates: Requirements 6.3**
+
+**Example 7: CSV Export Functionality**
+
+Given interview questions are displayed, when the user triggers CSV export, then a valid CSV file should be downloaded with columns for all InterviewQuestion fields.
+
+**Validates: Requirements 6.4**
+
+**Example 8: Refresh Functionality**
+
+Given the interview questions page is loaded, when the user triggers refresh, then the system should fetch fresh data from GitHub CSV.
+
+**Validates: Requirements 6.5**
+
+**Example 9: Error Display**
+
+Given an error occurs during data fetching, when the interview questions page loads, then an appropriate error message should be displayed to the user.
+
+**Validates: Requirements 6.6**
+
+**Example 10: UI Component Compatibility**
+
+Given the migration is complete, when UI components receive InterviewQuestion data, then they should render correctly without errors.
+
+**Validates: Requirements 7.3, 7.4**
+
+## Error Handling
+
+### GitHub CSV Service Errors
+
+**Timeout Errors**:
+- 15-second timeout on all GitHub raw content requests
+- On timeout: Log error, return empty array
+- User impact: Page loads with no questions, shows "No questions available" message
+
+**Network Errors**:
+- HTTP errors (404, 500, etc.) from GitHub
+- On error: Log error with status code, return empty array
+- User impact: Graceful degradation, no crash
+
+**Parse Errors**:
+- Invalid CSV format or structure
+- On error: Log parsing errors, filter out invalid rows, return valid rows only
+- User impact: Partial data displayed if some rows are valid
+
+### Data Fetcher Errors
+
+**Promise.allSettled Pattern**:
+- Use `Promise.allSettled()` to handle multiple data sources independently
+- Each data source failure is isolated
+- Return empty arrays for failed sources
+- Log all failures for monitoring
+
+**Retry Logic**:
+- Exponential backoff retry (3 attempts, starting at 1 second delay)
+- Applies to both GitHub CSV and Google Sheets calls
+- On final failure: Return empty array, log error
+
+### Environment Configuration Errors
+
+**Missing Environment Variables**:
+- GitHub CSV variables have sensible defaults (TrainWithShubham/interview-questions/main)
+- Jobs sheet URL has hardcoded fallback
+- On missing vars: Use defaults, log warning
+
+**Invalid Environment Variables**:
+- Zod schema validation catches invalid URLs or formats
+- On validation failure: Use defaults, log error
+- Build continues with fallback values
+
+### UI Error Handling
+
+**Empty Data States**:
+- Display "No questions available" message
+- Show refresh button to retry
+- Provide link to GitHub repository for contributions
+
+**Loading States**:
+- Show skeleton loaders while fetching
+- Timeout after 20 seconds, show error message
+
+**Filter Errors**:
+- If filter options are empty, disable filter UI
+- Show message: "Filters unavailable, showing all questions"
 
 ## Testing Strategy
 
-### Manual Testing
-1. Add 15 test questions
-2. Create PR in interview-questions repo
-3. Merge PR
-4. Watch GitHub Actions (both repos)
-5. Verify deploy completes (2-3 minutes)
-6. Visit production site
-7. Click "Refresh" button
-8. Verify new questions appear
+### Dual Testing Approach
 
-### Expected Results
-- ✅ Questions increase from 20
-- ✅ trigger-deploy.yml runs successfully (~30 seconds)
-- ✅ deploy.yml runs successfully (~2-3 minutes)
-- ✅ Site updates within 5 minutes total
-- ✅ Manual refresh shows new questions immediately
+This migration requires both unit tests and property-based tests to ensure correctness:
 
-## Deployment Process
+- **Unit tests**: Verify specific examples, edge cases, and integration points
+- **Property tests**: Verify universal properties across all inputs
+- Both are complementary and necessary for comprehensive coverage
 
-### Initial Setup
-1. Create `interview-questions` repo with CSV files
-2. Create `.github/workflows/trigger-deploy.yml`
-3. Generate PAT with repo + workflow scopes
-4. Add `TRIGGER_TOKEN` secret to interview-questions repo
-5. Update `community-website` with GitHub Actions listener
-6. Enable GitHub Pages (Source: GitHub Actions)
-7. Update service code with correct repository URLs
+### Property-Based Testing
 
-### Ongoing Workflow
-1. Contributor submits PR with new questions
-2. Maintainer reviews and merges PR
-3. GitHub Actions automatically:
-   - Triggers rebuild
-   - Deploys to GitHub Pages
-   - New questions live in 3-5 minutes
-4. No manual intervention required
+**Library**: Use `fast-check` for TypeScript property-based testing
 
-## Monitoring & Observability
+**Configuration**:
+- Minimum 100 iterations per property test
+- Each test tagged with feature name and property number
 
-### GitHub Actions
-- Monitor Actions tab for failures
-- Email notifications on workflow failure
-- Workflow run history available
+**Property Tests**:
 
-### Client-Side
-- Console logs for fetch errors
-- Browser DevTools Network tab shows CSV fetch
-- Loading states visible to users
+1. **Property 1: Interview Question Schema Completeness**
+   - Generate random InterviewQuestion objects
+   - Verify all required fields are present and non-empty
+   - Tag: `Feature: github-csv-migration, Property 1: Interview Question Schema Completeness`
 
-### Analytics (Future)
-- Page views
-- Search queries
-- Popular filters
-- Export usage
+2. **Property 2: Displayed Questions Include All Fields**
+   - Generate random InterviewQuestion objects
+   - Render using display component
+   - Verify rendered output contains all field values
+   - Tag: `Feature: github-csv-migration, Property 2: Displayed Questions Include All Fields`
 
-## Maintenance
+### Unit Testing
 
-### Adding New Categories
-1. Create new CSV file (e.g., `cloud/interview-questions.csv`)
-2. Update `CSV_FILES` object in `github-csv.ts`
-3. Update trigger-deploy.yml paths if needed
-4. Deploy changes
+**Focus Areas**:
+- Specific examples of data transformation
+- Edge cases (empty arrays, malformed data)
+- Error conditions (network failures, timeouts)
+- Integration points between components
 
-### Schema Changes
-1. Update CSV header row
-2. Update `InterviewQuestion` interface
-3. Update card display components
-4. Update filter logic if needed
-5. Test thoroughly before merging
+**Unit Tests**:
 
-### Performance Monitoring
-- Track question count growth
-- Monitor fetch times
-- Check filter performance at scale
-- Optimize if > 1000 questions
+1. **Jobs Functionality Preserved** (Example 1)
+   - Mock Google Sheets service
+   - Call getJobs()
+   - Verify jobs array is returned with correct structure
+
+2. **Data Structure Consolidation** (Example 2)
+   - Call getHomePageData()
+   - Verify return type has interviewQuestions and jobs properties
+   - Verify interviewQuestions is a single array
+
+3. **Error Handling** (Example 3)
+   - Mock GitHub CSV service to throw error
+   - Call getHomePageData()
+   - Verify empty array is returned, no exception thrown
+
+4. **Environment Configuration** (Example 4)
+   - Call getSheetUrls()
+   - Verify only jobs property exists
+   - Verify no warnings for missing interview sheet URLs
+
+5. **Interview Questions Page Loads** (Example 5)
+   - Render interview questions page component
+   - Mock getAllInterviewQuestions() to return sample data
+   - Verify page renders without errors
+
+6. **Filter Options Generated** (Example 6)
+   - Create sample InterviewQuestion array
+   - Call getFilterOptions()
+   - Verify all filter categories are present
+
+7. **CSV Export Functionality** (Example 7)
+   - Trigger CSV export with sample data
+   - Verify CSV contains correct headers and data
+
+8. **Refresh Functionality** (Example 8)
+   - Mock getAllInterviewQuestions()
+   - Trigger refresh
+   - Verify function is called again
+
+9. **Error Display** (Example 9)
+   - Mock getAllInterviewQuestions() to throw error
+   - Render page
+   - Verify error message is displayed
+
+10. **UI Component Compatibility** (Example 10)
+    - Render UI components with InterviewQuestion data
+    - Verify no console errors or warnings
+
+### Testing Balance
+
+- Avoid writing too many unit tests for scenarios covered by property tests
+- Property tests handle comprehensive input coverage through randomization
+- Unit tests focus on:
+  - Specific examples that demonstrate correct behavior
+  - Integration points between services and components
+  - Edge cases and error conditions
+  - UI rendering and user interactions
+
+### Test Organization
+
+```
+tests/
+  unit/
+    services/
+      github-csv.test.ts          # Unit tests for GitHub CSV service
+      google-sheets.test.ts       # Unit tests for Jobs functionality
+    lib/
+      data-fetcher.test.ts        # Unit tests for data fetcher
+      env.test.ts                 # Unit tests for environment config
+    components/
+      interview-questions.test.ts # UI component tests
+  
+  property/
+    interview-questions.property.test.ts  # Property-based tests
+```
+
+### Continuous Integration
+
+- Run all tests on every commit
+- Fail build if any test fails
+- Generate coverage reports (target: >80% coverage)
+- Run property tests with 100 iterations in CI, 1000 in nightly builds

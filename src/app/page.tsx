@@ -15,25 +15,20 @@ import { SectionDivider } from '@/components/section-divider';
 import { ErrorBoundary } from '@/components/error-boundary';
 
 export default async function Home() {
-  // Fetch data at build time (no caching, no revalidation)
+  // Fetch data at build time
+  // Interview questions from GitHub CSV, Jobs from Google Sheets
   const {
     interviewQuestions,
-    scenarioQuestions,
-    liveQuestions,
-    communityQuestions,
     jobs: allJobs,
   } = await getHomePageData();
   
-  // Combine all question sources from Google Sheets
-  const allQuestions = [
-    ...interviewQuestions,
-    ...scenarioQuestions,
-    ...liveQuestions,
-    ...communityQuestions
-  ];
-  
-  // Take first 6 questions for homepage display
-  const questionSnippets = allQuestions.slice(0, 6);
+  // Transform InterviewQuestion to Question format for the terminal animation
+  // The terminal animation expects { question, answer?, author? }
+  const questionSnippets = interviewQuestions.slice(0, 6).map(q => ({
+    question: q.question,
+    answer: `Asked at ${q.company} for ${q.role} position (${q.experience})`,
+    author: q.contributor,
+  }));
   
   // Show all jobs
   const recentJobs = allJobs;

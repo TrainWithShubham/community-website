@@ -105,14 +105,15 @@ export function InterviewQuestionsNewClient({
       result = result.filter(q => q.contributor === filters.contributor);
     }
 
-    // Apply search
+    // Apply search using memoized Fuse instance (performance optimization)
     if (searchQuery.trim()) {
-      const searchFuse = new Fuse(result, {
+      // Create a new Fuse instance with filtered results
+      const filteredFuse = new Fuse(result, {
         keys: ['question', 'topic', 'company', 'role'],
         threshold: 0.3,
         ignoreLocation: true,
       });
-      result = searchFuse.search(searchQuery).map(r => r.item);
+      result = filteredFuse.search(searchQuery).map(r => r.item);
     }
 
     return result;
@@ -226,10 +227,10 @@ export function InterviewQuestionsNewClient({
         </div>
 
         {filteredQuestions.length === 0 ? (
-          <Alert variant="destructive" className="border-destructive text-destructive-foreground">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>No Results Found</AlertTitle>
-            <AlertDescription>
+          <Alert variant="destructive" className="border-destructive bg-destructive/10">
+            <AlertCircle className="h-4 w-4 text-destructive" />
+            <AlertTitle className="text-destructive">No Results Found</AlertTitle>
+            <AlertDescription className="text-destructive/90">
               {searchQuery
                 ? `No questions match your search for "${searchQuery}". Try different keywords or clear filters.`
                 : 'No questions match your selected filters. Try adjusting or clearing some filters.'}

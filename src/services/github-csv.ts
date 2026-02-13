@@ -33,10 +33,46 @@ const CSV_FILES = {
   
 };
 
+// Rate limiting configuration
+const RATE_LIMIT = {
+  maxRequests: 60, // GitHub allows 60 requests per hour for unauthenticated requests
+  windowMs: 60 * 60 * 1000, // 1 hour
+  requests: [] as number[],
+};
+
 /**
- * Fetch CSV content from GitHub raw URL
+ * Check if we're within rate limits
+ */
+function checkRateLimit(): boolean {
+  const now = Date.now();
+  
+  // Remove requests older than the time window
+  RATE_LIMIT.requests = RATE_LIMIT.requests.filter(
+    timestamp => now - timestamp < RATE_LIMIT.windowMs
+  );
+  
+  // Check if we've exceeded the limit
+  if (RATE_LIMIT.requests.length >= RATE_LIMIT.maxRequests) {
+    const oldestRequest = RATE_LIMIT.requests[0];
+    const resetTime = new Date(oldestRequest + RATE_LIMIT.windowMs);
+    console.warn(`Rate limit exceeded. Resets at ${resetTime.toISOString()}`);
+    return false;
+  }
+  
+  // Add current request
+  RATE_LIMIT.requests.push(now);
+  return true;
+}
+
+/**
+ * Fetch CSV content from GitHub raw URL with rate limiting
  */
 async function fetchGitHubCSV(url: string): Promise<string> {
+  // Check rate limit before making request
+  if (!checkRateLimit()) {
+    throw new Error('Rate limit exceeded. Please try again later.');
+  }
+
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
@@ -47,12 +83,19 @@ async function fetchGitHubCSV(url: string): Promise<string> {
         'User-Agent': 'TWS-Community-Hub/1.0',
         'Accept': 'text/csv',
       },
-      cache: 'no-store',
+      // Cache for 1 hour, then revalidate in background
+      next: { revalidate: 3600 },
     });
 
     clearTimeout(timeoutId);
 
     if (!response.ok) {
+      // Check for rate limit response from GitHub
+      if (response.status === 429) {
+        const resetHeader = response.headers.get('X-RateLimit-Reset');
+        const resetTime = resetHeader ? new Date(parseInt(resetHeader) * 1000) : 'unknown';
+        throw new Error(`GitHub rate limit exceeded. Resets at ${resetTime}`);
+      }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 

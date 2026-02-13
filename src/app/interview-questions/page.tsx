@@ -1,6 +1,7 @@
 import { InterviewQuestionsNewClient } from './interview-questions-client';
 import { getAllInterviewQuestions, getFilterOptions } from '@/services/github-csv';
 import { Metadata } from 'next';
+import { ErrorBoundary } from '@/components/error-boundary';
 
 export const metadata: Metadata = {
   title: 'Interview Questions',
@@ -22,8 +23,10 @@ export default async function InterviewQuestionsPage() {
   const questions = await getAllInterviewQuestions();
   const filterOptions = getFilterOptions(questions);
   return (
-    <div className="container mx-auto px-4 py-8">
-      <InterviewQuestionsNewClient questions={questions} filterOptions={filterOptions} />
-    </div>
+    <ErrorBoundary>
+      <div className="container mx-auto px-4 py-8">
+        <InterviewQuestionsNewClient questions={questions} filterOptions={filterOptions} />
+      </div>
+    </ErrorBoundary>
   );
 }

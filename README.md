@@ -58,8 +58,10 @@ GitHub-powered project catalog with live metadata
 #### 💡 **Interview Questions**
 Comprehensive Q&A for DevOps/Cloud interviews
 - ⚡ Client-side fuzzy search (Fuse.js)
-- 📑 Paginated browsing
-- 🎯 Curated by community experts
+- 🔍 Advanced filtering (company, year, role, experience, topic)
+- 📊 CSV export functionality
+- 🔄 Real-time refresh from GitHub repository
+- 📦 Powered by GitHub CSV (no database required)
 
 </td>
 </tr>
@@ -108,10 +110,11 @@ graph TB
     B --> C[GitHub Pages CDN]
     D[Google Sheets API] --> B
     E[GitHub API] --> B
-    F[Client-Side Search] --> G[Fuse.js]
-    H[UI Components] --> I[Shadcn/ui + Radix]
-    J[Styling] --> K[Tailwind CSS]
-    L[Testing] --> M[Vitest + fast-check]
+    F[GitHub CSV Repository] --> B
+    G[Client-Side Search] --> H[Fuse.js]
+    I[UI Components] --> J[Shadcn/ui + Radix]
+    K[Styling] --> L[Tailwind CSS]
+    M[Testing] --> N[Vitest + fast-check]
 ```
 
 ### Project Structure
@@ -135,7 +138,8 @@ src/
 │   ├── data-fetcher.ts   # Build-time data fetching
 │   └── utils.ts          # Shared utilities
 ├── services/             # External service wrappers
-│   └── google-sheets.ts  # Google Sheets CSV fetching
+│   ├── google-sheets.ts  # Google Sheets CSV fetching (Jobs)
+│   └── github-csv.ts     # GitHub CSV fetching (Interview Questions)
 └── data/                 # Type definitions & static data
 ```
 
@@ -146,10 +150,11 @@ src/
 │                    Build Time (GitHub Actions)               │
 ├─────────────────────────────────────────────────────────────┤
 │  1. Trigger (Push/Cron/Manual)                              │
-│  2. Fetch Google Sheets CSV data                            │
-│  3. Fetch GitHub API metadata (stars, forks, topics)        │
-│  4. Generate static HTML/CSS/JS                             │
-│  5. Deploy to GitHub Pages CDN                              │
+│  2. Fetch Interview Questions from GitHub CSV               │
+│  3. Fetch Jobs data from Google Sheets                      │
+│  4. Fetch GitHub API metadata (stars, forks, topics)        │
+│  5. Generate static HTML/CSS/JS                             │
+│  6. Deploy to GitHub Pages CDN                              │
 └─────────────────────────────────────────────────────────────┘
                             ↓
 ┌─────────────────────────────────────────────────────────────┐
@@ -157,6 +162,8 @@ src/
 ├─────────────────────────────────────────────────────────────┤
 │  • Static assets served from CDN                            │
 │  • Client-side search with Fuse.js                          │
+│  • Advanced filtering (6 filter types)                      │
+│  • CSV export functionality                                 │
 │  • Theme toggle (dark/light mode)                           │
 │  • No server-side processing required                       │
 └─────────────────────────────────────────────────────────────┘

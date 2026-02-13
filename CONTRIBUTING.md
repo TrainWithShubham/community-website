@@ -12,13 +12,14 @@ Welcome! This repo is designed to help developers and DevOps engineers learn by 
 #### Conventional Commits
 - Format: `type(scope): short imperative summary`
 - Types: `feat, fix, docs, chore, build, ci, test, refactor, perf, style`
-- Scopes: `events, calendar-api, projects, interview-questions, ui, seo, assets, build, genkit, perf, docs, ci, infra, analytics, sheets-api, cache, repo`
+- Scopes: `events, calendar-api, projects, interview-questions, jobs, ui, seo, assets, build, genkit, perf, docs, ci, infra, analytics, github-csv, cache, repo`
 - Subject ≤ 72 chars; body explains why/how; reference issues (e.g., Closes #123)
 
 Examples
 ```text
 feat(projects): add filters and README viewer
 fix(interview-questions): stabilize pagination auto-refresh
+feat(github-csv): migrate interview questions to GitHub repository
 build(genkit): defer prompt/flow creation to runtime
 ```
 
@@ -47,9 +48,18 @@ build(genkit): defer prompt/flow creation to runtime
 - Be kind and constructive in reviews; ask for clarification as needed
 
 #### Environments & Secrets
-- Server: `GOOGLE_SHEETS_*`, `GOOGLE_SA_*`, `GOOGLE_CALENDAR_ID`, `APP_BASE_URL`, `REVALIDATE_SECRET`, `GOOGLE_AI_API_KEY`
-- Client: `NEXT_PUBLIC_FIREBASE_*`
-- Configure variables on Vercel Project (Production/Preview) and locally `.env.local`
+- Server: `JOBS_SHEET_URL` (Google Sheets for jobs)
+- Client: `NEXT_PUBLIC_INTERVIEW_REPO_OWNER`, `NEXT_PUBLIC_INTERVIEW_REPO_NAME`, `NEXT_PUBLIC_INTERVIEW_REPO_BRANCH` (GitHub CSV for interview questions)
+- Client: `NEXT_PUBLIC_FIREBASE_*` (Firebase authentication)
+- Configure variables on your hosting platform (Vercel/GitHub Pages) and locally in `.env.local`
+
+#### Contributing Interview Questions
+To add interview questions to the community:
+1. Fork the [interview-questions repository](https://github.com/TrainWithShubham/interview-questions)
+2. Add your questions to the appropriate CSV file (e.g., `devops/interview-questions.csv`)
+3. Follow the CSV format: `company,year,contributor,role,experience,topic,question`
+4. Submit a Pull Request with your additions
+5. Questions will appear on the site after the next build
 
 #### Where to Start
 - Good first issues: docs, tests, accessibility, small UI polish

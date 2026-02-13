@@ -1,29 +1,19 @@
+/**
+ * Data Fetcher - Homepage Data Aggregation
+ * 
+ * Fetches data from multiple sources for the homepage:
+ * - Interview Questions: GitHub CSV (src/services/github-csv.ts)
+ * - Jobs: Google Sheets (src/services/google-sheets.ts)
+ */
+
 import { trackError, trackPerformance } from './monitoring';
-import { 
-  getInterviewQuestions, 
-  getScenarioQuestions, 
-  getLiveQuestions, 
-  getCommunityQuestions,
-  getJobs,
-} from '@/services/google-sheets';
-import type { Question } from '@/data/questions';
+import { getAllInterviewQuestions, type InterviewQuestion } from '@/services/github-csv';
+import { getJobs } from '@/services/google-sheets';
 import type { Job } from '@/data/jobs';
 
 export interface HomePageData {
-  interviewQuestions: Question[];
-  scenarioQuestions: Question[];
-  liveQuestions: Question[];
-  communityQuestions: Question[];
+  interviewQuestions: InterviewQuestion[]; // Consolidated from GitHub CSV
   jobs: Job[];
-}
-
-// Function to transform community questions from Google Sheets API format to Question type
-function transformCommunityQuestions(apiQuestions: any[]): Question[] {
-  return apiQuestions.map(q => ({
-    question: q.question || '',
-    answer: q.answer || '',
-    author: q.author || 'Anonymous'
-  }));
 }
 
 /**
@@ -57,19 +47,15 @@ export async function getHomePageData(): Promise<HomePageData> {
   const startTime = Date.now();
   
   try {
-    console.log('[Build] Fetching homepage data from Google Sheets...');
+    console.log('[Build] Fetching homepage data...');
+    console.log('[Build] - Interview Questions: GitHub CSV');
+    console.log('[Build] - Jobs: Google Sheets');
     
     const [
       interviewQuestions,
-      scenarioQuestions,
-      liveQuestions,
-      communityQuestions,
       jobs,
     ] = await Promise.allSettled([
-      retryFetch(() => getInterviewQuestions()),
-      retryFetch(() => getScenarioQuestions()),
-      retryFetch(() => getLiveQuestions()),
-      retryFetch(() => getCommunityQuestions()),
+      retryFetch(() => getAllInterviewQuestions()),
       retryFetch(() => getJobs()),
     ]);
 
@@ -80,9 +66,6 @@ export async function getHomePageData(): Promise<HomePageData> {
     // Check for critical failures
     const failures = [
       { name: 'Interview Questions', result: interviewQuestions },
-      { name: 'Scenario Questions', result: scenarioQuestions },
-      { name: 'Live Questions', result: liveQuestions },
-      { name: 'Community Questions', result: communityQuestions },
       { name: 'Jobs', result: jobs },
     ].filter(({ result }) => result.status === 'rejected');
 
@@ -95,16 +78,8 @@ export async function getHomePageData(): Promise<HomePageData> {
       });
     }
 
-    // Transform community questions to match Question type
-    const transformedCommunityQuestions = communityQuestions.status === 'fulfilled' 
-      ? transformCommunityQuestions(communityQuestions.value)
-      : [];
-
     return {
       interviewQuestions: interviewQuestions.status === 'fulfilled' ? interviewQuestions.value : [],
-      scenarioQuestions: scenarioQuestions.status === 'fulfilled' ? scenarioQuestions.value : [],
-      liveQuestions: liveQuestions.status === 'fulfilled' ? liveQuestions.value : [],
-      communityQuestions: transformedCommunityQuestions,
       jobs: jobs.status === 'fulfilled' ? jobs.value : [],
     };
   } catch (error) {
@@ -113,6 +88,6 @@ export async function getHomePageData(): Promise<HomePageData> {
     trackError(error as Error, 'homepage-data-fetch');
     
     // Fail the build if data fetching fails completely
-    throw new Error(`Build failed: Unable to fetch data from Google Sheets. ${errorMessage}`);
+    throw new Error(`Build failed: Unable to fetch homepage data. ${errorMessage}`);
   }
 }
