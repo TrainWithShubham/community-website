@@ -53,6 +53,10 @@ jobs:
         env:
           # GitHub token for higher API rate limits (uses built-in GITHUB_TOKEN)
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Interview Questions Repository Configuration
+          NEXT_PUBLIC_INTERVIEW_REPO_OWNER: TrainWithShubham
+          NEXT_PUBLIC_INTERVIEW_REPO_NAME: interview-questions
+          NEXT_PUBLIC_INTERVIEW_REPO_BRANCH: main
           # Add any other required environment variables here
           # Example: GOOGLE_SHEETS_API_KEY: ${{ secrets.GOOGLE_SHEETS_API_KEY }}
       
