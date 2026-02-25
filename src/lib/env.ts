@@ -2,24 +2,19 @@
 import './env-loader';
 import { z } from 'zod';
 
-// Default Google Sheets URLs as fallback
-const DEFAULT_SHEET_URLS = {
-  SCENARIO_SHEET_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTUrAU7tRsTjLa2B9nYV5yz4x3gcYLf38ofVM0haSMKZ3XFq-FHwDQiIGntWYH1oEeWJXMQPeHnm3WN/pub?output=csv',
-  INTERVIEW_SHEET_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKXulHlDEFD1f3mVxbNgtk5_qfewFBIIN0s-XOYXXhOa2W-T9mmkvmbZi_SMqk0EpUhZbpFKhOMZDh/pub?output=csv',
-  LIVE_SHEET_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTX8qvtRs3zOsCtecGKHtcrqAAq8akht-drKxmkxCFBxxYEwWiG1_gqR8TY1fT757wqDIrzviEdbUpj/pub?output=csv',
-  COMMUNITY_SHEET_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTS9P-csRa0DxN4W3DYQ-Jd1216fI0EhUmKEeBVhDNOgZmVTJPxTUFbY52SjpuORhaHYRkkc66IYLsD/pub?output=csv',
-  JOBS_SHEET_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTXG1tfJqAN5IqlJqpvPWnOMVlCEKCYIgSfddrb30wZndYyn4rl2KSznKhx8D1GvdJmG040p1KA983u/pub?output=csv',
-};
+// Default Google Sheets URL for Jobs only
+const DEFAULT_JOBS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTXG1tfJqAN5IqlJqpvPWnOMVlCEKCYIgSfddrb30wZndYyn4rl2KSznKhx8D1GvdJmG040p1KA983u/pub?output=csv';
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   
-  // Google Sheets Configuration with fallbacks
-  SCENARIO_SHEET_URL: z.string().url().min(1).default(DEFAULT_SHEET_URLS.SCENARIO_SHEET_URL),
-  INTERVIEW_SHEET_URL: z.string().url().min(1).default(DEFAULT_SHEET_URLS.INTERVIEW_SHEET_URL),
-  LIVE_SHEET_URL: z.string().url().min(1).default(DEFAULT_SHEET_URLS.LIVE_SHEET_URL),
-  COMMUNITY_SHEET_URL: z.string().url().min(1).default(DEFAULT_SHEET_URLS.COMMUNITY_SHEET_URL),
-  JOBS_SHEET_URL: z.string().url().min(1).default(DEFAULT_SHEET_URLS.JOBS_SHEET_URL),
+  // Google Sheets - Jobs only (Interview questions now use GitHub CSV)
+  JOBS_SHEET_URL: z.string().url().min(1).default(DEFAULT_JOBS_SHEET_URL),
+  
+  // GitHub CSV - Interview Questions (public, no auth needed)
+  NEXT_PUBLIC_INTERVIEW_REPO_OWNER: z.string().default('TrainWithShubham'),
+  NEXT_PUBLIC_INTERVIEW_REPO_NAME: z.string().default('interview-questions'),
+  NEXT_PUBLIC_INTERVIEW_REPO_BRANCH: z.string().default('main'),
 });
 
 // Safe environment parsing with fallbacks
@@ -28,14 +23,10 @@ function parseEnvironment() {
     return envSchema.parse(process.env);
   } catch (error) {
     // Merge process.env with defaults for missing values
-    const envWithDefaults = { ...process.env };
-    
-    // Add missing sheet URLs with defaults
-    Object.entries(DEFAULT_SHEET_URLS).forEach(([key, defaultValue]) => {
-      if (!envWithDefaults[key]) {
-        envWithDefaults[key] = defaultValue;
-      }
-    });
+    const envWithDefaults = {
+      ...process.env,
+      JOBS_SHEET_URL: process.env.JOBS_SHEET_URL || DEFAULT_JOBS_SHEET_URL,
+    };
     
     return envSchema.parse(envWithDefaults);
   }
@@ -53,15 +44,17 @@ export function validateEnvironment(): { isValid: boolean; errors: string[]; war
   try {
     envSchema.parse(process.env);
     
-    // Check if we're using default values
-    Object.entries(DEFAULT_SHEET_URLS).forEach(([key, defaultValue]) => {
-      const envValue = process.env[key];
-      if (!envValue) {
-        warnings.push(`${key}: Missing from environment, using default`);
-      } else if (envValue === defaultValue) {
-        warnings.push(`${key}: Using production default value`);
-      }
-    });
+    // Check if we're using default Jobs sheet URL
+    if (!process.env.JOBS_SHEET_URL) {
+      warnings.push('JOBS_SHEET_URL: Missing from environment, using default');
+    } else if (process.env.JOBS_SHEET_URL === DEFAULT_JOBS_SHEET_URL) {
+      warnings.push('JOBS_SHEET_URL: Using production default value');
+    }
+    
+    // Check GitHub CSV configuration
+    if (!process.env.NEXT_PUBLIC_INTERVIEW_REPO_OWNER) {
+      warnings.push('NEXT_PUBLIC_INTERVIEW_REPO_OWNER: Using default (TrainWithShubham)');
+    }
     
     return { isValid: true, errors: [], warnings };
   } catch (error) {
@@ -75,13 +68,10 @@ export function validateEnvironment(): { isValid: boolean; errors: string[]; war
 }
 
 // Helper function to get sheet URLs with type safety
+// Note: Interview questions now use GitHub CSV (see src/services/github-csv.ts)
 export function getSheetUrls() {
   return {
-    scenario: env.SCENARIO_SHEET_URL,
-    interview: env.INTERVIEW_SHEET_URL,
-    live: env.LIVE_SHEET_URL,
-    community: env.COMMUNITY_SHEET_URL,
-    jobs: env.JOBS_SHEET_URL,
+    jobs: env.JOBS_SHEET_URL, // Only Jobs still uses Google Sheets
   };
 }
 

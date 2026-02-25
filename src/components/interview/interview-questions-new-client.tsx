@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import { Search, AlertCircle, Download, RefreshCw, Loader2 } from 'lucide-react';
@@ -105,15 +105,14 @@ export function InterviewQuestionsNewClient({
       result = result.filter(q => q.contributor === filters.contributor);
     }
 
-    // Apply search using memoized Fuse instance (performance optimization)
+    // Apply search
     if (searchQuery.trim()) {
-      // Create a new Fuse instance with filtered results
-      const filteredFuse = new Fuse(result, {
+      const searchFuse = new Fuse(result, {
         keys: ['question', 'topic', 'company', 'role'],
         threshold: 0.3,
         ignoreLocation: true,
       });
-      result = filteredFuse.search(searchQuery).map(r => r.item);
+      result = searchFuse.search(searchQuery).map(r => r.item);
     }
 
     return result;
@@ -227,10 +226,10 @@ export function InterviewQuestionsNewClient({
         </div>
 
         {filteredQuestions.length === 0 ? (
-          <Alert variant="destructive" className="border-destructive bg-destructive/10">
-            <AlertCircle className="h-4 w-4 text-destructive" />
-            <AlertTitle className="text-destructive">No Results Found</AlertTitle>
-            <AlertDescription className="text-destructive/90">
+          <Alert variant="destructive" className="border-destructive text-destructive-foreground">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>No Results Found</AlertTitle>
+            <AlertDescription>
               {searchQuery
                 ? `No questions match your search for "${searchQuery}". Try different keywords or clear filters.`
                 : 'No questions match your selected filters. Try adjusting or clearing some filters.'}

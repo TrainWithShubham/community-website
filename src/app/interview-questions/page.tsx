@@ -1,6 +1,7 @@
-import { InterviewQuestionsClient } from './interview-questions-client';
-import { getInterviewQuestions, getScenarioQuestions, getLiveQuestions, getCommunityQuestions } from '@/services/google-sheets';
+import { InterviewQuestionsNewClient } from './interview-questions-client';
+import { getAllInterviewQuestions, getFilterOptions } from '@/services/github-csv';
 import { Metadata } from 'next';
+import { ErrorBoundary } from '@/components/error-boundary';
 
 export const metadata: Metadata = {
   title: 'Interview Questions',
@@ -19,25 +20,13 @@ export const metadata: Metadata = {
 };
 
 export default async function InterviewQuestionsPage() {
-  const [interviewQuestions, scenarioQuestions, liveQuestions, communityQuestions] = await Promise.allSettled([
-    getInterviewQuestions(),
-    getScenarioQuestions(),
-    getLiveQuestions(),
-    getCommunityQuestions(),
-  ]);
-
-  const questionsMap = {
-    interview: interviewQuestions.status === 'fulfilled' ? interviewQuestions.value : [],
-    scenario: scenarioQuestions.status === 'fulfilled' ? scenarioQuestions.value : [],
-    live: liveQuestions.status === 'fulfilled' ? liveQuestions.value : [],
-    community: communityQuestions.status === 'fulfilled' ? communityQuestions.value : [],
-  };
-
+  const questions = await getAllInterviewQuestions();
+  const filterOptions = getFilterOptions(questions);
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">Interview Questions</h1>
-      
-      <InterviewQuestionsClient questionsMap={questionsMap} />
-    </div>
+    <ErrorBoundary>
+      <div className="container mx-auto px-4 py-8">
+        <InterviewQuestionsNewClient questions={questions} filterOptions={filterOptions} />
+      </div>
+    </ErrorBoundary>
   );
 }
