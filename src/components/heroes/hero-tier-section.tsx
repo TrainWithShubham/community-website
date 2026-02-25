@@ -1,16 +1,19 @@
-import { TierInfo } from '@/data/heroes';
+import { TierInfo, tierColorMap } from '@/data/heroes';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle2, Gift } from 'lucide-react';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 type HeroTierSectionProps = {
   tier: TierInfo;
 };
 
 export function HeroTierSection({ tier }: HeroTierSectionProps) {
+  const colors = tierColorMap[tier.id];
+
   return (
-    <Card className="flex flex-col">
+    <Card className={cn('flex flex-col border-2', colors.border)}>
       <CardHeader className="text-center pb-4">
         <div className="mx-auto mb-4 relative w-24 h-24">
           <Image
@@ -21,19 +24,19 @@ export function HeroTierSection({ tier }: HeroTierSectionProps) {
             sizes="96px"
           />
         </div>
-        <CardTitle className="text-2xl">{tier.name}</CardTitle>
+        <CardTitle className={cn('text-2xl', colors.text)}>{tier.name}</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 space-y-6">
         {/* Requirements */}
         <div>
           <h4 className="font-semibold mb-3 flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-primary" />
+            <CheckCircle2 className={cn('h-4 w-4', colors.text)} />
             Requirements
           </h4>
           <ul className="space-y-2">
             {tier.requirements.map((req, index) => (
               <li key={index} className="text-sm flex items-start gap-2">
-                <span className="text-primary mt-0.5">•</span>
+                <span className={cn('mt-0.5', colors.text)}>•</span>
                 <span>
                   {req.description}
                   {req.metric && (
@@ -50,13 +53,13 @@ export function HeroTierSection({ tier }: HeroTierSectionProps) {
         {/* Perks */}
         <div>
           <h4 className="font-semibold mb-3 flex items-center gap-2">
-            <Gift className="h-4 w-4 text-primary" />
+            <Gift className={cn('h-4 w-4', colors.text)} />
             Perks
           </h4>
           <ul className="space-y-2">
             {tier.perks.map((perk, index) => (
               <li key={index} className="text-sm flex items-start gap-2">
-                <span className="text-primary mt-0.5">•</span>
+                <span className={cn('mt-0.5', colors.text)}>•</span>
                 <span>
                   {perk.description}
                   {perk.exclusive && (

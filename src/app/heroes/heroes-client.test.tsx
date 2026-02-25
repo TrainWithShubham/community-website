@@ -203,8 +203,8 @@ describe('HeroesClient unit tests', () => {
     const devopsButton = screen.getByRole('button', { name: /devops/i });
     fireEvent.click(devopsButton);
     
-    expect(screen.getByText(/no heroes in this tier yet/i)).toBeInTheDocument();
-    expect(screen.getByText(/be the first/i)).toBeInTheDocument();
+    expect(screen.getByText(/no results found/i)).toBeInTheDocument();
+    expect(screen.getByText(/be the first hero in this tier/i)).toBeInTheDocument();
   });
 
   it('should render heroes in a responsive grid', () => {

@@ -1,12 +1,13 @@
 'use client';
 
-import { Hero, tierInfo } from '@/data/heroes';
+import { Hero, tierInfo, tierColorMap } from '@/data/heroes';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Github, Linkedin, Youtube, Globe, MapPin, Calendar } from 'lucide-react';
 import Image from 'next/image';
 import { TierBadge } from './tier-badge';
+import { cn } from '@/lib/utils';
 
 type HeroCardProps = {
   hero: Hero;
@@ -20,7 +21,7 @@ export function HeroCard({ hero }: HeroCardProps) {
   });
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+    <Card className={cn('overflow-hidden hover:shadow-lg transition-shadow border-l-4', tierColorMap[hero.tier].borderAccent)}>
       <CardHeader className="pb-4">
         <div className="flex items-start gap-4">
           <div className="relative w-20 h-20 rounded-full overflow-hidden flex-shrink-0">

@@ -1,6 +1,7 @@
-import { HeroTier, tierInfo } from '@/data/heroes';
+import { HeroTier, tierInfo, tierColorMap } from '@/data/heroes';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 type TierBadgeProps = {
   tier: HeroTier;
@@ -9,6 +10,7 @@ type TierBadgeProps = {
 
 export function TierBadge({ tier, size = 'md' }: TierBadgeProps) {
   const info = tierInfo[tier];
+  const colors = tierColorMap[tier];
   const sizeClasses = {
     sm: 'h-6 w-6',
     md: 'h-8 w-8',
@@ -26,7 +28,7 @@ export function TierBadge({ tier, size = 'md' }: TierBadgeProps) {
           sizes={size === 'sm' ? '24px' : size === 'md' ? '32px' : '48px'}
         />
       </div>
-      <Badge variant="secondary" className="text-xs">
+      <Badge variant="secondary" className={cn('text-xs', colors.text, colors.bg)}>
         {info.name}
       </Badge>
     </div>

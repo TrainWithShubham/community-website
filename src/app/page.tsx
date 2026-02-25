@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Code, Briefcase, MapPin, MessageSquareQuote, Handshake, TrendingUp, Sparkles, Users } from 'lucide-react';
+import { Code, Briefcase, MapPin, MessageSquareQuote, Handshake, TrendingUp, Sparkles, Users, Trophy } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { TerminalAnimation } from '@/components/terminal-animation';
@@ -13,6 +13,7 @@ import { QuestionsTerminalAnimation } from '@/components/questions-terminal-anim
 import { getHomePageData } from '@/lib/data-fetcher';
 import { SectionDivider } from '@/components/section-divider';
 import { ErrorBoundary } from '@/components/error-boundary';
+import { heroes } from '@/data/heroes';
 
 export default async function Home() {
   // Fetch data at build time (no caching, no revalidation)
@@ -104,6 +105,53 @@ export default async function Home() {
               <ClientOnly>
                 <QuestionsTerminalAnimation questions={questionSnippets} />
               </ClientOnly>
+          </div>
+        </section>
+
+        <SectionDivider />
+
+        {/* Community Heroes Section */}
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 lg:gap-12 items-center py-8 md:py-12" id="heroes">
+          <div className="order-2 md:order-1">
+            <div className="card-neo-border rounded-lg overflow-hidden">
+              <div className="bg-card border border-border rounded-lg">
+                <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
+                  <div className="h-3 w-3 rounded-full bg-red-500" />
+                  <div className="h-3 w-3 rounded-full bg-yellow-500" />
+                  <div className="h-3 w-3 rounded-full bg-green-500" />
+                  <span className="ml-2 text-xs text-muted-foreground font-mono">heroes --stats</span>
+                </div>
+                <div className="p-6 font-mono text-sm space-y-3">
+                  <p className="text-muted-foreground">$ cat /heroes/stats.log</p>
+                  <p>
+                    <span className="text-orange-500">Automation Heroes:</span>{' '}
+                    <span className="text-foreground">{heroes.filter(h => h.tier === 'automation').length}</span>
+                  </p>
+                  <p>
+                    <span className="text-blue-500">Cloud Heroes:</span>{' '}
+                    <span className="text-foreground">{heroes.filter(h => h.tier === 'cloud').length}</span>
+                  </p>
+                  <p>
+                    <span className="text-purple-500">DevOps Heroes:</span>{' '}
+                    <span className="text-foreground">{heroes.filter(h => h.tier === 'devops').length}</span>
+                  </p>
+                  <p className="text-muted-foreground pt-2 border-t border-border">
+                    Total: <span className="text-primary">{heroes.length}</span> community heroes recognized
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="space-y-3 md:space-y-4 order-1 md:order-2 text-center md:text-left">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-headline">
+              <Trophy className="inline-block mr-2 md:mr-3 h-6 w-6 md:h-8 md:w-8 text-primary"/> ./CommunityHeroes
+            </h2>
+            <p className="text-muted-foreground text-sm md:text-base">
+              <span className="text-primary">&gt;</span> Recognizing exceptional community members who drive learning, solve doubts, and inspire others in their DevOps and Cloud journey.
+            </p>
+            <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm md:text-base min-h-[44px] md:min-h-[40px] px-4 md:px-6">
+              <Link href="/heroes">ls -l /heroes</Link>
+            </Button>
           </div>
         </section>
 

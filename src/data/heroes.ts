@@ -93,6 +93,32 @@ export const tierInfo: Record<HeroTier, TierInfo> = {
   }
 };
 
+export const tierColorMap: Record<HeroTier, {
+  border: string;
+  text: string;
+  bg: string;
+  borderAccent: string;
+}> = {
+  automation: {
+    border: 'border-orange-500/30',
+    text: 'text-orange-500',
+    bg: 'bg-orange-500/10',
+    borderAccent: 'border-l-orange-500',
+  },
+  cloud: {
+    border: 'border-blue-500/30',
+    text: 'text-blue-500',
+    bg: 'bg-blue-500/10',
+    borderAccent: 'border-l-blue-500',
+  },
+  devops: {
+    border: 'border-purple-500/30',
+    text: 'text-purple-500',
+    bg: 'bg-purple-500/10',
+    borderAccent: 'border-l-purple-500',
+  },
+};
+
 export const heroes: Hero[] = [
   // Example hero
   {
@@ -163,6 +189,48 @@ export const heroes: Hero[] = [
     tier: 'devops',
     socialLinks: {
       linkedin: 'https://www.linkedin.com/in/madhup-pandey/',
+    }
+  },
+  {
+    id: 'sanket-dangat',
+    name: 'Sanket Dangat',
+    title: 'Cloud & DevOps Engineer',
+    photo: '/heroes/sanket-dangat.png',
+    location: 'Navi Mumbai, India',
+    heroSince: '2026-02-25',
+    about: 'Cloud & DevOps Engineer with a journey from Desktop Support to DevOps, focused on building scalable, automated, and reliable cloud solutions.',
+    tier: 'automation',
+    socialLinks: {
+      github: 'https://github.com/srdangat',
+      linkedin: 'https://www.linkedin.com/in/sanket-dangat-6462b8271/',
+    }
+  },
+  {
+    id: 'nandan-aghera',
+    name: 'Nandan P Aghera',
+    title: 'Software Engineer at Kambala Solutions Pvt Ltd',
+    photo: '/heroes/nandan-aghera.jpeg',
+    location: 'Mangaluru, Karnataka',
+    heroSince: '2026-02-25',
+    about: 'Software Engineer @ Kambala Solutions | DevOps Enthusiast | Community Contributor | AWS, Linux, Git, CI/CD, Docker.',
+    tier: 'automation',
+    socialLinks: {
+      github: 'https://github.com/Nandan29300',
+      linkedin: 'https://www.linkedin.com/in/nandan-p-aghera/',
+    }
+  },
+  {
+    id: 'prakhar-srivastava',
+    name: 'Prakhar Srivastava',
+    title: 'DevOps Engineer',
+    photo: '/heroes/prakhar-srivastava.jpeg',
+    location: 'Patna, Bihar, India',
+    heroSince: '2026-02-25',
+    about: 'DevOps Engineer | CI/CD | AWS | Infrastructure Automation | Container Orchestration.',
+    tier: 'automation',
+    socialLinks: {
+      github: 'https://github.com/Heyyprakhar1',
+      linkedin: 'https://www.linkedin.com/in/heyyprakhar1/',
     }
   }
   // More heroes can be added here
