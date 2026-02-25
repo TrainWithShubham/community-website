@@ -6,7 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "env:check": "tsx scripts/validate-env.ts",
     "env:validate": "tsx scripts/validate-env.ts",

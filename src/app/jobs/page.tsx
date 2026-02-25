@@ -35,12 +35,12 @@ export default async function JobsPage() {
           ./JobBoard
         </h1>
         <p className="text-muted-foreground mt-2 text-lg">Your next career move in the DevOps ecosystem starts here.</p>
-        <p className="text-sm text-accent mt-1">// Displaying all available job opportunities.</p>
+        <p className="text-sm text-accent mt-1">{'// Displaying all available job opportunities.'}</p>
       </div>
 
       {/* Top notice */}
       <div className="mb-8 rounded-lg border border-border bg-card px-4 py-3 text-center font-mono text-sm text-muted-foreground">
-        <span className="text-accent">//</span> Jobs updated periodically. For daily openings, join our{' '}
+        <span className="text-accent">{'// '}</span>Jobs updated periodically. For daily openings, join our{' '}
         <a
           href="https://discord.gg/kGEr9mR5gT"
           target="_blank"

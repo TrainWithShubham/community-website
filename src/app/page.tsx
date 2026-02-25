@@ -1,13 +1,8 @@
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Code, Briefcase, MapPin, MessageSquareQuote, Handshake, TrendingUp, Sparkles, Users, Trophy } from 'lucide-react';
-import Image from 'next/image';
+import { Code, Briefcase, Users, Trophy } from 'lucide-react';
 import Link from 'next/link';
 import { TerminalAnimation } from '@/components/terminal-animation';
 import { ClientOnly } from '@/components/client-only';
-import { type Job, jobs } from '@/data/jobs';
-import { Badge } from '@/components/ui/badge';
 import { JobsTerminalAnimation } from '@/components/jobs-terminal-animation';
 import { QuestionsTerminalAnimation } from '@/components/questions-terminal-animation';
 import { getHomePageData } from '@/lib/data-fetcher';

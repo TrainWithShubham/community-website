@@ -5,11 +5,7 @@ on:
   push:
     branches:
       - main
-  
-  # Trigger hourly to fetch fresh data from Google Sheets
-  schedule:
-    - cron: '0 * * * *'  # Every hour at minute 0
-  
+
   # Allow manual trigger from GitHub UI
   workflow_dispatch:
 
@@ -30,38 +26,36 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Build static site
         run: npm run build
         env:
           # GitHub token for higher API rate limits (uses built-in GITHUB_TOKEN)
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Add any other required environment variables here
-          # Example: GOOGLE_SHEETS_API_KEY: ${{ secrets.GOOGLE_SHEETS_API_KEY }}
-      
+
       - name: Create .nojekyll and CNAME files
         run: |
           touch out/.nojekyll
           echo "community.trainwithshubham.com" > out/CNAME
-      
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
-      
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

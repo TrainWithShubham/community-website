@@ -41,7 +41,7 @@ export function HeroesClient({ heroes }: HeroesClientProps) {
       </div>
 
       <p className="text-center text-sm text-muted-foreground mb-8 font-mono">
-        // {filteredHeroes.length} heroes found
+        {'// '}{filteredHeroes.length} heroes found
       </p>
 
       {/* Heroes Grid */}
@@ -54,7 +54,7 @@ export function HeroesClient({ heroes }: HeroesClientProps) {
       ) : (
         <div className="text-center py-12">
           <p className="text-muted-foreground text-lg font-mono">
-            // No results found. Be the first hero in this tier!
+            {'// No results found. Be the first hero in this tier!'}
           </p>
         </div>
       )}

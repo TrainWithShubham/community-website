@@ -29,7 +29,7 @@ export default function HeroesPage() {
           <span className="text-primary">&gt;</span> Recognizing exceptional community members who drive learning, solve doubts,
           and inspire others in their DevOps and Cloud journey.
         </p>
-        <p className="text-sm text-accent mt-1">// Honoring those who make our community stronger every day.</p>
+        <p className="text-sm text-accent mt-1">{'// Honoring those who make our community stronger every day.'}</p>
       </div>
 
       {/* Recognition Tiers Section */}
